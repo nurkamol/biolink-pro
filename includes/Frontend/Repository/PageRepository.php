@@ -38,10 +38,31 @@ final class PageRepository
     public static function defaultData(): array
     {
         return [
-            'theme'    => 'minimal',
-            'settings' => [],
+            'theme'    => 'mono',
+            'settings' => self::defaultSettings(),
             'blocks'   => [],
             'seo'      => [],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function defaultSettings(): array
+    {
+        return [
+            'avatar_id'         => 0,
+            'handle'            => '',
+            'headline'          => '',
+            'subheadline'       => '',
+            'hide_name'         => false,
+            'bg_type'           => 'theme',
+            'bg_color'          => '',
+            'bg_gradient_from'  => '',
+            'bg_gradient_to'    => '',
+            'bg_gradient_angle' => 135,
+            'bg_image_id'       => 0,
+            'bg_overlay'        => 0,
         ];
     }
 
@@ -195,7 +216,9 @@ final class PageRepository
     {
         $defaults = self::defaultData();
         $theme    = isset($data['theme']) && is_string($data['theme']) ? sanitize_key($data['theme']) : $defaults['theme'];
-        $settings = isset($data['settings']) && is_array($data['settings']) ? $data['settings'] : $defaults['settings'];
+        $settings = isset($data['settings']) && is_array($data['settings'])
+            ? self::normalizeSettings($data['settings'])
+            : $defaults['settings'];
         $seo      = isset($data['seo']) && is_array($data['seo']) ? $data['seo'] : $defaults['seo'];
 
         $blocks = [];
@@ -213,6 +236,37 @@ final class PageRepository
             'blocks'   => $blocks,
             'seo'      => $seo,
         ];
+    }
+
+    /**
+     * Normalize page-level settings to known shape; unknown keys preserved as-is.
+     *
+     * @param array<string, mixed> $settings
+     * @return array<string, mixed>
+     */
+    public static function normalizeSettings(array $settings): array
+    {
+        $defaults = self::defaultSettings();
+        $merged   = array_merge($defaults, $settings);
+
+        $merged['avatar_id']         = isset($merged['avatar_id']) ? (int) $merged['avatar_id'] : 0;
+        $merged['bg_image_id']       = isset($merged['bg_image_id']) ? (int) $merged['bg_image_id'] : 0;
+        $merged['bg_overlay']        = max(0, min(100, (int) $merged['bg_overlay']));
+        $merged['bg_gradient_angle'] = max(0, min(360, (int) $merged['bg_gradient_angle']));
+        $merged['hide_name']         = (bool) $merged['hide_name'];
+
+        $bg_type = is_string($merged['bg_type'] ?? null) ? sanitize_key($merged['bg_type']) : 'theme';
+        $merged['bg_type'] = in_array($bg_type, ['theme', 'color', 'gradient', 'image'], true) ? $bg_type : 'theme';
+
+        foreach (['handle', 'headline', 'subheadline'] as $text_key) {
+            $merged[$text_key] = is_string($merged[$text_key]) ? sanitize_text_field($merged[$text_key]) : '';
+        }
+        foreach (['bg_color', 'bg_gradient_from', 'bg_gradient_to'] as $color_key) {
+            $val = (string) ($merged[$color_key] ?? '');
+            $merged[$color_key] = preg_match('/^#[0-9a-f]{3}([0-9a-f]{3})?$/i', $val) ? $val : '';
+        }
+
+        return $merged;
     }
 
     /**

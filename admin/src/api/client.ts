@@ -13,6 +13,22 @@ export interface BioBlock {
 	data: Record< string, unknown >;
 }
 
+export interface BioPageSettings {
+	avatar_id?: number;
+	handle?: string;
+	headline?: string;
+	subheadline?: string;
+	hide_name?: boolean;
+	bg_type?: 'theme' | 'color' | 'gradient' | 'image';
+	bg_color?: string;
+	bg_gradient_from?: string;
+	bg_gradient_to?: string;
+	bg_gradient_angle?: number;
+	bg_image_id?: number;
+	bg_overlay?: number;
+	[ key: string ]: unknown;
+}
+
 export interface BioPage {
 	id: number;
 	title: string;
@@ -23,10 +39,34 @@ export interface BioPage {
 	modified: string;
 	url: string;
 	theme: string;
-	settings: Record< string, unknown >;
+	settings: BioPageSettings;
 	blocks: BioBlock[];
 	seo: Record< string, unknown >;
 }
+
+export interface ThemePreset {
+	slug: string;
+	label: string;
+	description: string;
+	background: { type: 'color' | 'gradient' | 'image'; value: string };
+	swatch: string;
+	tokens: {
+		text: string;
+		muted: string;
+		accent: string;
+		accentText: string;
+		surface: string;
+		border: string;
+		buttonShape: 'pill' | 'rounded' | 'square';
+		buttonStyle: 'filled' | 'outline' | 'glass';
+	};
+}
+
+export const ThemesApi = {
+	list(): Promise< ThemePreset[] > {
+		return request< ThemePreset[] >( `${ NS }/themes` );
+	},
+};
 
 export interface BioBlockType {
 	slug: string;

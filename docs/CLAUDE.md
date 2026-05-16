@@ -2,8 +2,8 @@
 
 > Read this file at the start of every session. Update the phase status line below when moving between phases.
 
-**Current phase:** Phase 3 — Block builder (in progress)
-**Next phase:** Phase 4 — Themes + remaining blocks
+**Current phase:** Phase 4a — Themes + polish (shipped in v0.3.0)
+**Next phase:** Phase 4b — P2 blocks (spotify, tiktok, faq, countdown, newsletter, product_card, donation, html_embed, map)
 **Decision (Phase 1):** Admin React app uses **CSS Modules** (not Tailwind).
 **Release channel:** GitHub Releases on `nurkamol/biolink-pro`. Stable tags only (`vX.Y.Z`). Updater = `BioLinkPro\Updates\GitHubUpdater`. See `bin/build-release.sh` for local builds; `.github/workflows/release.yml` runs on tag push.
 **Docs index:** `docs/` (start with `PROMPT.md` then `ARCHITECTURE.md`)

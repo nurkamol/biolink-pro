@@ -16,6 +16,7 @@ use BioLinkPro\Api\BlocksController;
 use BioLinkPro\Api\ChangelogController;
 use BioLinkPro\Api\PagesController;
 use BioLinkPro\Api\RestRouter;
+use BioLinkPro\Api\ThemesController;
 use BioLinkPro\Blocks\BlockRegistry;
 use BioLinkPro\Blocks\Types\ButtonBlock;
 use BioLinkPro\Blocks\Types\DividerBlock;
@@ -31,6 +32,7 @@ use BioLinkPro\Frontend\PageRenderer;
 use BioLinkPro\Frontend\PostType\BioLinkPagePostType;
 use BioLinkPro\Frontend\Repository\PageRepository;
 use BioLinkPro\Frontend\TemplateLoader;
+use BioLinkPro\Themes\ThemeEngine;
 use BioLinkPro\Updates\GitHubUpdater;
 
 defined('ABSPATH') || exit;
@@ -165,7 +167,10 @@ final class Plugin
             5
         );
 
-        $this->register(PageRenderer::class, new PageRenderer($registry, $repository));
+        $themes = new ThemeEngine();
+        $this->register(ThemeEngine::class, $themes);
+
+        $this->register(PageRenderer::class, new PageRenderer($registry, $repository, $themes));
         $this->register(TemplateLoader::class, new TemplateLoader());
         $this->register(FrontendAssets::class, new FrontendAssets());
 
@@ -183,6 +188,7 @@ final class Plugin
                 new PagesController($repository),
                 new BlocksController($registry, $repository),
                 new ChangelogController($updater),
+                new ThemesController($themes),
             ])
         );
 

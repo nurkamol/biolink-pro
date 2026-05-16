@@ -128,93 +128,79 @@ export function PageBuilder( { pageId, blocks, onChange }: Props ) {
 
 	return (
 		<div className={ styles.builder }>
-			<div className={ styles.canvasColumn }>
-				<header className={ styles.canvasHeader }>
-					<h2>{ __( 'Blocks', 'biolink-pro' ) }</h2>
-					<button
-						type="button"
-						className={ styles.addButton }
-						onClick={ () => setShowInserter( ( v ) => ! v ) }
-					>
-						{ __( '+ Add block', 'biolink-pro' ) }
-					</button>
-				</header>
-
-				{ error && <div className={ styles.error }>{ error }</div> }
-
-				{ showInserter && (
-					<div className={ styles.inserter }>
-						{ getBlockCatalog().map( ( meta ) => (
-							<button
-								type="button"
-								key={ meta.slug }
-								className={ styles.inserterItem }
-								onClick={ () => handleAdd( meta.slug ) }
-							>
-								<span className={ styles.inserterIcon }>{ meta.icon }</span>
-								<span>{ meta.label }</span>
-							</button>
-						) ) }
-					</div>
-				) }
-
-				<DndContext
-					sensors={ sensors }
-					onDragStart={ handleDragStart }
-					onDragEnd={ handleDragEnd }
+			<header className={ styles.canvasHeader }>
+				<h2>{ __( 'Blocks', 'biolink-pro' ) }</h2>
+				<button
+					type="button"
+					className={ styles.addButton }
+					onClick={ () => setShowInserter( ( v ) => ! v ) }
 				>
-					<SortableContext
-						items={ blocks.map( ( b ) => b.uuid ) }
-						strategy={ verticalListSortingStrategy }
-					>
-						{ blocks.length === 0 ? (
-							<div className={ styles.emptyCanvas }>
-								{ __( 'No blocks yet. Click "Add block" above to start.', 'biolink-pro' ) }
-							</div>
-						) : (
-							<div className={ styles.canvas }>
-								{ blocks.map( ( block ) => (
-									<SortableBlockRow
-										key={ block.uuid }
-										block={ block }
-										selected={ selectedUuid === block.uuid }
-										saving={ saving === block.uuid }
-										onSelect={ () => setSelectedUuid( block.uuid ) }
-										onDelete={ () => handleDelete( block.uuid ) }
-									/>
-								) ) }
-							</div>
-						) }
-					</SortableContext>
-					<DragOverlay>
-						{ activeBlock ? (
-							<div className={ `${ styles.blockRow } ${ styles.blockRowDragging }` }>
-								<BlockRowContent block={ activeBlock } />
-							</div>
-						) : null }
-					</DragOverlay>
-				</DndContext>
-			</div>
+					{ __( '+ Add block', 'biolink-pro' ) }
+				</button>
+			</header>
 
-			<aside className={ styles.inspector }>
-				{ selected ? (
-					<>
-						<header className={ styles.inspectorHeader }>
-							<h3>{ findBlockMeta( selected.type )?.label ?? selected.type }</h3>
-							{ saving === selected.uuid && (
-								<span className={ styles.savingLabel }>
-									{ __( 'Saving…', 'biolink-pro' ) }
-								</span>
-							) }
-						</header>
-						<InspectorEditor block={ selected } onChange={ handleUpdate } />
-					</>
-				) : (
-					<div className={ styles.inspectorEmpty }>
-						{ __( 'Select a block to edit its content.', 'biolink-pro' ) }
-					</div>
-				) }
-			</aside>
+			{ error && <div className={ styles.error }>{ error }</div> }
+
+			{ showInserter && (
+				<div className={ styles.inserter }>
+					{ getBlockCatalog().map( ( meta ) => (
+						<button
+							type="button"
+							key={ meta.slug }
+							className={ styles.inserterItem }
+							onClick={ () => handleAdd( meta.slug ) }
+						>
+							<span className={ styles.inserterIcon }>{ meta.icon }</span>
+							<span>{ meta.label }</span>
+						</button>
+					) ) }
+				</div>
+			) }
+
+			<DndContext
+				sensors={ sensors }
+				onDragStart={ handleDragStart }
+				onDragEnd={ handleDragEnd }
+			>
+				<SortableContext
+					items={ blocks.map( ( b ) => b.uuid ) }
+					strategy={ verticalListSortingStrategy }
+				>
+					{ blocks.length === 0 ? (
+						<div className={ styles.emptyCanvas }>
+							{ __( 'No blocks yet. Click "Add block" above to start.', 'biolink-pro' ) }
+						</div>
+					) : (
+						<div className={ styles.canvas }>
+							{ blocks.map( ( block ) => (
+								<SortableBlockRow
+									key={ block.uuid }
+									block={ block }
+									selected={ selectedUuid === block.uuid }
+									saving={ saving === block.uuid }
+									onSelect={ () =>
+										setSelectedUuid( ( prev ) => ( prev === block.uuid ? null : block.uuid ) )
+									}
+									onDelete={ () => handleDelete( block.uuid ) }
+									onUpdate={ handleUpdate }
+								/>
+							) ) }
+						</div>
+					) }
+				</SortableContext>
+				<DragOverlay>
+					{ activeBlock ? (
+						<div className={ `${ styles.blockRow } ${ styles.blockRowDragging }` }>
+							<BlockRowContent block={ activeBlock } />
+						</div>
+					) : null }
+				</DragOverlay>
+			</DndContext>
+			{ selected === null && blocks.length > 0 && (
+				<p className={ styles.helperHint }>
+					{ __( 'Click a block to edit its content.', 'biolink-pro' ) }
+				</p>
+			) }
 		</div>
 	);
 }
@@ -225,9 +211,10 @@ interface BlockRowProps {
 	saving: boolean;
 	onSelect: () => void;
 	onDelete: () => void;
+	onUpdate: ( uuid: string, next: BlockData ) => void;
 }
 
-function SortableBlockRow( { block, selected, saving, onSelect, onDelete }: BlockRowProps ) {
+function SortableBlockRow( { block, selected, saving, onSelect, onDelete, onUpdate }: BlockRowProps ) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
 		useSortable( { id: block.uuid } );
 
@@ -237,32 +224,44 @@ function SortableBlockRow( { block, selected, saving, onSelect, onDelete }: Bloc
 		opacity: isDragging ? 0.3 : 1,
 	};
 
-	const cls = [ styles.blockRow ];
-	if ( selected ) cls.push( styles.blockRowSelected );
+	const meta = findBlockMeta( block.type );
+
+	const cls = [ styles.blockCard ];
+	if ( selected ) cls.push( styles.blockCardSelected );
 
 	return (
 		<div ref={ setNodeRef } style={ style } className={ cls.join( ' ' ) }>
-			<button
-				type="button"
-				className={ styles.dragHandle }
-				aria-label={ __( 'Drag to reorder', 'biolink-pro' ) }
-				{ ...attributes }
-				{ ...listeners }
-			>
-				⋮⋮
-			</button>
-			<button type="button" className={ styles.blockBody } onClick={ onSelect }>
-				<BlockRowContent block={ block } />
-			</button>
-			{ saving && <span className={ styles.savingDot } aria-hidden="true" /> }
-			<button
-				type="button"
-				className={ styles.deleteButton }
-				onClick={ onDelete }
-				aria-label={ __( 'Delete block', 'biolink-pro' ) }
-			>
-				×
-			</button>
+			<div className={ styles.blockRow }>
+				<button
+					type="button"
+					className={ styles.dragHandle }
+					aria-label={ __( 'Drag to reorder', 'biolink-pro' ) }
+					{ ...attributes }
+					{ ...listeners }
+				>
+					⋮⋮
+				</button>
+				<button type="button" className={ styles.blockBody } onClick={ onSelect }>
+					<BlockRowContent block={ block } />
+				</button>
+				{ saving && <span className={ styles.savingDot } aria-hidden="true" /> }
+				<button
+					type="button"
+					className={ styles.deleteButton }
+					onClick={ onDelete }
+					aria-label={ __( 'Delete block', 'biolink-pro' ) }
+				>
+					×
+				</button>
+			</div>
+			{ selected && meta && (
+				<div className={ styles.blockInspector }>
+					<meta.Editor
+						data={ block.data as BlockData }
+						onChange={ ( next ) => onUpdate( block.uuid, next ) }
+					/>
+				</div>
+			) }
 		</div>
 	);
 }
@@ -279,30 +278,6 @@ function BlockRowContent( { block }: { block: BioBlock } ) {
 				</span>
 			</span>
 		</>
-	);
-}
-
-function InspectorEditor( {
-	block,
-	onChange,
-}: {
-	block: BioBlock;
-	onChange: ( uuid: string, next: BlockData ) => void;
-} ) {
-	const meta = findBlockMeta( block.type );
-	if ( ! meta ) {
-		return (
-			<div className={ styles.inspectorEmpty }>
-				{ __( 'Unknown block type.', 'biolink-pro' ) }
-			</div>
-		);
-	}
-	const Editor = meta.Editor;
-	return (
-		<Editor
-			data={ block.data as BlockData }
-			onChange={ ( next ) => onChange( block.uuid, next ) }
-		/>
 	);
 }
 

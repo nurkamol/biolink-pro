@@ -15,8 +15,9 @@ final class PageRepositoryTest extends TestCase
     public function testNormalizeFillsInDefaults(): void
     {
         $normalized = PageRepository::normalize([]);
-        self::assertSame('minimal', $normalized['theme']);
-        self::assertSame([], $normalized['settings']);
+        self::assertSame('mono', $normalized['theme']);
+        self::assertIsArray($normalized['settings']);
+        self::assertSame('theme', $normalized['settings']['bg_type']);
         self::assertSame([], $normalized['blocks']);
         self::assertSame([], $normalized['seo']);
     }

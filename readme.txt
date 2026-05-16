@@ -4,7 +4,7 @@ Tags: bio link, linktree, link in bio, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.6
 Requires PHP: 8.2
-Stable tag: 0.2.0
+Stable tag: 0.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,17 @@ Yes. Everything runs on your own server. No external account required (unless yo
 PHP 8.2 or higher.
 
 == Changelog ==
+
+= 0.3.0 =
+* Phase 4 cut: theme presets, page headers, live preview.
+* 8 starter themes (Mono, Glass, Forest, Midnight, Neon, Sunset, Aurora, Sky) with backgrounds, fonts, button shapes.
+* Per-page background override (color, gradient, image with overlay).
+* New Header tab: avatar (WP media), display name, @handle, subtitle.
+* Live preview iframe alongside the builder; reloads after every change.
+* Inline block inspector replaces the right-rail panel.
+* Frontend isolation reset stops active-theme typography (e.g. Bricks) bleeding into bio pages.
+* Plugin-row quick links on the wp-admin Plugins screen.
+* Fix: REST client double rootURL middleware (was 404'ing every request).
 
 = 0.2.0 =
 * Phase 3: drag-and-drop block builder with 8 P1 blocks (link, button, social icons, image gallery, rich text, divider, video, YouTube).

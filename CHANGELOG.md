@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-05-16
+
+### Added — Phase 4 cut: themes + polish
+- **`Themes\ThemeEngine`** + 8 starter presets — Mono, Glass, Forest, Midnight (minimal/professional) and Neon, Sunset, Aurora, Sky (vibrant). Each preset carries background, accent palette, font stack, button shape (pill/rounded/square), button style (filled/outline/glass), and an SVG-ready swatch.
+- **`Themes\Preset`** — immutable value object that serializes to CSS custom properties via `toCssVars()`.
+- **Per-page background override** — `_biolink_data.settings.bg_type` accepts `theme | color | gradient | image`, with `bg_color`, `bg_gradient_{from,to,angle}`, `bg_image_id`, `bg_overlay` fields. Renderer emits the override on `.bio-page` so a page can deviate without changing themes.
+- **Page header settings** — `avatar_id`, `handle` (renders as `@handle`), `headline`, `subheadline`, `hide_name`. Editable in the new admin Header tab.
+- **`Api\ThemesController`** — `GET /biolink/v1/themes` returns the catalog for the admin picker.
+- **Frontend theme isolation** — high-specificity reset scoped to `body.bio-body` stops active-theme typography (e.g. Bricks/Bebas Neue) from leaking into bio pages while keeping `wp_head()` available for SEO/analytics plugins.
+- **Updated frontend stylesheet** — consumes the new `--bio-*` tokens (button radius, shadow tone, surface color, accent text), adds backdrop blur on glass surfaces, and improves hover lift on links/buttons/social icons.
+
+### Added — Admin builder refresh
+- **3-section PageDetail layout** — top bar (back link / title / status / save indicator / Save / Publish / View), left settings rail (Header / Theme / Background tabs), middle block builder, right sticky live preview.
+- **`PageHeaderEditor`** — avatar picker via wp.media, display name, handle, subtitle, hide-name toggle.
+- **`ThemePicker`** — grid of theme tiles with live swatches, fetched from `/themes`.
+- **`BackgroundEditor`** — segmented picker for `theme | color | gradient | image`, with color/gradient/angle controls and an image overlay slider.
+- **`LivePreview`** — phone-frame iframe that auto-reloads (350ms debounced) after every page save or block change. Cache-busts via a `_blpreview=` query param.
+- **Inline block inspector** — selected block expands its editor below the row instead of taking the right rail (frees the rail for live preview).
+- Debounced settings autosave (~500ms) on header + background changes.
+
+### Fixed
+- **REST client double rootURL middleware** — `wp-api-fetch` already registers a default rootURL middleware via `wpApiSettings`. Our custom one caused every request to resolve to `/wp-json/pages` (404). Dropped the custom middleware; paths in `client.ts` now include the full `/biolink/v1` namespace.
+
 ## [0.2.0] - 2026-05-16
 
 ### Added — Phase 3: block builder

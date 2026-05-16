@@ -1,45 +1,27 @@
 /**
  * BioLink Pro — public bio page stylesheet.
  *
- * Mobile-first. BEM (`bio-block__element--modifier`). No framework, no resets
- * beyond what we need. CSS custom properties scoped to .bio-page so themes
- * can override without leaking into the host site.
+ * Mobile-first, BEM. Theme tokens come from `--bio-*` CSS custom properties
+ * emitted by Themes\ThemeEngine; this file only declares structure + variants.
  */
 
-:root {
-	--bio-color-bg: #fafafa;
-	--bio-color-surface: #ffffff;
-	--bio-color-text: #1d2327;
-	--bio-color-muted: #646970;
-	--bio-color-accent: #2271b1;
-	--bio-color-accent-hover: #135e96;
-	--bio-color-border: #e0e0e0;
-	--bio-radius: 12px;
-	--bio-radius-pill: 999px;
-	--bio-space-xs: 6px;
-	--bio-space-sm: 10px;
-	--bio-space-md: 16px;
-	--bio-space-lg: 24px;
-	--bio-space-xl: 36px;
-	--bio-font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-	--bio-shadow: 0 1px 2px rgba( 0, 0, 0, 0.04 );
-	--bio-shadow-hover: 0 4px 16px rgba( 0, 0, 0, 0.08 );
-}
+/* ---------------------------------------------------------------------
+ * Theme isolation reset — keeps the active WP theme's typography and
+ * background from bleeding into the bio page. Scoped to body.bio-body
+ * so we don't affect the rest of wp-admin or other plugins.
+ * ------------------------------------------------------------------ */
 
-* {
+body.bio-body,
+body.bio-body * {
 	box-sizing: border-box;
 }
 
-html,
-body {
+body.bio-body {
 	margin: 0;
 	padding: 0;
-}
-
-body.bio-body {
-	background: var( --bio-color-bg );
-	color: var( --bio-color-text );
-	font-family: var( --bio-font-stack );
+	font-family: var( --bio-font-stack, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif );
+	background: var( --bio-bg, #fafafa );
+	color: var( --bio-color-text, #1d2327 );
 	font-size: 16px;
 	line-height: 1.5;
 	-webkit-font-smoothing: antialiased;
@@ -47,39 +29,85 @@ body.bio-body {
 	min-height: 100svh;
 }
 
+body.bio-body .bio-page,
+body.bio-body .bio-page *,
+body.bio-body .bio-page *::before,
+body.bio-body .bio-page *::after {
+	box-sizing: border-box;
+}
+
+body.bio-body .bio-page h1,
+body.bio-body .bio-page h2,
+body.bio-body .bio-page h3,
+body.bio-body .bio-page h4,
+body.bio-body .bio-page p {
+	font-family: var( --bio-heading-stack, var( --bio-font-stack, inherit ) );
+	margin: 0;
+	font-weight: 600;
+	color: inherit;
+	text-transform: none;
+	letter-spacing: normal;
+	line-height: 1.3;
+}
+
+body.bio-body .bio-page p,
+body.bio-body .bio-page li,
+body.bio-body .bio-page a {
+	font-family: var( --bio-font-stack, inherit );
+}
+
+body.bio-body .bio-page button {
+	font-family: inherit;
+}
+
+/* Page wrapper ---------------------------------------------------------- */
+
 .bio-page {
-	max-width: 600px;
+	max-width: 620px;
 	margin: 0 auto;
-	padding: var( --bio-space-xl ) var( --bio-space-md );
+	padding: 56px 20px 80px;
+	min-height: 100vh;
+	min-height: 100svh;
 }
 
 /* Header ---------------------------------------------------------------- */
 
 .bio-header {
 	text-align: center;
-	margin-bottom: var( --bio-space-xl );
+	margin-bottom: 32px;
 }
 
 .bio-header__avatar {
-	width: 96px;
-	height: 96px;
+	width: 104px;
+	height: 104px;
 	border-radius: 50%;
 	object-fit: cover;
-	margin: 0 auto var( --bio-space-md );
+	margin: 0 auto 16px;
 	display: block;
-	box-shadow: var( --bio-shadow );
+	box-shadow: 0 6px 24px rgba( 0, 0, 0, 0.12 );
+	border: 3px solid rgba( 255, 255, 255, 0.4 );
 }
 
 .bio-header__title {
-	margin: 0 0 var( --bio-space-xs );
 	font-size: 22px;
 	font-weight: 700;
+	margin: 0 0 4px;
+	color: var( --bio-color-text );
+}
+
+.bio-header__handle {
+	font-size: 14px;
+	color: var( --bio-color-muted );
+	margin: 0 0 8px;
+	font-weight: 500;
 }
 
 .bio-header__subtitle {
-	margin: 0;
-	color: var( --bio-color-muted );
 	font-size: 15px;
+	color: var( --bio-color-muted );
+	margin: 0 auto;
+	max-width: 480px;
+	line-height: 1.45;
 }
 
 /* Block container ------------------------------------------------------- */
@@ -87,13 +115,13 @@ body.bio-body {
 .bio-blocks {
 	display: flex;
 	flex-direction: column;
-	gap: var( --bio-space-md );
+	gap: 12px;
 }
 
 .bio-block {
 	display: flex;
 	align-items: center;
-	gap: var( --bio-space-sm );
+	gap: 10px;
 }
 
 .bio-block__icon {
@@ -109,72 +137,68 @@ body.bio-body {
 }
 
 .bio-block__label {
-	font-weight: 500;
+	font-weight: 600;
 }
 
-/* Link block ------------------------------------------------------------ */
+/* Link block — themed surface ------------------------------------------ */
 
 .bio-block--link {
 	background: var( --bio-color-surface );
 	border: 1px solid var( --bio-color-border );
-	border-radius: var( --bio-radius );
-	padding: var( --bio-space-md ) var( --bio-space-lg );
+	border-radius: var( --bio-button-radius, 14px );
+	padding: 16px 20px;
 	text-decoration: none;
-	color: inherit;
+	color: var( --bio-color-text );
 	box-shadow: var( --bio-shadow );
-	transition: transform 160ms ease, box-shadow 160ms ease;
 	justify-content: center;
 	text-align: center;
+	transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+	backdrop-filter: blur( 12px );
+	-webkit-backdrop-filter: blur( 12px );
 }
 
 .bio-block--link:hover,
 .bio-block--link:focus-visible {
-	transform: translateY( -1px );
-	box-shadow: var( --bio-shadow-hover );
+	transform: translateY( -2px );
+	box-shadow: 0 8px 28px rgba( 0, 0, 0, 0.14 );
 	outline: none;
 }
 
 .bio-block--link.bio-block--featured {
 	background: var( --bio-color-accent );
-	color: #fff;
+	color: var( --bio-color-accent-text );
 	border-color: var( --bio-color-accent );
 }
 
-/* Button block ---------------------------------------------------------- */
+/* Button block — variants honor theme button shape/style --------------- */
 
 .bio-block--button {
 	justify-content: center;
 	text-decoration: none;
-	border-radius: var( --bio-radius-pill );
-	padding: var( --bio-space-sm ) var( --bio-space-lg );
+	border-radius: var( --bio-button-radius, 999px );
+	padding: 12px 24px;
 	font-weight: 600;
-	transition: transform 160ms ease, background 160ms ease;
+	transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+	box-shadow: var( --bio-shadow );
 }
 
 .bio-block--button:hover,
 .bio-block--button:focus-visible {
-	transform: translateY( -1px );
+	transform: translateY( -2px );
 	outline: none;
 }
 
 .bio-block--button-primary {
 	background: var( --bio-color-accent );
-	color: #fff;
-}
-
-.bio-block--button-primary:hover {
-	background: var( --bio-color-accent-hover );
+	color: var( --bio-color-accent-text );
 }
 
 .bio-block--button-secondary {
 	background: var( --bio-color-surface );
 	color: var( --bio-color-text );
 	border: 1px solid var( --bio-color-border );
-}
-
-.bio-block--button-secondary:hover {
-	border-color: var( --bio-color-accent );
-	color: var( --bio-color-accent );
+	backdrop-filter: blur( 12px );
+	-webkit-backdrop-filter: blur( 12px );
 }
 
 .bio-block--button-ghost {
@@ -184,16 +208,16 @@ body.bio-body {
 }
 
 .bio-block--button-ghost:hover {
-	background: rgba( 34, 113, 177, 0.08 );
+	background: var( --bio-color-surface );
 }
 
 .bio-block--button-sm {
-	padding: 6px var( --bio-space-md );
+	padding: 8px 18px;
 	font-size: 14px;
 }
 
 .bio-block--button-lg {
-	padding: var( --bio-space-md ) var( --bio-space-xl );
+	padding: 16px 32px;
 	font-size: 17px;
 }
 
@@ -201,7 +225,7 @@ body.bio-body {
 
 .bio-block--social {
 	justify-content: center;
-	gap: var( --bio-space-md );
+	gap: 14px;
 	flex-wrap: wrap;
 }
 
@@ -209,33 +233,34 @@ body.bio-body {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 40px;
-	height: 40px;
+	width: 44px;
+	height: 44px;
 	border-radius: 50%;
 	background: var( --bio-color-surface );
 	color: var( --bio-color-text );
 	border: 1px solid var( --bio-color-border );
-	transition: transform 160ms ease, color 160ms ease, background 160ms ease;
+	backdrop-filter: blur( 12px );
+	-webkit-backdrop-filter: blur( 12px );
+	transition: transform 180ms ease, color 180ms ease, background 180ms ease;
 }
 
 .bio-block__social-link:hover,
 .bio-block__social-link:focus-visible {
-	transform: translateY( -2px );
+	transform: translateY( -3px ) scale( 1.05 );
 	color: var( --bio-color-accent );
-	background: var( --bio-color-bg );
 	outline: none;
 }
 
 .bio-block__social-link svg {
-	width: 18px;
-	height: 18px;
+	width: 20px;
+	height: 20px;
 }
 
 /* Image gallery --------------------------------------------------------- */
 
 .bio-block--gallery {
 	flex-wrap: wrap;
-	gap: var( --bio-space-sm );
+	gap: 6px;
 }
 
 .bio-block--gallery-grid {
@@ -251,7 +276,7 @@ body.bio-body {
 .bio-block__image {
 	display: block;
 	width: 100%;
-	border-radius: var( --bio-radius );
+	border-radius: 12px;
 	overflow: hidden;
 }
 
@@ -271,32 +296,28 @@ body.bio-body {
 	flex-direction: column;
 	align-items: stretch;
 	gap: 0;
+	color: var( --bio-color-text );
 }
 
-.bio-block--text-left {
-	text-align: left;
-}
-
-.bio-block--text-center {
-	text-align: center;
-}
-
-.bio-block--text-right {
-	text-align: right;
-}
+.bio-block--text-left { text-align: left; }
+.bio-block--text-center { text-align: center; }
+.bio-block--text-right { text-align: right; }
 
 .bio-block--text p {
-	margin: 0 0 var( --bio-space-sm );
+	margin: 0 0 10px;
+	font-size: 15px;
+	line-height: 1.55;
 }
 
 .bio-block--text h2,
 .bio-block--text h3,
 .bio-block--text h4 {
-	margin: var( --bio-space-md ) 0 var( --bio-space-sm );
+	margin: 18px 0 8px;
+	font-weight: 700;
 }
 
 .bio-block--text ul {
-	margin: 0 0 var( --bio-space-sm );
+	margin: 0 0 10px;
 	padding-left: 1.4em;
 }
 
@@ -305,9 +326,9 @@ body.bio-body {
 }
 
 .bio-block--text code {
-	background: rgba( 0, 0, 0, 0.05 );
-	padding: 1px 5px;
-	border-radius: 3px;
+	background: var( --bio-color-surface );
+	padding: 2px 6px;
+	border-radius: 4px;
 	font-size: 0.9em;
 }
 
@@ -316,7 +337,7 @@ body.bio-body {
 .bio-block--divider {
 	background: transparent;
 	border: none;
-	height: var( --bio-space-md );
+	height: 16px;
 	width: 100%;
 }
 
@@ -326,15 +347,9 @@ body.bio-body {
 
 .bio-block--divider-dots {
 	display: flex;
-	gap: var( --bio-space-sm );
+	gap: 8px;
 	justify-content: center;
 	align-items: center;
-}
-
-.bio-block--divider-dots::before,
-.bio-block--divider-dots::after,
-.bio-block--divider-dots {
-	color: var( --bio-divider-color, var( --bio-color-border ) );
 }
 
 .bio-block--divider-dots::before,
@@ -344,17 +359,8 @@ body.bio-body {
 	font-size: 18px;
 }
 
-.bio-block--divider-space {
-	height: var( --bio-space-md );
-}
-
-.bio-block--divider-spacing-sm {
-	height: var( --bio-space-sm );
-}
-
-.bio-block--divider-spacing-lg {
-	height: var( --bio-space-xl );
-}
+.bio-block--divider-spacing-sm { height: 8px; }
+.bio-block--divider-spacing-lg { height: 36px; }
 
 /* Video ----------------------------------------------------------------- */
 
@@ -365,7 +371,7 @@ body.bio-body {
 
 .bio-block--video video {
 	width: 100%;
-	border-radius: var( --bio-radius );
+	border-radius: 12px;
 	display: block;
 }
 
@@ -383,7 +389,7 @@ body.bio-body {
 	border: none;
 	padding: 0;
 	background: #000;
-	border-radius: var( --bio-radius );
+	border-radius: 12px;
 	overflow: hidden;
 	cursor: pointer;
 	aspect-ratio: 16 / 9;
@@ -394,6 +400,12 @@ body.bio-body {
 	height: 100%;
 	object-fit: cover;
 	display: block;
+	opacity: 0.85;
+	transition: opacity 180ms ease;
+}
+
+.bio-block__yt-facade:hover .bio-block__yt-thumb {
+	opacity: 1;
 }
 
 .bio-block__yt-play {
@@ -401,23 +413,26 @@ body.bio-body {
 	top: 50%;
 	left: 50%;
 	transform: translate( -50%, -50% );
-	width: 56px;
-	height: 56px;
+	width: 60px;
+	height: 60px;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	color: #fff;
 	background: rgba( 0, 0, 0, 0.7 );
 	border-radius: 50%;
+	transition: background 180ms ease, transform 180ms ease;
+}
+
+.bio-block__yt-facade:hover .bio-block__yt-play {
+	background: var( --bio-color-accent );
+	color: var( --bio-color-accent-text );
+	transform: translate( -50%, -50% ) scale( 1.08 );
 }
 
 .bio-block__yt-play svg {
 	width: 22px;
 	height: 22px;
-}
-
-.bio-block__yt-facade:hover .bio-block__yt-play {
-	background: var( --bio-color-accent );
 }
 
 .bio-block__yt-facade iframe {
@@ -426,4 +441,19 @@ body.bio-body {
 	width: 100%;
 	height: 100%;
 	border: 0;
+}
+
+/* Footer credit (subtle, only when not customized) --------------------- */
+
+.bio-page__credit {
+	text-align: center;
+	margin-top: 40px;
+	font-size: 12px;
+	color: var( --bio-color-muted );
+	opacity: 0.7;
+}
+
+.bio-page__credit a {
+	color: inherit;
+	text-decoration: none;
 }

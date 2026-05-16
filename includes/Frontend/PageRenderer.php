@@ -11,6 +11,7 @@ namespace BioLinkPro\Frontend;
 
 use BioLinkPro\Blocks\BlockRegistry;
 use BioLinkPro\Frontend\Repository\PageRepository;
+use BioLinkPro\Themes\ThemeEngine;
 use WP_Post;
 
 defined('ABSPATH') || exit;
@@ -19,8 +20,14 @@ final class PageRenderer
 {
     public function __construct(
         private readonly BlockRegistry $registry,
-        private readonly PageRepository $repository
+        private readonly PageRepository $repository,
+        private readonly ThemeEngine $themes
     ) {
+    }
+
+    public function themes(): ThemeEngine
+    {
+        return $this->themes;
     }
 
     /**
@@ -31,7 +38,10 @@ final class PageRenderer
     public function renderHeader(WP_Post $post, array $settings): string
     {
         $avatar_id   = isset($settings['avatar_id']) ? (int) $settings['avatar_id'] : 0;
-        $headline    = isset($settings['headline']) ? (string) $settings['headline'] : $post->post_title;
+        $handle      = isset($settings['handle']) ? trim((string) $settings['handle']) : '';
+        $headline    = isset($settings['headline']) && trim((string) $settings['headline']) !== ''
+            ? (string) $settings['headline']
+            : $post->post_title;
         $subheadline = isset($settings['subheadline']) ? (string) $settings['subheadline'] : '';
         $show_name   = empty($settings['hide_name']);
 
@@ -55,6 +65,11 @@ final class PageRenderer
 
         if ($show_name && $headline !== '') {
             $html .= '<h1 class="bio-header__title">' . esc_html($headline) . '</h1>';
+        }
+
+        if ($handle !== '') {
+            $handle_display = str_starts_with($handle, '@') ? $handle : '@' . $handle;
+            $html .= '<p class="bio-header__handle">' . esc_html($handle_display) . '</p>';
         }
 
         if ($subheadline !== '') {
@@ -121,7 +136,13 @@ final class PageRenderer
          */
         do_action('biolink/page/render/before', $post, $data);
 
-        $html = '<article class="bio-page bio-theme-' . esc_attr((string) ($data['theme'] ?? 'minimal')) . '">';
+        $theme_slug = (string) ($data['theme'] ?? ThemeEngine::DEFAULT_SLUG);
+        if (! $this->themes->has($theme_slug)) {
+            $theme_slug = ThemeEngine::DEFAULT_SLUG;
+        }
+
+        $html  = $this->themes->renderStyleBlock($theme_slug, $settings);
+        $html .= '<article class="bio-page bio-theme-' . esc_attr($theme_slug) . '">';
         $html .= $this->renderHeader($post, $settings);
         $html .= $this->renderBlocks($blocks);
         $html .= '</article>';

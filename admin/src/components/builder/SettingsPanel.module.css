@@ -1,0 +1,213 @@
+.section {
+	padding-bottom: var( --biolink-space-md );
+	border-bottom: 1px solid var( --biolink-color-border );
+	margin-bottom: var( --biolink-space-md );
+}
+
+.section:last-child {
+	border-bottom: none;
+	margin-bottom: 0;
+}
+
+.sectionTitle {
+	font-size: 12px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var( --biolink-color-muted );
+	margin: 0 0 var( --biolink-space-sm );
+}
+
+.field {
+	display: block;
+	margin-bottom: var( --biolink-space-sm );
+}
+
+.label {
+	display: block;
+	font-size: 12px;
+	font-weight: 500;
+	color: var( --biolink-color-text );
+	margin-bottom: 4px;
+}
+
+.input {
+	display: block;
+	width: 100%;
+	padding: 6px 10px;
+	font-size: 13px;
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	background: var( --biolink-color-bg );
+	color: var( --biolink-color-text );
+	font-family: inherit;
+}
+
+.input:focus {
+	outline: none;
+	border-color: var( --biolink-color-primary );
+	box-shadow: 0 0 0 1px var( --biolink-color-primary );
+}
+
+.colorInput {
+	width: 100%;
+	height: 36px;
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	cursor: pointer;
+}
+
+.hint {
+	display: block;
+	color: var( --biolink-color-muted );
+	font-size: 11px;
+	margin: 4px 0 0;
+}
+
+.row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var( --biolink-space-sm );
+}
+
+.checkbox {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+	margin-top: 4px;
+}
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 6px 12px;
+	font-size: 12px;
+	border-radius: var( --biolink-radius );
+	border: 1px solid var( --biolink-color-border );
+	background: var( --biolink-color-bg );
+	color: var( --biolink-color-text );
+	cursor: pointer;
+}
+
+.btn:hover {
+	border-color: var( --biolink-color-primary );
+	color: var( --biolink-color-primary );
+}
+
+.btnDanger {
+	color: var( --biolink-color-danger );
+}
+
+.btnDanger:hover {
+	border-color: var( --biolink-color-danger );
+	color: var( --biolink-color-danger );
+}
+
+.avatarRow {
+	display: flex;
+	gap: var( --biolink-space-sm );
+	align-items: center;
+	margin-bottom: var( --biolink-space-md );
+}
+
+.avatarPreview {
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	overflow: hidden;
+	background: var( --biolink-color-surface );
+	border: 1px solid var( --biolink-color-border );
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.avatarPreview img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.avatarPlaceholder {
+	font-size: 20px;
+	font-weight: 600;
+	color: var( --biolink-color-muted );
+}
+
+.avatarActions {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	flex: 1;
+}
+
+.themeGrid {
+	display: grid;
+	grid-template-columns: repeat( 2, 1fr );
+	gap: 6px;
+}
+
+.themeTile {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 6px;
+	border: 2px solid transparent;
+	border-radius: var( --biolink-radius );
+	background: transparent;
+	cursor: pointer;
+}
+
+.themeTile:hover {
+	background: var( --biolink-color-surface );
+}
+
+.themeTileSelected {
+	border-color: var( --biolink-color-primary );
+	background: var( --biolink-color-surface );
+}
+
+.themeSwatch {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 10;
+	border-radius: 6px;
+	border: 1px solid var( --biolink-color-border );
+}
+
+.themeLabel {
+	font-size: 11px;
+	font-weight: 500;
+	text-align: center;
+	color: var( --biolink-color-text );
+}
+
+.segmentedRow {
+	display: grid;
+	grid-template-columns: repeat( 2, 1fr );
+	gap: 4px;
+	margin-bottom: var( --biolink-space-sm );
+}
+
+.segmented {
+	padding: 6px 8px;
+	font-size: 11px;
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	background: var( --biolink-color-bg );
+	cursor: pointer;
+}
+
+.segmented:hover {
+	border-color: var( --biolink-color-primary );
+}
+
+.segmentedActive {
+	background: var( --biolink-color-primary );
+	color: #fff;
+	border-color: var( --biolink-color-primary );
+}
