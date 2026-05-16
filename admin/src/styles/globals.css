@@ -1,0 +1,39 @@
+:root {
+	--biolink-color-text: #1d2327;
+	--biolink-color-muted: #646970;
+	--biolink-color-bg: #ffffff;
+	--biolink-color-surface: #f6f7f7;
+	--biolink-color-border: #dcdcde;
+	--biolink-color-primary: #2271b1;
+	--biolink-color-primary-hover: #135e96;
+	--biolink-color-danger: #b32d2e;
+	--biolink-radius: 4px;
+	--biolink-space-xs: 4px;
+	--biolink-space-sm: 8px;
+	--biolink-space-md: 16px;
+	--biolink-space-lg: 24px;
+	--biolink-space-xl: 32px;
+}
+
+.biolink-pro-app-root {
+	margin: var( --biolink-space-md ) 0 0 -20px;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	color: var( --biolink-color-text );
+}
+
+.biolink-pro-app-root *,
+.biolink-pro-app-root *::before,
+.biolink-pro-app-root *::after {
+	box-sizing: border-box;
+}
+
+.biolink-pro-app-root h1,
+.biolink-pro-app-root h2,
+.biolink-pro-app-root h3 {
+	margin: 0 0 var( --biolink-space-sm );
+	line-height: 1.3;
+}
+
+.biolink-pro-app-root button {
+	font-family: inherit;
+}

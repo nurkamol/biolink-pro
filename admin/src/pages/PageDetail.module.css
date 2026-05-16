@@ -1,0 +1,135 @@
+.root {
+	max-width: 720px;
+}
+
+.back {
+	display: inline-block;
+	margin-bottom: var( --biolink-space-md );
+	color: var( --biolink-color-muted );
+	text-decoration: none;
+	font-size: 13px;
+}
+
+.back:hover {
+	color: var( --biolink-color-primary );
+}
+
+.form {
+	background: var( --biolink-color-bg );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	padding: var( --biolink-space-lg );
+}
+
+.label {
+	display: block;
+	font-weight: 500;
+	font-size: 14px;
+	margin-bottom: var( --biolink-space-md );
+}
+
+.input {
+	display: block;
+	width: 100%;
+	margin-top: var( --biolink-space-xs );
+	padding: 8px 12px;
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	font-size: 14px;
+}
+
+.input:focus {
+	border-color: var( --biolink-color-primary );
+	box-shadow: 0 0 0 1px var( --biolink-color-primary );
+	outline: none;
+}
+
+.meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var( --biolink-space-md );
+	font-size: 13px;
+	color: var( --biolink-color-muted );
+	margin-bottom: var( --biolink-space-md );
+}
+
+.meta code {
+	background: var( --biolink-color-surface );
+	padding: 2px 6px;
+	border-radius: 3px;
+}
+
+.error {
+	padding: var( --biolink-space-sm ) var( --biolink-space-md );
+	background: #fcf0f1;
+	border: 1px solid var( --biolink-color-danger );
+	color: var( --biolink-color-danger );
+	border-radius: var( --biolink-radius );
+	margin-bottom: var( --biolink-space-md );
+}
+
+.actions {
+	display: flex;
+	align-items: center;
+	gap: var( --biolink-space-sm );
+}
+
+.primary {
+	padding: 8px 16px;
+	border: 1px solid var( --biolink-color-primary );
+	border-radius: var( --biolink-radius );
+	background: var( --biolink-color-primary );
+	color: #fff;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.primary:hover:not( :disabled ) {
+	background: var( --biolink-color-primary-hover );
+}
+
+.primary:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.secondary {
+	padding: 8px 16px;
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	background: var( --biolink-color-bg );
+	color: var( --biolink-color-text );
+	cursor: pointer;
+	font-size: 14px;
+}
+
+.secondary:hover {
+	border-color: var( --biolink-color-primary );
+	color: var( --biolink-color-primary );
+}
+
+.viewLink {
+	margin-left: auto;
+	color: var( --biolink-color-primary );
+	text-decoration: none;
+	font-size: 13px;
+}
+
+.viewLink:hover {
+	text-decoration: underline;
+}
+
+.builderPlaceholder {
+	margin-top: var( --biolink-space-lg );
+	padding: var( --biolink-space-lg );
+	background: var( --biolink-color-surface );
+	border-radius: var( --biolink-radius );
+	color: var( --biolink-color-muted );
+}
+
+.empty {
+	padding: var( --biolink-space-lg );
+	text-align: center;
+	color: var( --biolink-color-muted );
+}

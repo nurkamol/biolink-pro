@@ -1,0 +1,27 @@
+{
+    "name": "biolink-pro",
+    "version": "0.1.0",
+    "description": "BioLink Pro admin React app build pipeline.",
+    "private": true,
+    "license": "GPL-2.0-or-later",
+    "scripts": {
+        "build": "wp-scripts build",
+        "dev": "wp-scripts start",
+        "lint": "wp-scripts lint-js admin/src && wp-scripts lint-style \"admin/src/**/*.css\"",
+        "lint:fix": "wp-scripts lint-js --fix admin/src",
+        "format": "wp-scripts format admin/src",
+        "test": "wp-scripts test-unit-js"
+    },
+    "devDependencies": {
+        "@types/react": "^18.3.0",
+        "@types/react-dom": "^18.3.0",
+        "@types/wordpress__api-fetch": "^3.23.1",
+        "@wordpress/api-fetch": "^7.0.0",
+        "@wordpress/i18n": "^5.0.0",
+        "@wordpress/scripts": "^30.0.0",
+        "react": "^18.3.0",
+        "react-dom": "^18.3.0",
+        "react-router-dom": "^6.26.0",
+        "typescript": "^5.5.0"
+    }
+}

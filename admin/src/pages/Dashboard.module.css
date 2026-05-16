@@ -1,0 +1,42 @@
+.root {
+	max-width: 960px;
+}
+
+.lede {
+	color: var( --biolink-color-muted );
+	font-size: 15px;
+	margin: 0 0 var( --biolink-space-lg );
+}
+
+.cards {
+	display: grid;
+	grid-template-columns: repeat( auto-fit, minmax( 260px, 1fr ) );
+	gap: var( --biolink-space-md );
+}
+
+.card {
+	display: block;
+	padding: var( --biolink-space-lg );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	background: var( --biolink-color-bg );
+	color: inherit;
+	text-decoration: none;
+	transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.card:hover {
+	border-color: var( --biolink-color-primary );
+	box-shadow: 0 0 0 1px var( --biolink-color-primary );
+}
+
+.card h2 {
+	font-size: 16px;
+	margin-bottom: var( --biolink-space-xs );
+}
+
+.card p {
+	margin: 0;
+	color: var( --biolink-color-muted );
+	font-size: 13px;
+}

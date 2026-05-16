@@ -1,0 +1,68 @@
+.shell {
+	display: flex;
+	flex-direction: column;
+	min-height: calc( 100vh - 32px );
+	background: var( --biolink-color-bg );
+}
+
+.topbar {
+	display: flex;
+	align-items: center;
+	gap: var( --biolink-space-lg );
+	padding: var( --biolink-space-md ) var( --biolink-space-lg );
+	border-bottom: 1px solid var( --biolink-color-border );
+	background: var( --biolink-color-bg );
+}
+
+.brand {
+	display: flex;
+	align-items: center;
+	gap: var( --biolink-space-sm );
+	font-weight: 600;
+	font-size: 16px;
+}
+
+.brandMark {
+	display: inline-grid;
+	place-items: center;
+	width: 28px;
+	height: 28px;
+	border-radius: var( --biolink-radius );
+	background: var( --biolink-color-primary );
+	color: #fff;
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.nav {
+	display: flex;
+	gap: var( --biolink-space-sm );
+}
+
+.navLink {
+	padding: 6px 12px;
+	border-radius: var( --biolink-radius );
+	color: var( --biolink-color-muted );
+	text-decoration: none;
+	font-weight: 500;
+}
+
+.navLink:hover {
+	background: var( --biolink-color-surface );
+	color: var( --biolink-color-text );
+}
+
+.navLinkActive {
+	background: var( --biolink-color-primary );
+	color: #fff;
+}
+
+.navLinkActive:hover {
+	background: var( --biolink-color-primary-hover );
+	color: #fff;
+}
+
+.main {
+	flex: 1;
+	padding: var( --biolink-space-lg );
+}
