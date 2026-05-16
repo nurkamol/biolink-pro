@@ -35,11 +35,10 @@ foreach ($tables as $table) {
 // 2. Delete CPT entries + meta.
 $post_ids = get_posts(
     [
-        'post_type'      => 'biolink_page',
-        'post_status'    => 'any',
-        'numberposts'    => -1,
-        'fields'         => 'ids',
-        'suppress_filters' => true,
+        'post_type'   => 'biolink_page',
+        'post_status' => 'any',
+        'numberposts' => -1,
+        'fields'      => 'ids',
     ]
 );
 foreach ($post_ids as $post_id) {

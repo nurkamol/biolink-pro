@@ -1,0 +1,65 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  php:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+          coverage: none
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ runner.os }}-${{ matrix.php }}-${{ hashFiles('composer.json') }}
+
+      - name: Install Composer deps
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit --testdox
+
+  js:
+    name: Build admin bundle
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install npm deps
+        run: npm install --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify build artifacts
+        run: |
+          test -f assets/admin/main.js
+          test -f assets/admin/main.css
+          test -f assets/admin/main.asset.php
+          ls -lh assets/admin/

@@ -191,13 +191,13 @@ final class FormsController extends AbstractController
     private static function hashIp(): string
     {
         $salt = wp_salt('auth');
-        $ip   = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+        $ip   = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash((string) $_SERVER['REMOTE_ADDR'])) : '';
         return hash('sha256', $ip . '|' . $salt);
     }
 
     private static function clientFingerprint(): string
     {
-        $ip = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : 'unknown';
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash((string) $_SERVER['REMOTE_ADDR'])) : 'unknown';
         return substr(md5($ip), 0, 16);
     }
 }

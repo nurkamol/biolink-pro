@@ -46,7 +46,7 @@ final class TrackController extends AbstractController
             return $this->ok(['ok' => false]);
         }
 
-        $ip      = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+        $ip      = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash((string) $_SERVER['REMOTE_ADDR'])) : '';
         $bucket  = 'biolink_view_' . $page_id . '_' . md5($ip);
         $hits    = (int) get_transient($bucket);
         if ($hits >= 30) {
@@ -54,7 +54,7 @@ final class TrackController extends AbstractController
         }
         set_transient($bucket, $hits + 1, 60);
 
-        $ua_raw = isset($_SERVER['HTTP_USER_AGENT']) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+        $ua_raw = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash((string) $_SERVER['HTTP_USER_AGENT'])) : '';
         $ua     = Tracker::classifyUa($ua_raw);
         if ($ua['device'] === 'bot') {
             return $this->ok(['ok' => true, 'bot' => true]);
@@ -66,7 +66,7 @@ final class TrackController extends AbstractController
             'device'        => $ua['device'],
             'browser'       => $ua['browser'],
             'os'            => $ua['os'],
-            'referrer_host' => Tracker::referrerHost((string) ($_SERVER['HTTP_REFERER'] ?? '')),
+            'referrer_host' => Tracker::referrerHost(isset($_SERVER['HTTP_REFERER']) ? sanitize_text_field(wp_unslash((string) $_SERVER['HTTP_REFERER'])) : ''),
         ]);
 
         return $this->ok(['ok' => true]);

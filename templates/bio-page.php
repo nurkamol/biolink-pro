@@ -47,7 +47,9 @@ if ($post->post_status !== 'publish' && ! current_user_can('biolink_manage_pages
 </head>
 <body <?php body_class('bio-body'); ?>>
 	<?php
-	echo $renderer->render($post); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — renderer escapes per-block.
+	// PageRenderer escapes per-block; the assembled HTML stream is intentionally raw.
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo $renderer->render($post);
 	?>
 	<?php wp_footer(); ?>
 </body>

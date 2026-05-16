@@ -53,7 +53,7 @@ final class ClickController extends AbstractController
         }
 
         // Rate-limit clicks: 10 per link per IP per 60s.
-        $ip       = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+        $ip       = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash((string) $_SERVER['REMOTE_ADDR'])) : '';
         $bucket   = 'biolink_click_' . $id . '_' . md5($ip);
         $hits     = (int) get_transient($bucket);
         $rate_ok  = $hits < 10;
@@ -62,7 +62,7 @@ final class ClickController extends AbstractController
         }
 
         if ($rate_ok) {
-            $ua_raw = isset($_SERVER['HTTP_USER_AGENT']) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+            $ua_raw = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash((string) $_SERVER['HTTP_USER_AGENT'])) : '';
             $ua     = Tracker::classifyUa($ua_raw);
             // Skip recording bot traffic (still 302-redirect them so functional links work).
             if ($ua['device'] !== 'bot') {
@@ -73,7 +73,7 @@ final class ClickController extends AbstractController
                     'device'        => $ua['device'],
                     'browser'       => $ua['browser'],
                     'os'            => $ua['os'],
-                    'referrer_host' => Tracker::referrerHost((string) ($_SERVER['HTTP_REFERER'] ?? '')),
+                    'referrer_host' => Tracker::referrerHost(isset($_SERVER['HTTP_REFERER']) ? sanitize_text_field(wp_unslash((string) $_SERVER['HTTP_REFERER'])) : ''),
                     'utm_source'    => (string) $request->get_param('utm_source'),
                     'utm_medium'    => (string) $request->get_param('utm_medium'),
                     'utm_campaign'  => (string) $request->get_param('utm_campaign'),
@@ -107,7 +107,9 @@ final class ClickController extends AbstractController
         }
 
         nocache_headers();
-        wp_redirect(esc_url_raw($destination), 302, 'BioLink-Pro');
+        // External destinations are intentional — link blocks target arbitrary URLs.
+        // Use wp_redirect (not wp_safe_redirect) so external hosts aren't blocked.
+        wp_redirect(esc_url_raw($destination), 302, 'BioLink-Pro'); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
         exit;
     }
 }

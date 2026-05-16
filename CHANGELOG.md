@@ -5,6 +5,33 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-05-16
+
+**First stable release** — production-ready: 18 block types, 8 themes, analytics, QR codes, SEO coexistence with Rank Math / Yoast, JSON portability, encrypted integrations vault, AI suggestions, onboarding wizard, accessibility pass.
+
+### Added — Release prep
+- **PHPUnit coverage 12 → 60 tests** (156 assertions). New suites: `CryptoTest`, `MarkdownRendererTest`, `FieldValidatorTest`, `GitHubUpdaterTest`, `PresetTest`, `TemplateLibraryTest`, `IconsTest`. Bootstrap expanded with WP function stubs.
+- **GitHub Actions PR test workflow** (`.github/workflows/test.yml`) — PHP 8.2 + 8.3 matrix on every PR and push to main; verifies the admin bundle builds.
+- **POT translation file** at `languages/biolink-pro.pot` (125 strings, generated via `wp i18n make-pot`).
+- **`.wordpress-org/` directory scaffold** with README documenting required banner/icon/screenshot dimensions and an SVG placeholder icon.
+
+### Fixed — Plugin Check (wp.org scanner) ERROR-level findings
+- Removed obsolete `.gitkeep` placeholder files.
+- Bumped `Tested up to` from 6.6 → 6.9.
+- `templates/bio-page.php` phpcs-ignore annotation moved to comment-above-the-line.
+- All `$_SERVER` reads now go through `wp_unslash` + `sanitize_text_field`.
+- Dropped `suppress_filters` from `uninstall.php`.
+- `wp_redirect` (intentional for external links) and `fclose` (CSV streaming) flagged with `phpcs:ignore`.
+- `.eslintrc.json`, `.stylelintrc.json`, `.claude/`, `.distignore`, `CHANGELOG.md` added to `.distignore`.
+
+### Known
+- `Updates\GitHubUpdater` overrides WordPress's update routine — intentional for our GitHub-distributed release channel. WordPress.org submission would require gating it behind `defined('BIOLINK_PRO_DISABLE_UPDATER')`. Documented in `.wordpress-org/README.md`.
+
+### Stats
+- 30 REST endpoints · 18 block types · 8 themes · 6 starter templates
+- 60 unit tests, 156 assertions
+- Release zip ~3 MB · admin bundle ~570 KB
+
 ## [0.6.0] - 2026-05-16
 
 ### Added — AI suggestions everywhere

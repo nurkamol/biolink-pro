@@ -25,6 +25,10 @@
 /.stylelintrc.json
 /.babelrc
 /.prettierrc
+/.claude/
+/.distignore
+/CONTRIBUTING.md
+/CHANGELOG.md
 
 # PHP dev tooling
 /composer.lock

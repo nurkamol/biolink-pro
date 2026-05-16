@@ -1,0 +1,555 @@
+# Copyright (C) 2026 Nurkamol Vakhidov
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: BioLink Pro 0.6.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/biolink-pro\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-05-16T12:29:07+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: biolink-pro\n"
+
+#. Plugin Name of the plugin
+#: plugin.php
+msgid "BioLink Pro"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: plugin.php
+msgid "https://github.com/nurkamol/biolink-pro"
+msgstr ""
+
+#. Description of the plugin
+#: plugin.php
+#: includes/Updates/GitHubUpdater.php:271
+msgid "Self-hosted bio link / link-in-bio builder. Drag-and-drop blocks, themes, analytics, QR codes, monetization."
+msgstr ""
+
+#. Author of the plugin
+#: plugin.php
+msgid "Nurkamol Vakhidov"
+msgstr ""
+
+#. Author URI of the plugin
+#: plugin.php
+msgid "https://github.com/nurkamol"
+msgstr ""
+
+#: includes/Admin/Assets.php:42
+msgid "BioLink Pro admin assets are missing. Run \"npm install && npm run build\" inside the plugin directory."
+msgstr ""
+
+#: includes/Admin/Menu.php:30
+#: includes/Admin/Menu.php:31
+msgid "Bio Links"
+msgstr ""
+
+#: includes/Admin/Menu.php:41
+#: includes/Admin/Menu.php:42
+msgid "Dashboard"
+msgstr ""
+
+#: includes/Admin/Menu.php:50
+#: includes/Admin/Menu.php:51
+#: includes/Admin/PluginActionLinks.php:52
+msgid "What's New"
+msgstr ""
+
+#: includes/Admin/Menu.php:59
+#: includes/Admin/Menu.php:60
+#: includes/Admin/PluginActionLinks.php:47
+msgid "Settings"
+msgstr ""
+
+#: includes/Admin/PluginActionLinks.php:42
+msgid "Pages"
+msgstr ""
+
+#: includes/Admin/PluginActionLinks.php:74
+msgid "GitHub"
+msgstr ""
+
+#: includes/Admin/PluginActionLinks.php:82
+msgid "View details"
+msgstr ""
+
+#: includes/Ai/AiController.php:50
+msgid "Too many AI requests. Try again in a minute."
+msgstr ""
+
+#: includes/Ai/AiController.php:56
+msgid "Configure an AI provider in Settings → Integrations first."
+msgstr ""
+
+#: includes/Ai/AiController.php:62
+msgid "AI request did not return any suggestions."
+msgstr ""
+
+#: includes/Api/AbstractController.php:44
+msgid "You do not have permission to perform this action."
+msgstr ""
+
+#: includes/Api/BlocksController.php:108
+#: includes/Api/BlocksController.php:135
+#: includes/Api/BlocksController.php:162
+#: includes/Api/BlocksController.php:175
+#: includes/Api/PagesController.php:177
+#: includes/Api/PagesController.php:217
+#: includes/Api/PagesController.php:262
+#: includes/Api/PagesController.php:276
+#: includes/Api/PagesController.php:307
+#: includes/Api/PortabilityController.php:61
+#: includes/Api/QrController.php:54
+msgid "Bio page not found."
+msgstr ""
+
+#: includes/Api/BlocksController.php:113
+msgid "Block type is required."
+msgstr ""
+
+#: includes/Api/BlocksController.php:124
+msgid "Could not append block."
+msgstr ""
+
+#: includes/Api/BlocksController.php:146
+msgid "No block fields supplied."
+msgstr ""
+
+#: includes/Api/BlocksController.php:151
+#: includes/Api/BlocksController.php:165
+msgid "Block not found on this page."
+msgstr ""
+
+#: includes/Api/BlocksController.php:180
+msgid "order must be an array of uuids."
+msgstr ""
+
+#: includes/Api/BlocksController.php:191
+msgid "Could not save block order."
+msgstr ""
+
+#: includes/Api/ClickController.php:52
+msgid "Link not found."
+msgstr ""
+
+#: includes/Api/FormsController.php:73
+msgid "Please enter a valid email address."
+msgstr ""
+
+#. translators: %s: site name
+#: includes/Api/FormsController.php:102
+#, php-format
+msgid "[%s] New newsletter subscriber"
+msgstr ""
+
+#: includes/Api/FormsController.php:135
+msgid "Please fill in all fields with a valid email."
+msgstr ""
+
+#. translators: 1: site name, 2: visitor name
+#: includes/Api/FormsController.php:141
+#, php-format
+msgid "[%1$s] New contact form message from %2$s"
+msgstr ""
+
+#: includes/Api/FormsController.php:147
+msgid "Could not send your message right now."
+msgstr ""
+
+#: includes/Api/FormsController.php:172
+msgid "Submission blocked."
+msgstr ""
+
+#: includes/Api/FormsController.php:175
+msgid "Security check failed. Reload the page and try again."
+msgstr ""
+
+#: includes/Api/FormsController.php:178
+msgid "Invalid page reference."
+msgstr ""
+
+#: includes/Api/FormsController.php:185
+msgid "Too many submissions. Please try again later."
+msgstr ""
+
+#: includes/Api/PagesController.php:266
+msgid "Could not delete bio page."
+msgstr ""
+
+#: includes/Api/PagesController.php:282
+msgid "(copy)"
+msgstr ""
+
+#: includes/Api/PagesController.php:317
+msgid "Invalid publish timestamp."
+msgstr ""
+
+#: includes/Api/PortabilityController.php:102
+msgid "Invalid import payload."
+msgstr ""
+
+#: includes/Api/PortabilityController.php:109
+msgid "This export was produced by a newer plugin version. Update first."
+msgstr ""
+
+#: includes/Api/PortabilityController.php:115
+msgid "Imported bio page"
+msgstr ""
+
+#: includes/Api/QrController.php:58
+msgid "Page has no public URL yet."
+msgstr ""
+
+#: includes/Api/QrController.php:68
+msgid "Could not generate QR code."
+msgstr ""
+
+#: includes/Api/SettingsController.php:39
+msgid "You do not have permission."
+msgstr ""
+
+#: includes/Blocks/Types/ButtonBlock.php:27
+msgid "Button"
+msgstr ""
+
+#: includes/Blocks/Types/ContactFormBlock.php:26
+msgid "Contact Form"
+msgstr ""
+
+#: includes/Blocks/Types/ContactFormBlock.php:37
+msgid "Get in touch"
+msgstr ""
+
+#: includes/Blocks/Types/ContactFormBlock.php:39
+msgid "Send message"
+msgstr ""
+
+#: includes/Blocks/Types/ContactFormBlock.php:40
+msgid "Thanks! I'll get back to you soon."
+msgstr ""
+
+#: includes/Blocks/Types/ContactFormBlock.php:59
+msgid "Your name"
+msgstr ""
+
+#: includes/Blocks/Types/ContactFormBlock.php:60
+#: includes/Blocks/Types/NewsletterBlock.php:43
+msgid "you@example.com"
+msgstr ""
+
+#: includes/Blocks/Types/ContactFormBlock.php:61
+msgid "Message"
+msgstr ""
+
+#: includes/Blocks/Types/CountdownBlock.php:26
+msgid "Countdown"
+msgstr ""
+
+#: includes/Blocks/Types/CountdownBlock.php:39
+msgid "We're live!"
+msgstr ""
+
+#: includes/Blocks/Types/CountdownBlock.php:65
+msgid "days"
+msgstr ""
+
+#: includes/Blocks/Types/CountdownBlock.php:66
+msgid "hours"
+msgstr ""
+
+#: includes/Blocks/Types/CountdownBlock.php:67
+msgid "mins"
+msgstr ""
+
+#: includes/Blocks/Types/CountdownBlock.php:68
+msgid "secs"
+msgstr ""
+
+#: includes/Blocks/Types/DividerBlock.php:26
+msgid "Divider"
+msgstr ""
+
+#: includes/Blocks/Types/DonationBlock.php:27
+msgid "Donation"
+msgstr ""
+
+#: includes/Blocks/Types/DonationBlock.php:38
+msgid "Support my work"
+msgstr ""
+
+#: includes/Blocks/Types/DonationBlock.php:46
+msgid "Donate"
+msgstr ""
+
+#: includes/Blocks/Types/FaqBlock.php:26
+msgid "FAQ"
+msgstr ""
+
+#: includes/Blocks/Types/HtmlEmbedBlock.php:30
+msgid "HTML Embed"
+msgstr ""
+
+#: includes/Blocks/Types/ImageGalleryBlock.php:26
+msgid "Image Gallery"
+msgstr ""
+
+#: includes/Blocks/Types/LinkBlock.php:29
+msgid "Link"
+msgstr ""
+
+#: includes/Blocks/Types/MapBlock.php:26
+#: includes/Blocks/Types/MapBlock.php:75
+msgid "Map"
+msgstr ""
+
+#: includes/Blocks/Types/NewsletterBlock.php:30
+msgid "Newsletter"
+msgstr ""
+
+#: includes/Blocks/Types/NewsletterBlock.php:41
+#: includes/Blocks/Types/NewsletterBlock.php:44
+msgid "Subscribe"
+msgstr ""
+
+#: includes/Blocks/Types/NewsletterBlock.php:45
+msgid "Thanks! Check your inbox."
+msgstr ""
+
+#: includes/Blocks/Types/ProductCardBlock.php:26
+msgid "Product Card"
+msgstr ""
+
+#: includes/Blocks/Types/ProductCardBlock.php:41
+msgid "Buy now"
+msgstr ""
+
+#: includes/Blocks/Types/RichTextBlock.php:28
+msgid "Rich Text"
+msgstr ""
+
+#: includes/Blocks/Types/SocialIconsBlock.php:27
+msgid "Social Icons"
+msgstr ""
+
+#: includes/Blocks/Types/SpotifyBlock.php:26
+msgid "Spotify"
+msgstr ""
+
+#: includes/Blocks/Types/SpotifyBlock.php:67
+msgid "Spotify embed"
+msgstr ""
+
+#: includes/Blocks/Types/TiktokBlock.php:26
+msgid "TikTok"
+msgstr ""
+
+#: includes/Blocks/Types/TiktokBlock.php:55
+msgid "View on TikTok"
+msgstr ""
+
+#: includes/Blocks/Types/VideoBlock.php:26
+msgid "Video"
+msgstr ""
+
+#: includes/Blocks/Types/YouTubeBlock.php:30
+msgid "YouTube"
+msgstr ""
+
+#: includes/Blocks/Types/YouTubeBlock.php:60
+msgid "YouTube video"
+msgstr ""
+
+#. translators: %s: video title
+#: includes/Blocks/Types/YouTubeBlock.php:76
+#, php-format
+msgid "Play %s"
+msgstr ""
+
+#. translators: 1: required PHP, 2: current PHP
+#. translators: 1: required PHP version, 2: current PHP version
+#: includes/Core/Activator.php:63
+#: plugin.php:43
+#, php-format
+msgid "BioLink Pro requires PHP %1$s or higher. You are running PHP %2$s."
+msgstr ""
+
+#. translators: 1: required WP, 2: current WP
+#: includes/Core/Activator.php:74
+#, php-format
+msgid "BioLink Pro requires WordPress %1$s or higher."
+msgstr ""
+
+#: includes/Core/Activator.php:86
+msgid "Plugin Activation Error"
+msgstr ""
+
+#: includes/Frontend/PageRenderer.php:96
+msgid "Made with BioLink Pro"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:37
+msgctxt "post type general name"
+msgid "Bio Pages"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:38
+msgctxt "post type singular name"
+msgid "Bio Page"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:39
+msgctxt "admin menu"
+msgid "Bio Pages"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:40
+msgctxt "add new on admin bar"
+msgid "Bio Page"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:41
+msgid "Add New"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:42
+msgid "Add New Bio Page"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:43
+msgid "New Bio Page"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:44
+msgid "Edit Bio Page"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:45
+msgid "View Bio Page"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:46
+msgid "All Bio Pages"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:47
+msgid "Search Bio Pages"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:48
+msgid "No bio pages found."
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:49
+msgid "No bio pages found in Trash."
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:50
+msgid "Profile image"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:51
+msgid "Set profile image"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:52
+msgid "Remove profile image"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:53
+msgid "Use as profile image"
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:58
+msgid "Mobile-first bio link landing pages."
+msgstr ""
+
+#: includes/Frontend/PostType/BioLinkPagePostType.php:105
+msgid "Builder state JSON (blocks, theme, SEO)."
+msgstr ""
+
+#: includes/Templates/TemplateLibrary.php:68
+msgid "Template not found."
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:204
+msgid "Mono"
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:205
+msgid "Clean white background, ink text, subtle shadows. Classic."
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:222
+msgid "Glass"
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:223
+msgid "Frosted-glass cards on a soft gradient. Modern."
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:241
+msgid "Forest"
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:242
+msgid "Deep forest green with warm gold accents. Earthy."
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:260
+msgid "Midnight"
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:261
+msgid "Inky background, white text, electric accent. Pro look."
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:281
+msgid "Neon"
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:282
+msgid "Hot pink glow, dark canvas. Creator-mode."
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:300
+msgid "Sunset"
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:301
+msgid "Warm coral to amber gradient. Inviting."
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:319
+msgid "Aurora"
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:320
+msgid "Cyan-to-purple aurora gradient. Energetic."
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:338
+msgid "Sky"
+msgstr ""
+
+#: includes/Themes/ThemeEngine.php:339
+msgid "Soft sky-blue gradient with white cards. Friendly."
+msgstr ""
+
+#: includes/Updates/GitHubUpdater.php:277
+msgid "No release notes available."
+msgstr ""
+
+#: plugin.php:57
+msgid "BioLink Pro is missing its Composer dependencies. Run \"composer install\" inside the plugin directory."
+msgstr ""
+
+#. translators: 1: required WP version, 2: current WP version
+#: plugin.php:79
+#, php-format
+msgid "BioLink Pro requires WordPress %1$s or higher. You are running WordPress %2$s."
+msgstr ""

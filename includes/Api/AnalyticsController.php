@@ -140,6 +140,7 @@ final class AnalyticsController extends AbstractController
         foreach ($links as $row) {
             fputcsv($out, [$row['link_id'], $row['label'], $row['url'], $row['clicks']]);
         }
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
         fclose($out);
         exit;
     }
