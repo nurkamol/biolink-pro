@@ -8,8 +8,11 @@ export interface ProductCardData {
 	name?: string;
 	description?: string;
 	price?: string;
+	price_value?: string;
+	currency?: string;
 	cta_label?: string;
 	cta_url?: string;
+	provider?: 'link' | 'stripe' | 'paypal' | 'stripe_and_paypal';
 }
 
 interface Props {

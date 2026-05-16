@@ -100,6 +100,59 @@
 	color: var( --biolink-color-primary );
 }
 
+.installButton {
+	padding: 8px 14px;
+	background: var( --biolink-color-primary );
+	border: 1px solid var( --biolink-color-primary );
+	border-radius: var( --biolink-radius );
+	color: #fff;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.installButton:hover:not( :disabled ) {
+	background: var( --biolink-color-primary-hover );
+}
+
+.installButton:disabled {
+	opacity: 0.7;
+	cursor: progress;
+}
+
+.installResult {
+	padding: var( --biolink-space-sm ) var( --biolink-space-md );
+	border-radius: var( --biolink-radius );
+	margin-bottom: var( --biolink-space-lg );
+	font-size: 13px;
+	display: flex;
+	gap: var( --biolink-space-sm );
+	align-items: center;
+	justify-content: space-between;
+}
+
+.installSuccess {
+	background: #e8f5e9;
+	border: 1px solid #66bb6a;
+	color: #1b5e20;
+}
+
+.installFailure {
+	background: #fcf0f1;
+	border: 1px solid var( --biolink-color-danger );
+	color: var( --biolink-color-danger );
+}
+
+.reloadLink {
+	color: inherit;
+	text-decoration: underline;
+	background: none;
+	border: 0;
+	cursor: pointer;
+	padding: 0;
+	font: inherit;
+}
+
 .empty {
 	padding: var( --biolink-space-lg );
 	text-align: center;

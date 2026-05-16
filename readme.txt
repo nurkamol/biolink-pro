@@ -130,6 +130,10 @@ First stable release. Production-ready: 18 block types, 8 themes, analytics, QR 
 
 == Changelog ==
 
+= 1.2.0 =
+* New in-app updater — install the latest release straight from the "What's New" tab in the BioLink Pro admin. No more bouncing to the Plugins screen.
+* Fixed: 10 P2 block editors (Donation, ProductCard, Contact Form, Countdown, FAQ, HTML Embed, Map, Newsletter, Spotify, TikTok) were missing from the React inserter due to a catalog regression — they now appear in the inserter and their inline inspectors open as expected. Public rendering was never affected.
+
 = 1.1.2 =
 * Hotfix: v1.1.1 shipped without `Checkout::captureAndLog()` so the PayPal return handler crashed with HTTP 500. Adds the method back.
 

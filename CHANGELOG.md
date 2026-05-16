@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-05-16
+
+### Added
+- **In-app updater** — new `POST /biolink/v1/changelog/install-update` endpoint (cap `update_plugins`) runs WordPress's `Plugin_Upgrader` against the latest GitHub release zip. Re-activates the plugin if it was active before. The What's New page now has an "Install update" button on the update-available banner; success state offers a one-click page reload to pick up the new admin bundle.
+
+### Fixed
+- **Restored the 18-block React catalog** (regression). `admin/src/blocks/index.ts` had reverted to the v0.3.0 state and was only registering the 8 P1 block editors. All 10 P2 editors — Donation, ProductCard, ContactForm, Countdown, FAQ, HTML Embed, Map, Newsletter, Spotify, TikTok — were missing from the admin inserter and their inline inspectors did not open when the row was selected. Public rendering was unaffected because the PHP `BlockRegistry` was intact, but the editor showed lowercase slugs with the fallback `□` icon. Catalog now restored with the `group` field (`core | embed | engage | monetize`) for the grouped inserter.
+- **`ProductCardData` TypeScript interface** was missing `provider`, `currency`, and `price_value` fields even though the editor JSX referenced them. Added.
+
 ## [1.1.2] - 2026-05-16
 
 ### Fixed

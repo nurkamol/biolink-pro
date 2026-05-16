@@ -277,12 +277,23 @@ export interface UpdateStatus {
 	published_at: string | null;
 }
 
+export interface InstallUpdateResult {
+	status: 'updated' | 'already_latest';
+	current: string;
+	latest?: string;
+	previous?: string;
+	message: string;
+}
+
 export const ChangelogApi = {
 	list( force = false ): Promise< Release[] > {
 		return request< Release[] >( `${ NS }/changelog${ force ? '?force=1' : '' }` );
 	},
 	status( force = false ): Promise< UpdateStatus > {
 		return request< UpdateStatus >( `${ NS }/changelog/update-status${ force ? '?force=1' : '' }` );
+	},
+	installUpdate(): Promise< InstallUpdateResult > {
+		return request< InstallUpdateResult >( `${ NS }/changelog/install-update`, { method: 'POST' } );
 	},
 };
 

@@ -3,12 +3,19 @@ import { useCallback, useEffect, useState } from 'react';
 import { ChangelogApi, type Release, type UpdateStatus } from '../api/client';
 import styles from './Changelog.module.css';
 
+type InstallState =
+	| { phase: 'idle' }
+	| { phase: 'installing' }
+	| { phase: 'success'; message: string; needsReload: boolean }
+	| { phase: 'error'; message: string };
+
 export function Changelog() {
 	const [ releases, setReleases ] = useState< Release[] >( [] );
 	const [ status, setStatus ] = useState< UpdateStatus | null >( null );
 	const [ loading, setLoading ] = useState( true );
 	const [ refreshing, setRefreshing ] = useState( false );
 	const [ error, setError ] = useState< string | null >( null );
+	const [ install, setInstall ] = useState< InstallState >( { phase: 'idle' } );
 
 	const load = useCallback( async ( force: boolean ) => {
 		if ( force ) {
@@ -38,6 +45,28 @@ export function Changelog() {
 
 	useEffect( () => {
 		void load( false );
+	}, [ load ] );
+
+	const installUpdate = useCallback( async () => {
+		setInstall( { phase: 'installing' } );
+		try {
+			const result = await ChangelogApi.installUpdate();
+			setInstall( {
+				phase: 'success',
+				message: result.message,
+				needsReload: result.status === 'updated',
+			} );
+			// Refresh release metadata so the banner updates.
+			void load( true );
+		} catch ( err ) {
+			setInstall( {
+				phase: 'error',
+				message:
+					err instanceof Error
+						? err.message
+						: __( 'Update failed. Try installing manually from the Plugins screen.', 'biolink-pro' ),
+			} );
+		}
 	}, [ load ] );
 
 	const updatesUrl = `${ window.BIOLINK_PRO.adminUrl.replace(
@@ -72,7 +101,27 @@ export function Changelog() {
 
 			{ error && <div className={ styles.error }>{ error }</div> }
 
-			{ status?.update_available && status.latest && (
+			{ install.phase === 'success' && (
+				<div className={ `${ styles.installResult } ${ styles.installSuccess }` }>
+					<span>{ install.message }</span>
+					{ install.needsReload && (
+						<button
+							type="button"
+							className={ styles.reloadLink }
+							onClick={ () => window.location.reload() }
+						>
+							{ __( 'Reload now', 'biolink-pro' ) }
+						</button>
+					) }
+				</div>
+			) }
+			{ install.phase === 'error' && (
+				<div className={ `${ styles.installResult } ${ styles.installFailure }` }>
+					<span>{ install.message }</span>
+				</div>
+			) }
+
+			{ status?.update_available && status.latest && install.phase !== 'success' && (
 				<div className={ styles.updateBanner }>
 					<div>
 						<strong>
@@ -84,13 +133,23 @@ export function Changelog() {
 						</strong>
 						<p className={ styles.updateBannerLede }>
 							{ __(
-								'Install it from the WordPress Updates screen, or download the zip directly from GitHub.',
+								'Install in place, or use the WordPress Updates screen.',
 								'biolink-pro'
 							) }
 						</p>
 					</div>
 					<div className={ styles.updateActions }>
-						<a className={ styles.primaryAction } href={ updatesUrl }>
+						<button
+							type="button"
+							className={ styles.installButton }
+							onClick={ () => void installUpdate() }
+							disabled={ install.phase === 'installing' }
+						>
+							{ install.phase === 'installing'
+								? __( 'Installing…', 'biolink-pro' )
+								: __( 'Install update', 'biolink-pro' ) }
+						</button>
+						<a className={ styles.secondaryAction } href={ updatesUrl }>
 							{ __( 'Go to Updates', 'biolink-pro' ) }
 						</a>
 						{ status.download_url && (
