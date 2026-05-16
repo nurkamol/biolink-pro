@@ -1,0 +1,248 @@
+.overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba( 24, 22, 16, 0.45 );
+	z-index: 1000;
+	display: grid;
+	place-items: center;
+	padding: 24px;
+}
+
+.modal {
+	width: min( 920px, 96vw );
+	max-height: 88vh;
+	background: var( --biolink-color-bg );
+	border-radius: 22px;
+	box-shadow: 0 32px 64px rgba( 0, 0, 0, 0.2 );
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 18px 24px;
+	border-bottom: 1px solid var( --biolink-color-border );
+}
+
+.title {
+	font-size: 20px;
+	font-weight: 700;
+	margin: 0;
+}
+
+.closeBtn {
+	width: 32px;
+	height: 32px;
+	display: inline-grid;
+	place-items: center;
+	background: var( --biolink-color-surface );
+	border: 0;
+	border-radius: 50%;
+	font-size: 18px;
+	cursor: pointer;
+}
+
+.closeBtn:hover {
+	background: var( --biolink-color-surface-2 );
+}
+
+.search {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 16px;
+	margin: 14px 18px 4px;
+	background: var( --biolink-color-surface );
+	border-radius: var( --biolink-radius-pill );
+}
+
+.searchIcon {
+	color: var( --biolink-color-text-muted );
+	font-size: 18px;
+}
+
+.searchInput {
+	flex: 1;
+	border: 0;
+	background: none;
+	font: inherit;
+	font-size: 14px;
+	color: var( --biolink-color-text );
+}
+
+.searchInput:focus {
+	outline: 0;
+}
+
+.body {
+	display: grid;
+	grid-template-columns: 200px 1fr;
+	flex: 1;
+	min-height: 0;
+}
+
+.rail {
+	border-right: 1px solid var( --biolink-color-border );
+	padding: 14px 10px;
+	overflow-y: auto;
+}
+
+.railItem {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	padding: 8px 12px;
+	background: none;
+	border: 0;
+	border-radius: var( --biolink-radius-pill );
+	font: inherit;
+	font-size: 14px;
+	text-align: left;
+	cursor: pointer;
+	color: var( --biolink-color-text );
+}
+
+.railItem:hover {
+	background: var( --biolink-color-surface );
+}
+
+.railItemActive {
+	background: var( --biolink-color-surface-2 );
+	font-weight: 600;
+}
+
+.railIcon {
+	display: inline-grid;
+	place-items: center;
+	width: 18px;
+	color: var( --biolink-color-text-muted );
+}
+
+.panel {
+	padding: 16px 24px 24px;
+	overflow-y: auto;
+}
+
+.heroes {
+	display: grid;
+	grid-template-columns: repeat( 4, 1fr );
+	gap: 12px;
+	margin-bottom: 18px;
+}
+
+.heroTile {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 14px;
+	height: 110px;
+	background: var( --biolink-color-surface );
+	border: 0;
+	border-radius: var( --biolink-radius-lg );
+	font: inherit;
+	cursor: pointer;
+	text-align: left;
+}
+
+.heroTile:hover {
+	background: var( --biolink-color-surface-2 );
+}
+
+.heroLabel {
+	font-size: 14px;
+	font-weight: 700;
+	color: var( --biolink-color-text );
+}
+
+.heroIcon {
+	font-size: 22px;
+	color: var( --biolink-color-primary );
+	align-self: flex-start;
+}
+
+.sectionLabel {
+	font-size: 13px;
+	color: var( --biolink-color-text-muted );
+	margin: 10px 0 8px;
+	font-weight: 600;
+}
+
+.list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.listItem {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	width: 100%;
+	padding: 12px 8px;
+	background: none;
+	border: 0;
+	border-bottom: 1px solid var( --biolink-color-border );
+	font: inherit;
+	cursor: pointer;
+	text-align: left;
+	color: var( --biolink-color-text );
+}
+
+.listItem:hover {
+	background: var( --biolink-color-surface );
+}
+
+.listIcon {
+	width: 40px;
+	height: 40px;
+	display: inline-grid;
+	place-items: center;
+	background: var( --biolink-color-surface );
+	border-radius: 50%;
+	font-size: 18px;
+}
+
+.listText {
+	flex: 1;
+	min-width: 0;
+}
+
+.listLabel {
+	display: block;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.listSub {
+	display: block;
+	font-size: 12px;
+	color: var( --biolink-color-text-muted );
+	margin-top: 1px;
+}
+
+.listChev {
+	color: var( --biolink-color-text-muted );
+	font-size: 18px;
+}
+
+.empty {
+	padding: 24px;
+	text-align: center;
+	color: var( --biolink-color-text-muted );
+}
+
+@media ( max-width: 720px ) {
+	.body {
+		grid-template-columns: 1fr;
+	}
+	.rail {
+		display: none;
+	}
+	.heroes {
+		grid-template-columns: repeat( 2, 1fr );
+	}
+}

@@ -4,7 +4,7 @@ Tags: link in bio, linktree, bio link, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.9
 Requires PHP: 8.2
-Stable tag: 1.1.2
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,13 @@ GitHub: https://github.com/nurkamol/biolink-pro/issues
 First stable release. Production-ready: 18 block types, 8 themes, analytics, QR codes, SEO coexistence with Rank Math / Yoast, JSON portability, encrypted integrations vault, AI suggestions, onboarding wizard, accessibility pass. Tested on WordPress 6.9 and PHP 8.2 / 8.3.
 
 == Changelog ==
+
+= 2.0.0 =
+* Linktree-class admin redesign. New left sidebar with grouped nav, page-scoped routes (Links / Design / Shop / Insights), sticky right-side phone preview.
+* New centralized Add modal replaces the inline block inserter.
+* New card-based Design page replaces the tabbed settings rail.
+* Per-block on/off toggle on every link row.
+* Coming-soon stubs for Earn, Audience, Social planner, IG auto-reply, Link shortener, Post ideas — full feature work tracked in v2.1+.
 
 = 1.2.0 =
 * New in-app updater — install the latest release straight from the "What's New" tab in the BioLink Pro admin. No more bouncing to the Plugins screen.

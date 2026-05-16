@@ -1,24 +1,44 @@
 :root {
-	--biolink-color-text: #1d2327;
-	--biolink-color-muted: #646970;
+	/* Linktree-class palette */
+	--biolink-color-text: #0a0a0a;
+	--biolink-color-text-muted: #5b5b5b;
+	--biolink-color-muted: #5b5b5b;
 	--biolink-color-bg: #ffffff;
-	--biolink-color-surface: #f6f7f7;
-	--biolink-color-border: #dcdcde;
-	--biolink-color-primary: #2271b1;
-	--biolink-color-primary-hover: #135e96;
-	--biolink-color-danger: #b32d2e;
-	--biolink-radius: 4px;
+	--biolink-color-app-bg: #f4f1ea;
+	--biolink-color-sidebar-bg: #ffffff;
+	--biolink-color-surface: #f4f1ea;
+	--biolink-color-surface-2: #ebe7dd;
+	--biolink-color-border: #e6e2d6;
+	--biolink-color-border-strong: #d5cfbe;
+	--biolink-color-primary: #672ac0;
+	--biolink-color-primary-hover: #571eaa;
+	--biolink-color-accent: #d2f25b;
+	--biolink-color-danger: #c41e3a;
+	--biolink-color-success: #00b754;
+
+	--biolink-radius: 10px;
+	--biolink-radius-sm: 6px;
+	--biolink-radius-lg: 22px;
+	--biolink-radius-pill: 999px;
+
 	--biolink-space-xs: 4px;
 	--biolink-space-sm: 8px;
 	--biolink-space-md: 16px;
 	--biolink-space-lg: 24px;
 	--biolink-space-xl: 32px;
+
+	--biolink-sidebar-width: 240px;
+	--biolink-preview-width: 380px;
+	--biolink-shadow-sm: 0 1px 2px rgba( 17, 17, 17, 0.04 );
+	--biolink-shadow-md: 0 6px 24px rgba( 17, 17, 17, 0.06 );
 }
 
 .biolink-pro-app-root {
-	margin: var( --biolink-space-md ) 0 0 -20px;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	margin: 0 0 0 -20px;
+	font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
 	color: var( --biolink-color-text );
+	background: var( --biolink-color-app-bg );
+	min-height: calc( 100vh - 32px );
 }
 
 .biolink-pro-app-root *,
@@ -31,7 +51,13 @@
 .biolink-pro-app-root h2,
 .biolink-pro-app-root h3 {
 	margin: 0 0 var( --biolink-space-sm );
-	line-height: 1.3;
+	line-height: 1.25;
+	letter-spacing: -0.01em;
+}
+
+.biolink-pro-app-root h1 {
+	font-size: 26px;
+	font-weight: 700;
 }
 
 .biolink-pro-app-root button {

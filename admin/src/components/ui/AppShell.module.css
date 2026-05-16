@@ -1,25 +1,33 @@
 .shell {
+	display: grid;
+	grid-template-columns: var( --biolink-sidebar-width ) 1fr;
+	min-height: calc( 100vh - 32px );
+	background: var( --biolink-color-app-bg );
+}
+
+.sidebar {
+	background: var( --biolink-color-sidebar-bg );
+	border-right: 1px solid var( --biolink-color-border );
 	display: flex;
 	flex-direction: column;
 	min-height: calc( 100vh - 32px );
-	background: var( --biolink-color-bg );
+	position: sticky;
+	top: 32px;
+	max-height: calc( 100vh - 32px );
+	overflow-y: auto;
 }
 
-.topbar {
-	display: flex;
-	align-items: center;
-	gap: var( --biolink-space-lg );
-	padding: var( --biolink-space-md ) var( --biolink-space-lg );
+.sidebarHeader {
+	padding: 18px 16px 14px;
 	border-bottom: 1px solid var( --biolink-color-border );
-	background: var( --biolink-color-bg );
 }
 
 .brand {
 	display: flex;
 	align-items: center;
-	gap: var( --biolink-space-sm );
-	font-weight: 600;
-	font-size: 16px;
+	gap: 10px;
+	font-weight: 700;
+	font-size: 15px;
 }
 
 .brandMark {
@@ -27,42 +35,284 @@
 	place-items: center;
 	width: 28px;
 	height: 28px;
-	border-radius: var( --biolink-radius );
+	border-radius: 8px;
 	background: var( --biolink-color-primary );
 	color: #fff;
 	font-size: 12px;
+	font-weight: 800;
+}
+
+.pageSelector {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 10px;
+	margin-top: 12px;
+	background: var( --biolink-color-surface );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	cursor: pointer;
+	width: 100%;
+	text-align: left;
+	font: inherit;
+	color: inherit;
+}
+
+.pageSelector:hover {
+	background: var( --biolink-color-surface-2 );
+}
+
+.pageSelectorAvatar {
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	background: var( --biolink-color-surface-2 );
+	display: inline-grid;
+	place-items: center;
+	font-size: 12px;
 	font-weight: 700;
+	color: var( --biolink-color-text-muted );
+	flex-shrink: 0;
+}
+
+.pageSelectorLabel {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.pageSelectorCaret {
+	color: var( --biolink-color-text-muted );
+	font-size: 11px;
+}
+
+.pageDropdown {
+	position: absolute;
+	top: 100%;
+	left: 16px;
+	right: 16px;
+	background: var( --biolink-color-bg );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	box-shadow: var( --biolink-shadow-md );
+	margin-top: 4px;
+	max-height: 280px;
+	overflow-y: auto;
+	z-index: 20;
+}
+
+.pageDropdownItem {
+	display: block;
+	padding: 8px 12px;
+	text-decoration: none;
+	color: inherit;
+	font-size: 13px;
+	width: 100%;
+	text-align: left;
+	background: none;
+	border: 0;
+	font: inherit;
+}
+
+.pageDropdownItem:hover {
+	background: var( --biolink-color-surface );
+}
+
+.pageDropdownItem.active {
+	background: var( --biolink-color-surface-2 );
+	font-weight: 600;
+}
+
+.pageDropdownDivider {
+	height: 1px;
+	background: var( --biolink-color-border );
+	margin: 4px 0;
 }
 
 .nav {
+	flex: 1;
+	padding: 12px 8px;
+}
+
+.navGroup {
+	margin-bottom: 6px;
+}
+
+.navGroupHeader {
 	display: flex;
-	gap: var( --biolink-space-sm );
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	padding: 8px 10px;
+	background: none;
+	border: 0;
+	font: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	color: var( --biolink-color-text );
+	border-radius: var( --biolink-radius );
+	text-align: left;
+	cursor: pointer;
+}
+
+.navGroupHeader:hover {
+	background: var( --biolink-color-surface );
+}
+
+.navGroupChevron {
+	margin-left: auto;
+	color: var( --biolink-color-text-muted );
+	font-size: 11px;
+	transition: transform 150ms ease;
+}
+
+.navGroupChevronOpen {
+	transform: rotate( 180deg );
+}
+
+.navGroupBody {
+	padding: 2px 0 4px;
+}
+
+.navSectionLabel {
+	padding: 12px 10px 4px;
+	font-size: 11px;
+	font-weight: 600;
+	color: var( --biolink-color-text-muted );
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
 }
 
 .navLink {
-	padding: 6px 12px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 10px;
+	margin: 1px 0;
 	border-radius: var( --biolink-radius );
-	color: var( --biolink-color-muted );
+	color: var( --biolink-color-text );
 	text-decoration: none;
+	font-size: 13px;
 	font-weight: 500;
+	background: none;
+	border: 0;
+	font-family: inherit;
+	width: 100%;
+	text-align: left;
+	cursor: pointer;
+	position: relative;
+}
+
+.navLinkNested {
+	padding-left: 36px;
 }
 
 .navLink:hover {
 	background: var( --biolink-color-surface );
-	color: var( --biolink-color-text );
 }
 
 .navLinkActive {
-	background: var( --biolink-color-primary );
-	color: #fff;
+	background: var( --biolink-color-surface-2 );
+	color: var( --biolink-color-primary );
+	font-weight: 600;
 }
 
 .navLinkActive:hover {
-	background: var( --biolink-color-primary-hover );
+	background: var( --biolink-color-surface-2 );
+}
+
+.navIcon {
+	width: 18px;
+	height: 18px;
+	display: inline-grid;
+	place-items: center;
+	color: currentColor;
+	flex-shrink: 0;
+}
+
+.navBadge {
+	margin-left: auto;
+	padding: 1px 7px;
+	border-radius: var( --biolink-radius-pill );
+	background: var( --biolink-color-surface-2 );
+	color: var( --biolink-color-text-muted );
+	font-size: 10px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.setupChecklist {
+	margin: 12px;
+	padding: 14px;
+	background: var( --biolink-color-surface );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+}
+
+.setupRing {
+	width: 42px;
+	height: 42px;
+	border-radius: 50%;
+	display: inline-grid;
+	place-items: center;
+	font-size: 12px;
+	font-weight: 700;
+	color: var( --biolink-color-primary );
+	background: conic-gradient(
+		var( --biolink-color-primary ) calc( var( --pct, 0 ) * 1% ),
+		var( --biolink-color-surface-2 ) 0
+	);
+	position: relative;
+}
+
+.setupRing::before {
+	content: "";
+	position: absolute;
+	inset: 4px;
+	background: var( --biolink-color-surface );
+	border-radius: 50%;
+}
+
+.setupRing span {
+	position: relative;
+	z-index: 1;
+}
+
+.setupTitle {
+	margin-top: 8px;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.setupSub {
+	color: var( --biolink-color-text-muted );
+	font-size: 12px;
+	margin: 2px 0 10px;
+}
+
+.setupBtn {
+	display: block;
+	width: 100%;
+	padding: 8px;
+	background: var( --biolink-color-primary );
 	color: #fff;
+	border: 0;
+	border-radius: var( --biolink-radius );
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.setupBtn:hover {
+	background: var( --biolink-color-primary-hover );
 }
 
 .main {
-	flex: 1;
-	padding: var( --biolink-space-lg );
+	min-height: calc( 100vh - 32px );
+	padding: 0;
 }

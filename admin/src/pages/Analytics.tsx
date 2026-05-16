@@ -22,9 +22,13 @@ function isoDate( d: Date ): string {
 	return d.toISOString().slice( 0, 10 );
 }
 
-export function Analytics() {
+interface AnalyticsProps {
+	initialPageId?: number;
+}
+
+export function Analytics( { initialPageId }: AnalyticsProps = {} ) {
 	const [ pages, setPages ] = useState< BioPage[] >( [] );
-	const [ pageId, setPageId ] = useState< number | null >( null );
+	const [ pageId, setPageId ] = useState< number | null >( initialPageId ?? null );
 	const [ rangeId, setRangeId ] = useState< ( typeof RANGES )[ number ][ 'id' ] >( '30d' );
 	const [ summary, setSummary ] = useState< AnalyticsSummary | null >( null );
 	const [ series, setSeries ] = useState< AnalyticsPoint[] >( [] );

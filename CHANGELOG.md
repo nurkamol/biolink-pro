@@ -5,6 +5,32 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-05-16
+
+Linktree-class admin redesign. Major UI overhaul — the old top-bar nav and tabbed PageDetail are gone, replaced by a left sidebar with grouped nav, page-scoped routes (Links / Design / Shop / Insights), and a sticky phone preview pane.
+
+### Added
+- **New AppShell** — left sidebar with brand mark, page selector dropdown, grouped nav (My BioLink → Links/Shop/Design; Earn; Audience; Insights; Tools → Social planner / IG auto-reply / Link shortener / Post ideas; Account → What's New / Settings). Coming-soon stub pages for Earn, Audience, and every Tools entry. Setup checklist card at the bottom.
+- **Page-scoped routes** — `/pages/:id/{links,design,shop,insights,earn,audience}`. `BuilderShell` wraps each with a shared top bar (page title + status pill + saved indicator + Publish + View ↗) and a sticky right-side phone preview iframe on Links/Design/Shop. Auto-refresh on save (350ms debounce).
+- **Linktree-style Links page** — profile card at top (avatar + name + bio + edit pencil), big purple `+ Add` button, secondary row for collections/archive, drag-and-drop link rows with: drag handle, title + URL, on/off toggle, action chip row (thumbnail / highlight / schedule / lock — chip stubs for v2.1 features), delete, and inline inspector when expanded.
+- **Card-based Design page** — replaces the old settings rail. Cards: Theme, Header, Wallpaper, Buttons (style + corner radius + accent color + button text color), Text, Footer. Each card collapses; opening one closes the others.
+- **Centralized Add modal** — replaces the inline inserter. Big overlay modal with search field, category rail (Suggested / Commerce / Social / Media / Engage / View all), hero tiles (Link / Product / Form / Gallery), and a suggested list with platform-style rows.
+- **Per-block visibility toggle** — the on/off switch on each link row writes `_active: false` into the block data; `PageRenderer` skips inactive blocks on the public page.
+
+### Changed
+- Design tokens now use a Linktree-flavored cream palette (`--biolink-color-app-bg: #f4f1ea`), pill-shaped buttons, larger radii (`--biolink-radius-lg: 22px`), and a `--biolink-sidebar-width: 240px` / `--biolink-preview-width: 380px` layout grid.
+- `Analytics` now accepts an optional `initialPageId` prop so the per-page Insights tab opens scoped to the current bio page.
+
+### Removed
+- `pages/PageDetail.tsx` and `components/builder/PageBuilder.tsx` — replaced by `BuilderShell` + `LinksPage` + `DesignPage`.
+
+### Roadmap (v2.1)
+- Insights page redesign (card-first like screenshot).
+- Shop page real UI (today it's a coming-soon stub).
+- Real Audience tab with subscriber export.
+- Per-page "Hide footer" toggle and Google Font picker wired through `ThemeEngine`.
+- Schedule / lock / thumbnail action chips on link rows.
+
 ## [1.2.0] - 2026-05-16
 
 ### Added

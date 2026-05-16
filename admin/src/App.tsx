@@ -5,8 +5,13 @@ import { Analytics } from './pages/Analytics';
 import { Changelog } from './pages/Changelog';
 import { Dashboard } from './pages/Dashboard';
 import { Pages } from './pages/Pages';
-import { PageDetail } from './pages/PageDetail';
 import { Settings } from './pages/Settings';
+import { BuilderShell } from './pages/builder/BuilderShell';
+import { DesignPage } from './pages/builder/DesignPage';
+import { InsightsPage } from './pages/builder/InsightsPage';
+import { LinksPage } from './pages/builder/LinksPage';
+import { ShopPage } from './pages/builder/ShopPage';
+import { AudienceStub, EarnStub, ToolsStub } from './pages/builder/StubPage';
 
 export function App() {
 	return (
@@ -16,8 +21,19 @@ export function App() {
 				<Routes>
 					<Route path="/" element={ <Dashboard /> } />
 					<Route path="/pages" element={ <Pages /> } />
-					<Route path="/pages/:id" element={ <PageDetail /> } />
+					<Route path="/pages/:id" element={ <BuilderShell /> }>
+						<Route index element={ <Navigate to="links" replace /> } />
+						<Route path="links" element={ <LinksPage /> } />
+						<Route path="design" element={ <DesignPage /> } />
+						<Route path="shop" element={ <ShopPage /> } />
+						<Route path="insights" element={ <InsightsPage /> } />
+						<Route path="audience" element={ <AudienceStub /> } />
+						<Route path="earn" element={ <EarnStub /> } />
+					</Route>
 					<Route path="/analytics" element={ <Analytics /> } />
+					<Route path="/audience" element={ <AudienceStub /> } />
+					<Route path="/earn" element={ <EarnStub /> } />
+					<Route path="/tools/:tool" element={ <ToolsStub /> } />
 					<Route path="/changelog" element={ <Changelog /> } />
 					<Route path="/settings" element={ <Settings /> } />
 					<Route path="*" element={ <Navigate to="/" replace /> } />

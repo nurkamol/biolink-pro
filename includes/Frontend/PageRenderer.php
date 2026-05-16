@@ -114,6 +114,11 @@ final class PageRenderer
                 continue;
             }
             $data = is_array($block['data'] ?? null) ? $block['data'] : [];
+
+            // Per-block visibility toggle (Linktree-style on/off switch in the admin).
+            if (array_key_exists('_active', $data) && $data['_active'] === false) {
+                continue;
+            }
             $uuid = isset($block['uuid']) && is_string($block['uuid']) ? $block['uuid'] : null;
 
             // LinkBlock + DonationBlock + ProductCardBlock take uuid as a 2nd arg

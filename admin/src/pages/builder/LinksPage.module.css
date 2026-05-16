@@ -1,0 +1,336 @@
+.root {
+	max-width: 760px;
+	margin: 0 auto;
+}
+
+.profileCard {
+	background: var( --biolink-color-bg );
+	border-radius: var( --biolink-radius-lg );
+	padding: 18px;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-bottom: 18px;
+	border: 1px solid var( --biolink-color-border );
+}
+
+.avatar {
+	width: 58px;
+	height: 58px;
+	border-radius: 50%;
+	background: var( --biolink-color-surface-2 );
+	display: inline-grid;
+	place-items: center;
+	overflow: hidden;
+	font-size: 22px;
+	color: var( --biolink-color-text-muted );
+	flex-shrink: 0;
+}
+
+.avatar img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.profileBody {
+	flex: 1;
+	min-width: 0;
+}
+
+.handle {
+	font-weight: 700;
+	font-size: 16px;
+	margin: 0;
+}
+
+.bio {
+	margin: 2px 0 6px;
+	color: var( --biolink-color-text-muted );
+	font-size: 13px;
+	display: -webkit-box;
+	-webkit-line-clamp: 1;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.socialRow {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+}
+
+.socialPill {
+	width: 26px;
+	height: 26px;
+	display: inline-grid;
+	place-items: center;
+	border-radius: 50%;
+	background: var( --biolink-color-surface );
+	font-size: 13px;
+	color: var( --biolink-color-text );
+}
+
+.editPencil {
+	width: 26px;
+	height: 26px;
+	display: inline-grid;
+	place-items: center;
+	border-radius: 50%;
+	background: none;
+	border: 1px solid var( --biolink-color-border );
+	cursor: pointer;
+	font-size: 12px;
+	color: var( --biolink-color-text-muted );
+}
+
+.editPencil:hover {
+	background: var( --biolink-color-surface );
+}
+
+.addBtn {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 14px;
+	background: var( --biolink-color-primary );
+	color: #fff;
+	border: 0;
+	border-radius: var( --biolink-radius-pill );
+	font-size: 15px;
+	font-weight: 700;
+	cursor: pointer;
+	margin-bottom: 18px;
+}
+
+.addBtn:hover {
+	background: var( --biolink-color-primary-hover );
+}
+
+.secondaryRow {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 18px;
+}
+
+.secondaryBtn {
+	background: var( --biolink-color-bg );
+	border: 1px solid var( --biolink-color-border );
+	padding: 8px 14px;
+	border-radius: var( --biolink-radius-pill );
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 500;
+	color: var( --biolink-color-text );
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.secondaryBtn:hover {
+	background: var( --biolink-color-surface );
+}
+
+.list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.row {
+	background: var( --biolink-color-bg );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius-lg );
+	padding: 14px 18px 14px 32px;
+	position: relative;
+	transition: border-color 150ms ease;
+}
+
+.rowSelected {
+	border-color: var( --biolink-color-primary );
+}
+
+.rowInactive {
+	opacity: 0.6;
+}
+
+.dragHandle {
+	position: absolute;
+	left: 8px;
+	top: 50%;
+	transform: translateY( -50% );
+	background: none;
+	border: 0;
+	color: var( --biolink-color-text-muted );
+	font-size: 14px;
+	cursor: grab;
+	padding: 4px;
+	user-select: none;
+}
+
+.dragHandle:active {
+	cursor: grabbing;
+}
+
+.rowTop {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.rowLabel {
+	flex: 1;
+	min-width: 0;
+	background: none;
+	border: 0;
+	text-align: left;
+	font: inherit;
+	padding: 0;
+	color: var( --biolink-color-text );
+	cursor: pointer;
+}
+
+.rowTitle {
+	font-size: 15px;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.rowSub {
+	font-size: 13px;
+	color: var( --biolink-color-text-muted );
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	margin-top: 2px;
+}
+
+.rowToggle {
+	flex-shrink: 0;
+}
+
+.toggleSwitch {
+	position: relative;
+	display: inline-block;
+	width: 40px;
+	height: 22px;
+	cursor: pointer;
+}
+
+.toggleSwitch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.toggleSlider {
+	position: absolute;
+	inset: 0;
+	background: var( --biolink-color-surface-2 );
+	border-radius: 999px;
+	transition: background 150ms;
+}
+
+.toggleSlider::before {
+	content: "";
+	position: absolute;
+	height: 16px;
+	width: 16px;
+	left: 3px;
+	top: 3px;
+	background: #fff;
+	border-radius: 50%;
+	box-shadow: 0 1px 3px rgba( 0, 0, 0, 0.15 );
+	transition: transform 150ms;
+}
+
+.toggleSwitch input:checked + .toggleSlider {
+	background: var( --biolink-color-success );
+}
+
+.toggleSwitch input:checked + .toggleSlider::before {
+	transform: translateX( 18px );
+}
+
+.actionBar {
+	display: flex;
+	gap: 4px;
+	margin-top: 12px;
+	padding-top: 12px;
+	border-top: 1px solid var( --biolink-color-border );
+	align-items: center;
+}
+
+.actionBtn {
+	width: 32px;
+	height: 32px;
+	display: inline-grid;
+	place-items: center;
+	background: none;
+	border: 0;
+	border-radius: 50%;
+	cursor: pointer;
+	color: var( --biolink-color-text-muted );
+	font-size: 14px;
+}
+
+.actionBtn:hover {
+	background: var( --biolink-color-surface );
+	color: var( --biolink-color-text );
+}
+
+.actionChip {
+	margin-left: auto;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	color: var( --biolink-color-text-muted );
+	font-size: 12px;
+}
+
+.deleteBtn {
+	composes: actionBtn;
+	color: var( --biolink-color-danger );
+}
+
+.deleteBtn:hover {
+	background: #fdecea;
+	color: var( --biolink-color-danger );
+}
+
+.inspector {
+	margin-top: 14px;
+	padding-top: 14px;
+	border-top: 1px solid var( --biolink-color-border );
+}
+
+.emptyHero {
+	text-align: center;
+	padding: 60px 24px;
+	background: var( --biolink-color-bg );
+	border: 1px dashed var( --biolink-color-border-strong );
+	border-radius: var( --biolink-radius-lg );
+	color: var( --biolink-color-text-muted );
+}
+
+.errorBanner {
+	margin-bottom: 12px;
+	padding: 8px 14px;
+	background: #fdecea;
+	border: 1px solid var( --biolink-color-danger );
+	color: var( --biolink-color-danger );
+	border-radius: var( --biolink-radius );
+	font-size: 13px;
+}
+
+.headerEditor {
+	margin-bottom: 18px;
+	background: var( --biolink-color-bg );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius-lg );
+	padding: 18px;
+}
