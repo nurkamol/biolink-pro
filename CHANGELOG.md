@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.5.1] - 2026-05-17
+
+### Changed
+- **Top-level pages now flush-left** instead of centered. Removed `margin: 0 auto` from Dashboard / Pages / Analytics / Audience / Changelog / Settings — the centered max-width container left a visible gap between the sidebar and the page content on wider monitors. Padding (24px 28px 60px) is preserved. Analytics also gained the same padding (it was missing it).
+
 ## [2.5.0] - 2026-05-17
 
 ### Added
