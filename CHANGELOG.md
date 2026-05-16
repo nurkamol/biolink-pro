@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.5.3] - 2026-05-16
+
+### Fixed
+- **Release zip is now actually ~3 MB.** v0.5.2's prune step removed ~7 KB. The real culprit was `vendor/endroid/qr-code/assets/noto_sans.otf` (16 MB!) — a font the library bundles for QR labels, which we never use. Release workflow now deletes `endroid/qr-code/assets/*.otf` and `*.ttf` after the rsync stage.
+
 ## [0.5.2] - 2026-05-16
 
 ### Fixed

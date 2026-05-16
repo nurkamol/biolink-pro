@@ -4,7 +4,7 @@ Tags: bio link, linktree, link in bio, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.6
 Requires PHP: 8.2
-Stable tag: 0.5.2
+Stable tag: 0.5.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,9 @@ Yes. Everything runs on your own server. No external account required (unless yo
 PHP 8.2 or higher.
 
 == Changelog ==
+
+= 0.5.3 =
+* Release zip slimmed to ~3 MB by dropping endroid/qr-code's 16 MB bundled Noto Sans / Open Sans fonts (only used for QR label rendering, which we don't expose).
 
 = 0.5.2 =
 * Release zip slimmed from ~14 MB to ~3 MB (v0.5.1's .distignore globs didn't actually match — replaced with a `find vendor/` prune step in the release workflow).

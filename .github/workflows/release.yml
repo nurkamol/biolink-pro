@@ -96,6 +96,9 @@ jobs:
             \) -delete
           # Drop the per-package vendor/bin shims (only useful in dev).
           rm -rf ../vendor/bin
+          # Drop endroid/qr-code's bundled fonts — only used for ->labelFont(),
+          # which we never call. Saves ~16 MB.
+          rm -rf endroid/qr-code/assets/*.otf endroid/qr-code/assets/*.ttf 2>/dev/null || true
           # Report final size.
           cd ../..
           du -sh biolink-pro/vendor 2>/dev/null || true
