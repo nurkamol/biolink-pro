@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.5.2] - 2026-05-16
+
+### Fixed
+- **Release zip trim now actually works.** v0.5.1 added `vendor/*/*/tests/` patterns to `.distignore` but rsync didn't match them. Replaced with a post-rsync `find vendor/ -type d \( -name tests -o ... \) -prune -exec rm -rf` step in `.github/workflows/release.yml`. Also strips `CHANGELOG*`, `UPGRADE*`, `CONTRIBUTING*`, `SECURITY.md`, `README*`, `phpunit.xml*`, `phpstan.neon*`, `psalm.xml*`, `.scrutinizer.yml`, `.travis.yml`, `.php-cs-fixer*`, `Makefile`, and `vendor/bin/`. LICENSE files kept for GPL compliance. Target zip size ~3 MB.
+
 ## [0.5.1] - 2026-05-16
 
 ### Fixed

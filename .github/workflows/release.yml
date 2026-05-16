@@ -73,6 +73,34 @@ jobs:
           mkdir -p build/biolink-pro dist
           rsync -a --exclude-from=.distignore ./ build/biolink-pro/
 
+      - name: Trim vendor directory
+        run: |
+          cd build/biolink-pro/vendor
+          # Drop test / docs / CI metadata folders from every vendor package.
+          find . -type d \( \
+              -name tests -o -name Tests -o -name test \
+              -o -name docs -o -name doc \
+              -o -name examples -o -name example \
+              -o -name benchmark -o -name benchmarks \
+              -o -name .github \
+            \) -prune -exec rm -rf {} +
+          # Drop CI / dev config files (keep LICENSE for GPL compliance).
+          find . -type f \( \
+              -name "CHANGELOG*" -o -name "UPGRADE*" -o -name "UPGRADING*" \
+              -o -name "CONTRIBUTING*" -o -name "SECURITY.md" -o -name "COPYING" \
+              -o -name "README.md" -o -name "readme.md" -o -name "README.rst" \
+              -o -name ".gitignore" -o -name ".gitattributes" -o -name ".editorconfig" \
+              -o -name "phpunit.xml*" -o -name "phpstan.neon*" -o -name "psalm.xml*" \
+              -o -name ".scrutinizer.yml" -o -name ".travis.yml" \
+              -o -name ".php-cs-fixer*" -o -name "Makefile" \
+            \) -delete
+          # Drop the per-package vendor/bin shims (only useful in dev).
+          rm -rf ../vendor/bin
+          # Report final size.
+          cd ../..
+          du -sh biolink-pro/vendor 2>/dev/null || true
+          du -sh biolink-pro 2>/dev/null || true
+
       - name: Create release zip
         run: |
           cd build
