@@ -241,6 +241,13 @@ export function PageDetail() {
 									settings={ page.settings }
 									onChange={ handleThemeChange }
 									onSettingsChange={ handleSettingsChange }
+									pageSummary={ [
+										page.settings.headline,
+										page.settings.subheadline,
+										page.title,
+									]
+										.filter( Boolean )
+										.join( ' — ' ) }
 								/>
 							) }
 							{ tab === 'background' && (

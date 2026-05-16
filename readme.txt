@@ -4,7 +4,7 @@ Tags: bio link, linktree, link in bio, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.6
 Requires PHP: 8.2
-Stable tag: 0.5.3
+Stable tag: 0.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,14 @@ Yes. Everything runs on your own server. No external account required (unless yo
 PHP 8.2 or higher.
 
 == Changelog ==
+
+= 0.6.0 =
+* "✨ Suggest" button on Button block label (calls /ai/cta) and inside the Theme picker (calls /ai/theme, parses "<slug>: <reason>" lines).
+* Settings → Integrations now exposes credential fields for OpenAI, Stripe, PayPal (client ID + secret), Mailchimp, MailerLite, and Resend — all encrypted at rest, returned masked.
+* JSON page import / export: per-row "Export" link downloads the full page as a portable JSON file; Pages-list header "Import JSON" recreates a draft from one.
+* Bulk actions on the Pages list (multi-select with indeterminate header checkbox, bulk Delete + Duplicate).
+* "Made with BioLink Pro" footer credit on public pages (toggle via Settings → General).
+* Accessibility: visible focus ring on every interactive control inside the admin app; ARIA labels on icon-only buttons; `prefers-reduced-motion` honored for transitions.
 
 = 0.5.3 =
 * Release zip slimmed to ~3 MB by dropping endroid/qr-code's 16 MB bundled Noto Sans / Open Sans fonts (only used for QR label rendering, which we don't expose).

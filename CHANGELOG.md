@@ -5,6 +5,30 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-05-16
+
+### Added — AI suggestions everywhere
+- **`AiSuggestButton`** shared component — "✨ Suggest" pill with loading + error + suggestion list. Already wired into the page subtitle; v0.6.0 adds it on the Button block label (calls `/ai/cta` with the URL as context) and inside `ThemePicker` (calls `/ai/theme`, parses `"<slug>: <reason>"` lines, applies the picked theme on click).
+- `AiApi.theme()` client method.
+
+### Added — Integration credentials
+- Settings → Integrations now exposes **OpenAI, Stripe, PayPal client ID, PayPal secret, Mailchimp, MailerLite, Resend** fields grouped by category (AI / Payments / Email). Stored encrypted via `Core\Crypto`, returned masked.
+
+### Added — Page portability
+- `Api\PortabilityController` — `GET /biolink/v1/pages/{id}/export` (with `?download=1` for direct file) and `POST /biolink/v1/pages/import` (creates a new draft, re-uuids blocks so `wp_biolink_links` doesn't collide).
+- Per-row **Export** link in the Pages list; **Import JSON** button in the list header (file picker → POST → navigate to new page).
+
+### Added — Bulk actions
+- Multi-select checkboxes with indeterminate header state; **Bulk Duplicate** and **Bulk Delete** with confirmation. Sticky bulk-actions bar with count + Clear.
+
+### Added — "Powered by" credit
+- `PageRenderer::renderCredit()` emits a small footer link below the block stream, honoring the existing `biolink_settings.show_credit` toggle (default true).
+
+### Added — Accessibility
+- Global `:focus-visible` outline scoped to `.biolink-pro-app-root` so wp-admin's reset doesn't suppress keyboard focus rings.
+- `prefers-reduced-motion` media query disables transitions / animations.
+- `aria-label` on icon-only buttons; `role="alert"` on error banners; `role="region"` on the bulk-actions bar.
+
 ## [0.5.3] - 2026-05-16
 
 ### Fixed

@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import type { ChangeEvent } from 'react';
+import { AiSuggestButton } from '../components/ai/AiSuggestButton';
 import styles from './shared.module.css';
 
 export interface ButtonData {
@@ -30,6 +31,11 @@ export function ButtonEditor( { data, onChange }: Props ) {
 					className={ styles.input }
 					value={ data.label ?? '' }
 					onChange={ set( 'label' ) }
+				/>
+				<AiSuggestButton
+					kind="cta"
+					prompt={ data.url ? `Link to ${ data.url }` : 'Generic CTA button' }
+					onPick={ ( v ) => onChange( { ...data, label: v } ) }
 				/>
 			</label>
 			<label className={ styles.field }>

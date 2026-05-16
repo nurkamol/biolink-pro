@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useEffect, useState } from 'react';
 import { ThemesApi, type BioPageSettings, type ThemePreset } from '../../api/client';
+import { AiSuggestButton } from '../ai/AiSuggestButton';
 import styles from './SettingsPanel.module.css';
 
 interface Props {
@@ -8,9 +9,10 @@ interface Props {
 	settings: BioPageSettings;
 	onChange: ( slug: string ) => void;
 	onSettingsChange: ( next: BioPageSettings ) => void;
+	pageSummary?: string;
 }
 
-export function ThemePicker( { value, settings, onChange, onSettingsChange }: Props ) {
+export function ThemePicker( { value, settings, onChange, onSettingsChange, pageSummary = '' }: Props ) {
 	const [ themes, setThemes ] = useState< ThemePreset[] >( [] );
 	const [ loading, setLoading ] = useState( true );
 
@@ -20,6 +22,22 @@ export function ThemePicker( { value, settings, onChange, onSettingsChange }: Pr
 			.catch( () => setThemes( [] ) )
 			.finally( () => setLoading( false ) );
 	}, [] );
+
+	const themeSlugs = themes.map( ( t ) => t.slug );
+
+	// Parse "<slug>: <reason>" lines from the AI; fall back to whole line.
+	const parseTheme = ( raw: string ): { label: string; value: string } => {
+		const m = raw.match( /^\s*([a-z_]+)\s*[:\-]\s*(.+)$/i );
+		if ( m && themeSlugs.includes( m[ 1 ].toLowerCase() ) ) {
+			return { label: `${ m[ 1 ].toLowerCase() } — ${ m[ 2 ] }`, value: m[ 1 ].toLowerCase() };
+		}
+		for ( const slug of themeSlugs ) {
+			if ( raw.toLowerCase().includes( slug ) ) {
+				return { label: raw, value: slug };
+			}
+		}
+		return { label: raw, value: themeSlugs[ 0 ] ?? 'mono' };
+	};
 
 	const currentPreset = themes.find( ( t ) => t.slug === value );
 
@@ -47,6 +65,12 @@ export function ThemePicker( { value, settings, onChange, onSettingsChange }: Pr
 	return (
 		<div className={ styles.section }>
 			<h3 className={ styles.sectionTitle }>{ __( 'Theme', 'biolink-pro' ) }</h3>
+			<AiSuggestButton
+				kind="theme"
+				prompt={ pageSummary || __( 'Pick a theme for a personal bio page', 'biolink-pro' ) }
+				onPick={ ( slug ) => onChange( slug ) }
+				parseSuggestion={ parseTheme }
+			/>
 			{ loading ? (
 				<p className={ styles.hint }>{ __( 'Loading themes…', 'biolink-pro' ) }</p>
 			) : (

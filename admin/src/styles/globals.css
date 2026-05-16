@@ -37,3 +37,23 @@
 .biolink-pro-app-root button {
 	font-family: inherit;
 }
+
+/* A11y — visible focus ring on every interactive element inside the app.
+ * Browsers' default focus rings often get suppressed by wp-admin styles. */
+.biolink-pro-app-root :focus-visible {
+	outline: 2px solid var( --biolink-color-primary );
+	outline-offset: 2px;
+	border-radius: var( --biolink-radius );
+}
+
+.biolink-pro-app-root button:not( :disabled ),
+.biolink-pro-app-root a {
+	cursor: pointer;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.biolink-pro-app-root * {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}

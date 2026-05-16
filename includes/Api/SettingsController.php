@@ -18,7 +18,15 @@ defined('ABSPATH') || exit;
 
 final class SettingsController extends AbstractController
 {
-    private const SECRET_KEYS = ['openai_api_key', 'stripe_secret', 'paypal_secret', 'mailchimp_api_key'];
+    private const SECRET_KEYS = [
+        'openai_api_key',
+        'stripe_secret',
+        'paypal_secret',
+        'paypal_client_id',
+        'mailchimp_api_key',
+        'mailerlite_api_key',
+        'resend_api_key',
+    ];
 
     public function registerRoutes(): void
     {

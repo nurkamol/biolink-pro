@@ -1,7 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PagesApi, type BioPage } from '../api/client';
+import { PagesApi, PortabilityApi, type BioPage } from '../api/client';
 import styles from './Pages.module.css';
 
 export function Pages() {
@@ -10,14 +10,18 @@ export function Pages() {
 	const [ error, setError ] = useState< string | null >( null );
 	const [ creating, setCreating ] = useState( false );
 	const [ newTitle, setNewTitle ] = useState( '' );
+	const [ selected, setSelected ] = useState< Set< number > >( new Set() );
+	const [ busyBulk, setBusyBulk ] = useState( false );
+	const fileInputRef = useRef< HTMLInputElement | null >( null );
 	const navigate = useNavigate();
 
 	const reload = useCallback( async () => {
 		setLoading( true );
 		setError( null );
 		try {
-			const result = await PagesApi.list( { perPage: 50 } );
+			const result = await PagesApi.list( { perPage: 100 } );
 			setPages( result );
+			setSelected( new Set() );
 		} catch ( err ) {
 			setError( err instanceof Error ? err.message : __( 'Failed to load pages.', 'biolink-pro' ) );
 		} finally {
@@ -56,10 +60,103 @@ export function Pages() {
 		}
 	};
 
+	const toggle = ( id: number ) => {
+		setSelected( ( prev ) => {
+			const next = new Set( prev );
+			if ( next.has( id ) ) next.delete( id );
+			else next.add( id );
+			return next;
+		} );
+	};
+
+	const toggleAll = () => {
+		setSelected( ( prev ) => {
+			if ( prev.size === pages.length ) return new Set();
+			return new Set( pages.map( ( p ) => p.id ) );
+		} );
+	};
+
+	const bulkDelete = async () => {
+		if ( selected.size === 0 ) return;
+		// eslint-disable-next-line no-alert
+		if (
+			! window.confirm(
+				sprintf(
+					/* translators: %d: count */
+					__( 'Trash %d selected page(s)?', 'biolink-pro' ),
+					selected.size
+				)
+			)
+		)
+			return;
+		setBusyBulk( true );
+		try {
+			await Promise.all( Array.from( selected ).map( ( id ) => PagesApi.remove( id ) ) );
+			setPages( ( prev ) => prev.filter( ( p ) => ! selected.has( p.id ) ) );
+			setSelected( new Set() );
+		} catch ( err ) {
+			setError( err instanceof Error ? err.message : __( 'Bulk delete failed.', 'biolink-pro' ) );
+		} finally {
+			setBusyBulk( false );
+		}
+	};
+
+	const bulkDuplicate = async () => {
+		if ( selected.size === 0 ) return;
+		setBusyBulk( true );
+		try {
+			await Promise.all( Array.from( selected ).map( ( id ) => PagesApi.duplicate( id ) ) );
+			await reload();
+		} catch ( err ) {
+			setError( err instanceof Error ? err.message : __( 'Bulk duplicate failed.', 'biolink-pro' ) );
+		} finally {
+			setBusyBulk( false );
+		}
+	};
+
+	const handleImport = async ( file: File ) => {
+		try {
+			const text = await file.text();
+			const payload = JSON.parse( text );
+			const page = await PortabilityApi.importJson( payload );
+			await reload();
+			navigate( `/pages/${ page.id }` );
+		} catch ( err ) {
+			setError(
+				err instanceof Error
+					? err.message
+					: __( 'Import failed — make sure the file is a valid BioLink Pro JSON export.', 'biolink-pro' )
+			);
+		}
+	};
+
+	const allSelected = pages.length > 0 && selected.size === pages.length;
+	const someSelected = selected.size > 0 && ! allSelected;
+
 	return (
 		<section className={ styles.root }>
 			<header className={ styles.header }>
 				<h1>{ __( 'Bio Pages', 'biolink-pro' ) }</h1>
+				<div className={ styles.headerActions }>
+					<button
+						type="button"
+						className={ styles.linkAction }
+						onClick={ () => fileInputRef.current?.click() }
+					>
+						{ __( 'Import JSON', 'biolink-pro' ) }
+					</button>
+					<input
+						ref={ fileInputRef }
+						type="file"
+						accept="application/json,.json"
+						hidden
+						onChange={ ( e ) => {
+							const f = e.target.files?.[ 0 ];
+							if ( f ) void handleImport( f );
+							e.target.value = '';
+						} }
+					/>
+				</div>
 			</header>
 
 			<form className={ styles.createForm } onSubmit={ handleCreate }>
@@ -76,7 +173,46 @@ export function Pages() {
 				</button>
 			</form>
 
-			{ error && <div className={ styles.error }>{ error }</div> }
+			{ error && (
+				<div className={ styles.error } role="alert">
+					{ error }
+				</div>
+			) }
+
+			{ selected.size > 0 && (
+				<div className={ styles.bulkBar } role="region" aria-label={ __( 'Bulk actions', 'biolink-pro' ) }>
+					<span className={ styles.bulkCount }>
+						{ sprintf(
+							/* translators: %d: count */
+							__( '%d selected', 'biolink-pro' ),
+							selected.size
+						) }
+					</span>
+					<button
+						type="button"
+						className={ styles.linkAction }
+						onClick={ bulkDuplicate }
+						disabled={ busyBulk }
+					>
+						{ __( 'Duplicate', 'biolink-pro' ) }
+					</button>
+					<button
+						type="button"
+						className={ styles.dangerAction }
+						onClick={ bulkDelete }
+						disabled={ busyBulk }
+					>
+						{ __( 'Delete', 'biolink-pro' ) }
+					</button>
+					<button
+						type="button"
+						className={ styles.linkAction }
+						onClick={ () => setSelected( new Set() ) }
+					>
+						{ __( 'Clear', 'biolink-pro' ) }
+					</button>
+				</div>
+			) }
 
 			{ loading ? (
 				<p className={ styles.empty }>{ __( 'Loading pages…', 'biolink-pro' ) }</p>
@@ -88,17 +224,40 @@ export function Pages() {
 				<table className={ styles.table }>
 					<thead>
 						<tr>
-							<th>{ __( 'Title', 'biolink-pro' ) }</th>
-							<th>{ __( 'Slug', 'biolink-pro' ) }</th>
-							<th>{ __( 'Status', 'biolink-pro' ) }</th>
-							<th>{ __( 'Blocks', 'biolink-pro' ) }</th>
-							<th>{ __( 'Modified', 'biolink-pro' ) }</th>
-							<th className={ styles.actionsCol }>{ __( 'Actions', 'biolink-pro' ) }</th>
+							<th scope="col" className={ styles.checkCol }>
+								<input
+									type="checkbox"
+									checked={ allSelected }
+									ref={ ( el ) => {
+										if ( el ) el.indeterminate = someSelected;
+									} }
+									onChange={ toggleAll }
+									aria-label={ __( 'Select all pages', 'biolink-pro' ) }
+								/>
+							</th>
+							<th scope="col">{ __( 'Title', 'biolink-pro' ) }</th>
+							<th scope="col">{ __( 'Slug', 'biolink-pro' ) }</th>
+							<th scope="col">{ __( 'Status', 'biolink-pro' ) }</th>
+							<th scope="col">{ __( 'Blocks', 'biolink-pro' ) }</th>
+							<th scope="col">{ __( 'Modified', 'biolink-pro' ) }</th>
+							<th scope="col" className={ styles.actionsCol }>{ __( 'Actions', 'biolink-pro' ) }</th>
 						</tr>
 					</thead>
 					<tbody>
 						{ pages.map( ( page ) => (
-							<tr key={ page.id }>
+							<tr key={ page.id } className={ selected.has( page.id ) ? styles.rowSelected : '' }>
+								<td className={ styles.checkCol }>
+									<input
+										type="checkbox"
+										checked={ selected.has( page.id ) }
+										onChange={ () => toggle( page.id ) }
+										aria-label={ sprintf(
+											/* translators: %s: page title */
+											__( 'Select %s', 'biolink-pro' ),
+											page.title
+										) }
+									/>
+								</td>
 								<td>
 									<Link to={ `/pages/${ page.id }` } className={ styles.titleLink }>
 										{ page.title || __( '(no title)', 'biolink-pro' ) }
@@ -113,8 +272,20 @@ export function Pages() {
 								<td>{ page.blocks.length }</td>
 								<td>{ formatDate( page.modified ) }</td>
 								<td className={ styles.actionsCol }>
-									<a href={ page.url } target="_blank" rel="noreferrer" className={ styles.linkAction }>
+									<a
+										href={ page.url }
+										target="_blank"
+										rel="noreferrer"
+										className={ styles.linkAction }
+									>
 										{ __( 'View', 'biolink-pro' ) }
+									</a>
+									<a
+										href={ PortabilityApi.exportUrl( page.id ) }
+										className={ styles.linkAction }
+										title={ __( 'Download as JSON', 'biolink-pro' ) }
+									>
+										{ __( 'Export', 'biolink-pro' ) }
 									</a>
 									<button
 										type="button"

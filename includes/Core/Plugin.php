@@ -24,6 +24,7 @@ use BioLinkPro\Api\ChangelogController;
 use BioLinkPro\Api\ClickController;
 use BioLinkPro\Api\FormsController;
 use BioLinkPro\Api\PagesController;
+use BioLinkPro\Api\PortabilityController;
 use BioLinkPro\Api\QrController;
 use BioLinkPro\Api\RestRouter;
 use BioLinkPro\Api\SettingsController;
@@ -264,6 +265,7 @@ final class Plugin
                 new SettingsController(),
                 new AiController($ai_registry),
                 new WebhookController(),
+                new PortabilityController($repository),
             ])
         );
 

@@ -169,6 +169,20 @@ export const AiApi = {
 	cta( prompt: string ): Promise< { suggestions: string[] } > {
 		return request( `${ NS }/ai/cta`, { method: 'POST', data: { prompt } } );
 	},
+	theme( prompt: string ): Promise< { suggestions: string[] } > {
+		return request( `${ NS }/ai/theme`, { method: 'POST', data: { prompt } } );
+	},
+};
+
+export const PortabilityApi = {
+	exportUrl( id: number ): string {
+		return `${ window.BIOLINK_PRO.restBase }pages/${ id }/export?download=1&_wpnonce=${ encodeURIComponent(
+			window.BIOLINK_PRO.restNonce
+		) }`;
+	},
+	importJson( payload: unknown ): Promise< BioPage > {
+		return request< BioPage >( `${ NS }/pages/import`, { method: 'POST', data: payload } );
+	},
 };
 
 export interface BioBlockType {

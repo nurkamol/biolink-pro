@@ -81,6 +81,23 @@ final class PageRenderer
     }
 
     /**
+     * "Powered by" footer credit. Honors the `biolink_settings.show_credit` toggle
+     * (default true) — site owners can disable it.
+     */
+    private function renderCredit(): string
+    {
+        $settings    = (array) get_option('biolink_settings', []);
+        $show_credit = ! array_key_exists('show_credit', $settings) || (bool) $settings['show_credit'];
+        if (! $show_credit) {
+            return '';
+        }
+        return sprintf(
+            '<p class="bio-page__credit"><a href="https://github.com/nurkamol/biolink-pro" target="_blank" rel="noopener">%s</a></p>',
+            esc_html__('Made with BioLink Pro', 'biolink-pro')
+        );
+    }
+
+    /**
      * Render every block on the page to a stream of HTML.
      *
      * @param list<array<string, mixed>> $blocks
@@ -152,6 +169,7 @@ final class PageRenderer
         $html .= '<article class="bio-page bio-theme-' . esc_attr($theme_slug) . '">';
         $html .= $this->renderHeader($post, $settings);
         $html .= $this->renderBlocks($blocks);
+        $html .= $this->renderCredit();
         $html .= '</article>';
 
         /**

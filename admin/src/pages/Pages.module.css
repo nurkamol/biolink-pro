@@ -9,6 +9,38 @@
 	margin-bottom: var( --biolink-space-md );
 }
 
+.headerActions {
+	display: flex;
+	gap: var( --biolink-space-sm );
+	align-items: center;
+}
+
+.bulkBar {
+	display: flex;
+	align-items: center;
+	gap: var( --biolink-space-sm );
+	padding: 8px 12px;
+	background: #e7f3ff;
+	border: 1px solid #b3d4fc;
+	border-radius: var( --biolink-radius );
+	margin-bottom: var( --biolink-space-sm );
+	font-size: 13px;
+}
+
+.bulkCount {
+	font-weight: 600;
+	color: #1f5380;
+}
+
+.checkCol {
+	width: 32px;
+	text-align: center;
+}
+
+.rowSelected {
+	background: #f0f7ff;
+}
+
 .createForm {
 	display: flex;
 	gap: var( --biolink-space-sm );
