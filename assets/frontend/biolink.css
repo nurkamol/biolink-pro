@@ -690,6 +690,56 @@ body.bio-body .bio-page button {
 	font-size: 14px;
 	font-weight: 600;
 	align-self: center;
+	border: none;
+	cursor: pointer;
+	font-family: inherit;
+}
+
+.bio-block__donation-cta:disabled {
+	opacity: 0.6;
+	cursor: progress;
+}
+
+.bio-block__donation-chip--btn {
+	cursor: pointer;
+	font-family: inherit;
+	border: 1px solid var( --bio-color-border );
+}
+
+.bio-block__donation-chip--btn:hover {
+	background: var( --bio-color-accent );
+	color: var( --bio-color-accent-text );
+	border-color: var( --bio-color-accent );
+}
+
+.bio-block__donation-form {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-top: 12px;
+	width: 100%;
+}
+
+.bio-block__donation-input {
+	padding: 10px 12px;
+	font-size: 14px;
+	border: 1px solid var( --bio-color-border );
+	border-radius: 10px;
+	background: var( --bio-color-bg );
+	color: var( --bio-color-text );
+	font-family: inherit;
+}
+
+.bio-block__donation-input:focus {
+	outline: none;
+	border-color: var( --bio-color-accent );
+	box-shadow: 0 0 0 1px var( --bio-color-accent );
+}
+
+.bio-block__donation-status {
+	font-size: 12px;
+	min-height: 1em;
+	text-align: center;
 }
 
 /* Newsletter + Contact forms */

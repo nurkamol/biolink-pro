@@ -116,10 +116,14 @@ final class PageRenderer
             $data = is_array($block['data'] ?? null) ? $block['data'] : [];
             $uuid = isset($block['uuid']) && is_string($block['uuid']) ? $block['uuid'] : null;
 
-            // LinkBlock has an optional 2nd arg to receive uuid for click tracking.
-            $rendered = ($instance instanceof \BioLinkPro\Blocks\Types\LinkBlock)
-                ? $instance->render($data, $uuid)
-                : $instance->render($data);
+            // LinkBlock + DonationBlock take uuid as a 2nd arg (click tracking + checkout forms).
+            if ($instance instanceof \BioLinkPro\Blocks\Types\LinkBlock
+                || $instance instanceof \BioLinkPro\Blocks\Types\DonationBlock
+            ) {
+                $rendered = $instance->render($data, $uuid);
+            } else {
+                $rendered = $instance->render($data);
+            }
 
             /**
              * Filter a block's HTML before it lands on the page.

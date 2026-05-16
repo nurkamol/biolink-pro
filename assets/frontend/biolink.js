@@ -161,6 +161,57 @@
 			.forEach( ( form ) => handleFormSubmit( form, 'contact/submit', '.bio-block__contact-status' ) );
 	}
 
+	function initCheckout() {
+		document.querySelectorAll( 'form[data-action="checkout"]' ).forEach( ( form ) => {
+			form.addEventListener( 'submit', async ( event ) => {
+				event.preventDefault();
+				const button = form.querySelector( 'button[type="submit"]' );
+				const status = form.querySelector( '.bio-block__donation-status' );
+				const clickedAmount = event.submitter && event.submitter.value;
+				const inputAmount = form.querySelector( 'input[name="amount"]' )?.value || '';
+				const amount = Number( clickedAmount || inputAmount );
+				if ( ! amount || amount <= 0 ) {
+					setStatus( status, 'Enter a valid amount.', 'error' );
+					return;
+				}
+				const endpoint = form.getAttribute( 'data-endpoint' );
+				if ( ! endpoint ) return;
+				if ( button ) button.disabled = true;
+				setStatus( status, 'Redirecting…', 'info' );
+				try {
+					const res = await fetch( endpoint, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify( {
+							amount,
+							currency: form.getAttribute( 'data-currency' ) || 'USD',
+							name: form.getAttribute( 'data-name' ) || 'Donation',
+							description: form.getAttribute( 'data-name' ) || 'Donation',
+							page_id: Number( form.getAttribute( 'data-page' ) || '0' ),
+							block_uuid: form.getAttribute( 'data-block' ) || '',
+						} ),
+					} );
+					const json = await res.json().catch( () => ( {} ) );
+					if ( ! res.ok ) {
+						setStatus( status, ( json && json.message ) || 'Checkout failed.', 'error' );
+						if ( button ) button.disabled = false;
+						return;
+					}
+					const url = json.url || json.approve_url;
+					if ( url ) {
+						window.location.href = url;
+					} else {
+						setStatus( status, 'No redirect URL returned.', 'error' );
+						if ( button ) button.disabled = false;
+					}
+				} catch {
+					setStatus( status, 'Network error.', 'error' );
+					if ( button ) button.disabled = false;
+				}
+			} );
+		} );
+	}
+
 	function fireViewBeacon() {
 		const pageId = ( window.BIOLINK_PRO_PUBLIC && window.BIOLINK_PRO_PUBLIC.pageId ) || 0;
 		if ( ! pageId ) return;
@@ -189,6 +240,7 @@
 		initCountdowns();
 		initTikTok();
 		initForms();
+		initCheckout();
 		fireViewBeacon();
 	}
 

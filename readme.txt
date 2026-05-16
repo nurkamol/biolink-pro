@@ -4,7 +4,7 @@ Tags: link in bio, linktree, bio link, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.9
 Requires PHP: 8.2
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,15 @@ GitHub: https://github.com/nurkamol/biolink-pro/issues
 First stable release. Production-ready: 18 block types, 8 themes, analytics, QR codes, SEO coexistence with Rank Math / Yoast, JSON portability, encrypted integrations vault, AI suggestions, onboarding wizard, accessibility pass. Tested on WordPress 6.9 and PHP 8.2 / 8.3.
 
 == Changelog ==
+
+= 1.1.0 =
+* Real Stripe Checkout — Donation block can now open a hosted Checkout session instead of just linking out (set Provider = Stripe in the block editor).
+* Real PayPal Orders v2 — Donation block can now open a PayPal approval flow.
+* Mailchimp / MailerLite / Resend adapters — newsletter subscribers are forwarded to the configured provider via wp_remote_post (no SDK).
+* Settings → Integrations: new fields for Stripe webhook secret, PayPal sandbox toggle, Mailchimp list ID, MailerLite group ID, Resend audience ID.
+* New REST endpoints: `POST /biolink/v1/stripe/checkout`, `POST /biolink/v1/paypal/checkout`, `POST /biolink/v1/paypal/capture`. 36 total endpoints now.
+* Stripe webhook signature verification (HMAC SHA-256) hooked via `biolink/webhook/stripe/verify`.
+* `biolink/stripe/completed` and `biolink/paypal/captured` action hooks fire on successful payments.
 
 = 1.0.0 =
 * First stable release.

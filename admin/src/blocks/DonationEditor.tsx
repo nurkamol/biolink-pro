@@ -8,6 +8,7 @@ export interface DonationData {
 	currency?: string;
 	cta_label?: string;
 	cta_url?: string;
+	provider?: 'link' | 'stripe' | 'paypal';
 }
 
 interface Props {
@@ -17,9 +18,30 @@ interface Props {
 
 export function DonationEditor( { data, onChange }: Props ) {
 	const amountsStr = ( data.amounts ?? [] ).join( ', ' );
+	const provider = data.provider ?? 'link';
 
 	return (
 		<>
+			<label className={ styles.field }>
+				<span className={ styles.label }>{ __( 'Provider', 'biolink-pro' ) }</span>
+				<select
+					className={ styles.select }
+					value={ provider }
+					onChange={ ( e ) =>
+						onChange( { ...data, provider: e.target.value as DonationData[ 'provider' ] } )
+					}
+				>
+					<option value="link">{ __( 'External link', 'biolink-pro' ) }</option>
+					<option value="stripe">{ __( 'Stripe Checkout', 'biolink-pro' ) }</option>
+					<option value="paypal">{ __( 'PayPal', 'biolink-pro' ) }</option>
+				</select>
+				<span className={ styles.hint }>
+					{ provider === 'link'
+						? __( 'Use a Stripe Payment Link or PayPal.me URL below.', 'biolink-pro' )
+						: __( 'Configure the provider in Settings → Integrations first.', 'biolink-pro' ) }
+				</span>
+			</label>
+
 			<label className={ styles.field }>
 				<span className={ styles.label }>{ __( 'Heading', 'biolink-pro' ) }</span>
 				<input

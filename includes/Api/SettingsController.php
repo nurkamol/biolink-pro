@@ -21,11 +21,19 @@ final class SettingsController extends AbstractController
     private const SECRET_KEYS = [
         'openai_api_key',
         'stripe_secret',
+        'stripe_webhook_secret',
         'paypal_secret',
         'paypal_client_id',
         'mailchimp_api_key',
         'mailerlite_api_key',
         'resend_api_key',
+    ];
+
+    private const PLAIN_INTEGRATION_KEYS = [
+        'mailchimp_list_id',
+        'mailerlite_group_id',
+        'resend_audience_id',
+        'paypal_sandbox',
     ];
 
     public function registerRoutes(): void
@@ -108,6 +116,12 @@ final class SettingsController extends AbstractController
                     }
                     if ($value === '' || $value === null) {
                         unset($current[$k]);
+                    }
+                } elseif (in_array($k, self::PLAIN_INTEGRATION_KEYS, true)) {
+                    if ($k === 'paypal_sandbox') {
+                        $current[$k] = (bool) $value;
+                    } else {
+                        $current[$k] = is_scalar($value) ? sanitize_text_field((string) $value) : '';
                     }
                 } else {
                     $current[$k] = is_scalar($value) ? (is_bool($value) ? $value : (string) $value) : '';

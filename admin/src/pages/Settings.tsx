@@ -142,7 +142,15 @@ export function Settings() {
 						isSet={ !! integrations.stripe_secret_set }
 						masked={ ( integrations.stripe_secret as string ) || '' }
 						onChange={ ( v ) => setIntegrations( { ...integrations, stripe_secret: v } ) }
-						hint={ __( 'Used by Donation / Product blocks. Webhooks land at /wp-json/biolink/v1/webhooks/stripe.', 'biolink-pro' ) }
+						hint={ __( 'Powers the Donation block when its Provider is set to Stripe. Mode (test/live) auto-detected from sk_test_ / sk_live_ prefix.', 'biolink-pro' ) }
+					/>
+					<SecretField
+						label={ __( 'Stripe webhook secret', 'biolink-pro' ) }
+						placeholder="whsec_…"
+						isSet={ !! ( integrations as Record< string, unknown > ).stripe_webhook_secret_set }
+						masked={ ( ( integrations as Record< string, unknown > ).stripe_webhook_secret as string ) || '' }
+						onChange={ ( v ) => setIntegrations( { ...integrations, stripe_webhook_secret: v } ) }
+						hint={ __( 'Stripe → Developers → Webhooks. Point at /wp-json/biolink/v1/webhooks/stripe.', 'biolink-pro' ) }
 					/>
 					<SecretField
 						label={ __( 'PayPal client ID', 'biolink-pro' ) }
@@ -158,6 +166,16 @@ export function Settings() {
 						masked={ ( integrations.paypal_secret as string ) || '' }
 						onChange={ ( v ) => setIntegrations( { ...integrations, paypal_secret: v } ) }
 					/>
+					<label className={ styles.toggle }>
+						<input
+							type="checkbox"
+							checked={ !! integrations.paypal_sandbox }
+							onChange={ ( e ) =>
+								setIntegrations( { ...integrations, paypal_sandbox: e.target.checked } )
+							}
+						/>
+						<span>{ __( 'PayPal sandbox mode', 'biolink-pro' ) }</span>
+					</label>
 
 					<h2 className={ styles.groupTitle }>{ __( 'Email', 'biolink-pro' ) }</h2>
 					<SecretField
@@ -167,6 +185,19 @@ export function Settings() {
 						masked={ ( integrations.mailchimp_api_key as string ) || '' }
 						onChange={ ( v ) => setIntegrations( { ...integrations, mailchimp_api_key: v } ) }
 					/>
+					<label className={ styles.field }>
+						<span>{ __( 'Mailchimp list ID', 'biolink-pro' ) }</span>
+						<input
+							type="text"
+							className={ styles.input }
+							placeholder="a1b2c3d4e5"
+							value={ ( integrations.mailchimp_list_id as string ) || '' }
+							onChange={ ( e ) =>
+								setIntegrations( { ...integrations, mailchimp_list_id: e.target.value } )
+							}
+						/>
+					</label>
+
 					<SecretField
 						label={ __( 'MailerLite API key', 'biolink-pro' ) }
 						placeholder="eyJ..."
@@ -174,6 +205,19 @@ export function Settings() {
 						masked={ ( integrations.mailerlite_api_key as string ) || '' }
 						onChange={ ( v ) => setIntegrations( { ...integrations, mailerlite_api_key: v } ) }
 					/>
+					<label className={ styles.field }>
+						<span>{ __( 'MailerLite group ID (optional)', 'biolink-pro' ) }</span>
+						<input
+							type="text"
+							className={ styles.input }
+							placeholder="123456789"
+							value={ ( integrations.mailerlite_group_id as string ) || '' }
+							onChange={ ( e ) =>
+								setIntegrations( { ...integrations, mailerlite_group_id: e.target.value } )
+							}
+						/>
+					</label>
+
 					<SecretField
 						label={ __( 'Resend API key', 'biolink-pro' ) }
 						placeholder="re_..."
@@ -181,6 +225,18 @@ export function Settings() {
 						masked={ ( integrations.resend_api_key as string ) || '' }
 						onChange={ ( v ) => setIntegrations( { ...integrations, resend_api_key: v } ) }
 					/>
+					<label className={ styles.field }>
+						<span>{ __( 'Resend audience ID', 'biolink-pro' ) }</span>
+						<input
+							type="text"
+							className={ styles.input }
+							placeholder="aud-…"
+							value={ ( integrations.resend_audience_id as string ) || '' }
+							onChange={ ( e ) =>
+								setIntegrations( { ...integrations, resend_audience_id: e.target.value } )
+							}
+						/>
+					</label>
 				</div>
 			) }
 		</section>

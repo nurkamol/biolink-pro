@@ -5,6 +5,40 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-05-16
+
+Real integrations — no more hook-only scaffolding. Stripe + PayPal accept real payments; Mailchimp / MailerLite / Resend receive real subscribers.
+
+### Added — Stripe Checkout
+- `Integrations\Stripe\Checkout` service — talks to `/v1/checkout/sessions` via `wp_remote_post` (no SDK). Mode (test/live) auto-detected from the `sk_test_` / `sk_live_` prefix.
+- `Api\CheckoutController` exposes `POST /biolink/v1/stripe/checkout` — anonymous, accepts `{ page_id, block_uuid, amount, currency, name }`, returns `{ id, url }` pointing at the hosted Checkout page.
+- `Integrations\Stripe\StripeWebhookListener` — hooks `biolink/webhook/stripe/verify` (HMAC SHA-256 against `stripe_webhook_secret`) and `biolink/webhook/stripe` for `checkout.session.completed`. Logs to `biolink_stripe_log` (capped 200) and fires `biolink/stripe/completed`.
+
+### Added — PayPal Orders v2
+- `Integrations\PayPal\Checkout` — OAuth client_credentials + transient-cached access token, creates orders via `/v2/checkout/orders`. Sandbox/live toggle in Settings.
+- `POST /biolink/v1/paypal/checkout` returns approval URL; `POST /biolink/v1/paypal/capture` captures an approved order. `biolink_paypal_log` option + `biolink/paypal/captured` action.
+
+### Added — Email provider adapters
+- `Integrations\Email\AbstractEmailAdapter` — common plumbing; hooks `biolink/newsletter/subscribed`.
+- `MailchimpAdapter` — PUT `/3.0/lists/{list_id}/members/{email_md5}`, auto-detects datacenter from API key suffix.
+- `MailerLiteAdapter` — POST `connect.mailerlite.com/api/subscribers` with optional `groups[]`.
+- `ResendAdapter` — POST `/audiences/{id}/contacts`.
+
+### Added — Donation block: real provider flow
+- New `provider` field (`link` / `stripe` / `paypal`) on the block schema.
+- Provider auto-falls-back to `link` if the chosen provider isn't configured.
+- When provider is `stripe` or `paypal`, block renders a `<form>` that POSTs to the checkout endpoint and redirects to the hosted page.
+- Amount chips become clickable submit buttons that pre-fill the amount.
+- `data-action="checkout"` handler in `biolink.js`.
+
+### Added — Settings UI
+- New fields: Stripe webhook secret (encrypted), PayPal sandbox toggle, Mailchimp list_id, MailerLite group_id, Resend audience_id (plain text fields).
+- `PLAIN_INTEGRATION_KEYS` allowlist in `SettingsController` for non-secret integration settings.
+
+### Stats
+- **36 REST endpoints** under `/wp-json/biolink/v1/` (was 33).
+- 60 unit tests still pass.
+
 ## [1.0.0] - 2026-05-16
 
 **First stable release** — production-ready: 18 block types, 8 themes, analytics, QR codes, SEO coexistence with Rank Math / Yoast, JSON portability, encrypted integrations vault, AI suggestions, onboarding wizard, accessibility pass.

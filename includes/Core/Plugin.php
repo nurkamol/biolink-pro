@@ -21,6 +21,7 @@ use BioLinkPro\Analytics\Tracker;
 use BioLinkPro\Api\AnalyticsController;
 use BioLinkPro\Api\BlocksController;
 use BioLinkPro\Api\ChangelogController;
+use BioLinkPro\Api\CheckoutController;
 use BioLinkPro\Api\ClickController;
 use BioLinkPro\Api\FormsController;
 use BioLinkPro\Api\PagesController;
@@ -33,6 +34,12 @@ use BioLinkPro\Api\ThemesController;
 use BioLinkPro\Api\TrackController;
 use BioLinkPro\Api\WebhookController;
 use BioLinkPro\Cron\Pruner;
+use BioLinkPro\Integrations\Email\MailchimpAdapter;
+use BioLinkPro\Integrations\Email\MailerLiteAdapter;
+use BioLinkPro\Integrations\Email\ResendAdapter;
+use BioLinkPro\Integrations\PayPal\Checkout as PayPalCheckout;
+use BioLinkPro\Integrations\Stripe\Checkout as StripeCheckout;
+use BioLinkPro\Integrations\Stripe\StripeWebhookListener;
 use BioLinkPro\Blocks\BlockRegistry;
 use BioLinkPro\Blocks\Types\ButtonBlock;
 use BioLinkPro\Blocks\Types\ContactFormBlock;
@@ -241,6 +248,16 @@ final class Plugin
         $ai_registry->register(new OpenAiProvider());
         $this->register(ProviderRegistry::class, $ai_registry);
 
+        // v1.1 — real integrations
+        $stripe = new StripeCheckout();
+        $paypal = new PayPalCheckout();
+        $this->register(StripeCheckout::class, $stripe);
+        $this->register(PayPalCheckout::class, $paypal);
+        $this->register(StripeWebhookListener::class, new StripeWebhookListener($stripe));
+        $this->register(MailchimpAdapter::class, new MailchimpAdapter());
+        $this->register(MailerLiteAdapter::class, new MailerLiteAdapter());
+        $this->register(ResendAdapter::class, new ResendAdapter());
+
         $updater = new GitHubUpdater(
             'nurkamol',
             'biolink-pro',
@@ -266,6 +283,7 @@ final class Plugin
                 new AiController($ai_registry),
                 new WebhookController(),
                 new PortabilityController($repository),
+                new CheckoutController($stripe, $paypal),
             ])
         );
 
