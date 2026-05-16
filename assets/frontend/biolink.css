@@ -176,6 +176,46 @@ body.bio-body .bio-page button {
 	opacity: 0.7;
 }
 
+/* Generic locked placeholder for non-link blocks ----------------------- */
+
+.bio-block--locked-placeholder {
+	background: var( --bio-color-surface );
+	border: 1px dashed var( --bio-color-border );
+	border-radius: var( --bio-button-radius, 14px );
+	padding: 18px 20px;
+	text-decoration: none;
+	color: var( --bio-color-text );
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	justify-content: flex-start;
+	transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.bio-block--locked-placeholder:hover,
+.bio-block--locked-placeholder:focus-visible {
+	transform: translateY( -2px );
+	border-color: var( --bio-color-accent );
+	outline: none;
+}
+
+.bio-block--locked-placeholder .bio-block__lock {
+	margin: 0;
+	font-size: 22px;
+	opacity: 1;
+}
+
+.bio-block--locked-placeholder .bio-block__label {
+	font-weight: 600;
+	flex: 1;
+}
+
+.bio-block--locked-placeholder .bio-block__sub {
+	font-size: 12px;
+	color: var( --bio-color-muted, rgba( 0, 0, 0, 0.5 ) );
+	font-weight: 500;
+}
+
 .bio-block--has-thumb .bio-block__thumb {
 	width: 36px;
 	height: 36px;

@@ -4,7 +4,7 @@ Tags: link in bio, linktree, bio link, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.9
 Requires PHP: 8.2
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,10 @@ GitHub: https://github.com/nurkamol/biolink-pro/issues
 First stable release. Production-ready: 18 block types, 8 themes, analytics, QR codes, SEO coexistence with Rank Math / Yoast, JSON portability, encrypted integrations vault, AI suggestions, onboarding wizard, accessibility pass. Tested on WordPress 6.9 and PHP 8.2 / 8.3.
 
 == Changelog ==
+
+= 2.2.1 =
+* Fix: the passcode gate in v2.2.0 only applied to Link blocks — setting a passcode on YouTube / Image Gallery / Donation / etc. still rendered the content publicly. Every block type is now gated at PageRenderer.
+* Signed cookie persists unlock state for 30 days so visitors don't re-enter the passcode on every page load.
 
 = 2.2.0 =
 * Passcode-gated links — the Lock chip on each row now works. Set a passcode, visitors land on a standalone unlock page before the redirect. Passcodes are stored hashed; the plaintext is never persisted or returned to the admin.

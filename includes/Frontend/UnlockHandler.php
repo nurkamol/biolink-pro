@@ -22,6 +22,9 @@ defined('ABSPATH') || exit;
 
 final class UnlockHandler implements Bootable
 {
+    private const COOKIE_NAME = 'biolink_unlocked';
+    private const COOKIE_TTL  = 30 * DAY_IN_SECONDS;
+
     public function __construct(private readonly PageRepository $repository)
     {
     }
@@ -29,6 +32,63 @@ final class UnlockHandler implements Bootable
     public function boot(): void
     {
         add_action('template_redirect', [$this, 'maybeUnlock']);
+    }
+
+    /**
+     * Whether the visitor has unlocked this specific block on this page.
+     * Checks the signed `biolink_unlocked` cookie (comma-separated tokens).
+     */
+    public static function isUnlocked(int $page_id, string $uuid): bool
+    {
+        if ($uuid === '' || $page_id <= 0) {
+            return false;
+        }
+        if (! isset($_COOKIE[self::COOKIE_NAME])) {
+            return false;
+        }
+        $raw    = sanitize_text_field(wp_unslash((string) $_COOKIE[self::COOKIE_NAME]));
+        $tokens = $raw === '' ? [] : array_map('trim', explode(',', $raw));
+        return in_array(self::tokenFor($page_id, $uuid), $tokens, true);
+    }
+
+    /**
+     * Tamper-resistant token for (page_id, uuid). Signed with wp_hash() so
+     * visitors can't forge unlock state by editing the cookie.
+     */
+    public static function tokenFor(int $page_id, string $uuid): string
+    {
+        return wp_hash('biolink_unlock|' . $page_id . '|' . $uuid);
+    }
+
+    private function rememberUnlock(int $page_id, string $uuid): void
+    {
+        $token = self::tokenFor($page_id, $uuid);
+        $raw   = isset($_COOKIE[self::COOKIE_NAME])
+            ? sanitize_text_field(wp_unslash((string) $_COOKIE[self::COOKIE_NAME]))
+            : '';
+        $tokens = $raw === '' ? [] : array_map('trim', explode(',', $raw));
+        if (! in_array($token, $tokens, true)) {
+            $tokens[] = $token;
+        }
+        // Cap cookie growth — keep the most recent N unlocks.
+        $tokens = array_slice($tokens, -50);
+
+        // Make the cookie visible to subsequent PHP requests too, so PageRenderer
+        // sees the unlock state on the redirect target.
+        $_COOKIE[self::COOKIE_NAME] = implode(',', $tokens);
+
+        setcookie(
+            self::COOKIE_NAME,
+            implode(',', $tokens),
+            [
+                'expires'  => time() + self::COOKIE_TTL,
+                'path'     => COOKIEPATH ?: '/',
+                'domain'   => COOKIE_DOMAIN ?: '',
+                'secure'   => is_ssl(),
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]
+        );
     }
 
     public function maybeUnlock(): void
@@ -63,18 +123,22 @@ final class UnlockHandler implements Bootable
             return;
         }
 
-        $data        = is_array($block['data'] ?? null) ? $block['data'] : [];
-        $hash        = isset($data['_passcode_hash']) ? (string) $data['_passcode_hash'] : '';
-        $destination = isset($data['url']) ? (string) $data['url'] : '';
+        $data = is_array($block['data'] ?? null) ? $block['data'] : [];
+        $hash = isset($data['_passcode_hash']) ? (string) $data['_passcode_hash'] : '';
 
-        if ($hash === '' || $destination === '') {
-            // Not actually locked, or no destination. Bounce back to the page.
+        if ($hash === '') {
+            // Not actually locked. Bounce back to the page.
             wp_safe_redirect(get_permalink($post));
             exit;
         }
 
+        // If a destination URL exists (Link / Button / Donation / Product), unlocking
+        // redirects there; otherwise we just send the visitor back to the bio page
+        // where the now-unlocked block content will be revealed.
+        $destination = self::destinationFor($block);
+
         $error = '';
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $submitted = isset($_POST['passcode'])
                 ? sanitize_text_field(wp_unslash((string) $_POST['passcode']))
                 : '';
@@ -86,19 +150,42 @@ final class UnlockHandler implements Bootable
                  * @param int    $page_id
                  */
                 do_action('biolink/link/unlocked', $uuid, $post->ID);
+                $this->rememberUnlock($post->ID, $uuid);
                 nocache_headers();
-                wp_redirect(esc_url_raw($destination));
+                wp_redirect(esc_url_raw($destination !== '' ? $destination : get_permalink($post)));
                 exit;
             }
             $error = __('Incorrect passcode. Try again.', 'biolink-pro');
         }
 
+        $label = (string) ($data['label']
+            ?? $data['heading']
+            ?? $data['name']
+            ?? __('Locked content', 'biolink-pro'));
+
         $this->renderForm(
             $uuid,
-            (string) ($data['label'] ?? __('Locked link', 'biolink-pro')),
+            $label,
             $error,
             get_permalink($post)
         );
+    }
+
+    /**
+     * Find a destination URL on the block, if any. Falls back to the bio page
+     * when the block doesn't have a direct link target (e.g. an embed).
+     *
+     * @param array<string, mixed> $block
+     */
+    private static function destinationFor(array $block): string
+    {
+        $data = is_array($block['data'] ?? null) ? $block['data'] : [];
+        foreach (['url', 'cta_url'] as $key) {
+            if (isset($data[$key]) && is_string($data[$key]) && $data[$key] !== '') {
+                return (string) $data[$key];
+            }
+        }
+        return '';
     }
 
     /**

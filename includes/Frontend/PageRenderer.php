@@ -11,6 +11,7 @@ namespace BioLinkPro\Frontend;
 
 use BioLinkPro\Blocks\BlockRegistry;
 use BioLinkPro\Frontend\Repository\PageRepository;
+use BioLinkPro\Frontend\UnlockHandler;
 use BioLinkPro\Themes\ThemeEngine;
 use WP_Post;
 
@@ -98,6 +99,24 @@ final class PageRenderer
     }
 
     /**
+     * Render a generic locked-content placeholder. Click → unlock form.
+     */
+    private function renderLockedPlaceholder(int $page_id, string $uuid, string $label): string
+    {
+        $url = add_query_arg(['biolink_unlock' => $uuid], get_permalink($page_id));
+        return sprintf(
+            '<a class="bio-block bio-block--locked-placeholder" href="%s">'
+            . '<span class="bio-block__lock" aria-hidden="true">🔒</span>'
+            . '<span class="bio-block__label">%s</span>'
+            . '<span class="bio-block__sub">%s</span>'
+            . '</a>',
+            esc_url($url),
+            esc_html($label),
+            esc_html__('Click to unlock', 'biolink-pro')
+        );
+    }
+
+    /**
      * Decide whether a block is inside its visibility window.
      *
      * @param array<string, mixed> $data
@@ -158,9 +177,28 @@ final class PageRenderer
 
             $uuid = isset($block['uuid']) && is_string($block['uuid']) ? $block['uuid'] : null;
 
+            // Passcode gate: if the block has _passcode_hash and the visitor
+            // hasn't unlocked it, replace the output with a placeholder card
+            // (skipping LinkBlock, which renders its own unlock-routed href).
+            $hash       = isset($data['_passcode_hash']) ? (string) $data['_passcode_hash'] : '';
+            $is_link    = $instance instanceof \BioLinkPro\Blocks\Types\LinkBlock;
+            $page_id    = (int) (get_the_ID() ?: 0);
+            $unlocked   = $uuid !== null && $page_id > 0
+                ? UnlockHandler::isUnlocked($page_id, $uuid)
+                : false;
+            $gated      = $hash !== '' && ! $unlocked && ! $is_link;
+
+            if ($gated) {
+                $label = isset($data['label']) && is_string($data['label']) && $data['label'] !== ''
+                    ? (string) $data['label']
+                    : (string) ($data['heading'] ?? $data['name'] ?? __('Locked content', 'biolink-pro'));
+                $html .= $this->renderLockedPlaceholder($page_id, (string) $uuid, $label);
+                continue;
+            }
+
             // LinkBlock + DonationBlock + ProductCardBlock take uuid as a 2nd arg
             // (click tracking + checkout-form correlation).
-            if ($instance instanceof \BioLinkPro\Blocks\Types\LinkBlock
+            if ($is_link
                 || $instance instanceof \BioLinkPro\Blocks\Types\DonationBlock
                 || $instance instanceof \BioLinkPro\Blocks\Types\ProductCardBlock
             ) {

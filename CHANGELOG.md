@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-05-17
+
+### Fixed
+- **Passcode gate now applies to every block type, not just Link.** v2.2.0 only gated `LinkBlock`, so setting a passcode on a YouTube / Image Gallery / Donation / etc. block still rendered the content publicly. `PageRenderer` now checks `_passcode_hash` on every block and replaces the output with a generic "🔒 {label} — Click to unlock" placeholder card when the visitor hasn't unlocked it.
+
+### Added
+- **Signed unlock cookie** — `UnlockHandler` sets `biolink_unlocked` (HTTP-only, SameSite=Lax, 30 days) on successful passcode entry. Value is a comma-separated list of `wp_hash('biolink_unlock|page_id|uuid')` tokens — tamper-resistant, no DB writes. Subsequent visits skip the form for blocks already unlocked.
+- **`UnlockHandler::isUnlocked( $page_id, $uuid )`** static helper, used by `PageRenderer` and `LinkBlock` to decide whether the gate should fire.
+- **Public CSS for `.bio-block--locked-placeholder`** — dashed border, lock icon, theme-matched. Hovers lift like a normal link card.
+
+### Changed
+- **`UnlockHandler` destination logic generalized.** Looks for `url` or `cta_url` on the block; if found, unlock redirects to it (works for Link / Button / Donation / Product Card). Otherwise redirects back to the bio page so the now-unlocked embed/gallery/etc. renders inline.
+
 ## [2.2.0] - 2026-05-17
 
 ### Added

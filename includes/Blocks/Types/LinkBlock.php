@@ -14,6 +14,7 @@ use BioLinkPro\Blocks\AbstractBlock;
 use BioLinkPro\Blocks\Icons;
 use BioLinkPro\Blocks\Schema\FieldValidator;
 use BioLinkPro\Core\Plugin;
+use BioLinkPro\Frontend\UnlockHandler;
 
 defined('ABSPATH') || exit;
 
@@ -58,16 +59,20 @@ final class LinkBlock extends AbstractBlock
 
         $url = $data['url'];
 
-        // Passcode-gated links bypass click tracking + UTM — visitors hit the
-        // unlock form first; analytics on locked links is a v2.3 follow-up.
-        if ($passcode_hash !== '' && $uuid !== null) {
-            $page_id = (int) (get_the_ID() ?: 0);
-            if ($page_id > 0) {
-                $url = add_query_arg(
-                    ['biolink_unlock' => $uuid],
-                    get_permalink($page_id)
-                );
-            }
+        // Passcode-gated links bypass click tracking + UTM until unlocked.
+        // Once the visitor has cleared the passcode for this (page, uuid),
+        // the cookie tells us to skip the unlock form on subsequent clicks.
+        $page_id = (int) (get_the_ID() ?: 0);
+        $needs_unlock = $passcode_hash !== ''
+            && $uuid !== null
+            && $page_id > 0
+            && ! UnlockHandler::isUnlocked($page_id, $uuid);
+
+        if ($needs_unlock) {
+            $url = add_query_arg(
+                ['biolink_unlock' => $uuid],
+                get_permalink($page_id)
+            );
         } else {
             // Route through /click/{id} when we have a stable link_id so analytics
             // can record the click + apply UTM at redirect time.
@@ -118,8 +123,8 @@ final class LinkBlock extends AbstractBlock
             $leading = '<span class="bio-block__icon" aria-hidden="true">' . $icon_svg . '</span>';
         }
 
-        // Locked links open in the same window so the passcode form lands cleanly.
-        $target = $passcode_hash !== '' ? '_self' : '_blank';
+        // Locked + not-yet-unlocked links open in the same window so the form lands cleanly.
+        $target = $needs_unlock ? '_self' : '_blank';
         $lock_indicator = $passcode_hash !== ''
             ? '<span class="bio-block__lock" aria-hidden="true">🔒</span>'
             : '';
