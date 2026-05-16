@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-05-16
+
+### Added — Phase 3: block builder
+- **8 P1 block types** in `BioLinkPro\Blocks\Types\`: `LinkBlock`, `ButtonBlock`, `SocialIconsBlock`, `ImageGalleryBlock`, `RichTextBlock`, `DividerBlock`, `VideoBlock`, `YouTubeBlock`. Each implements `slug() / label() / icon() / schema() / render()`.
+- `Blocks\Schema\FieldValidator` — schema-driven sanitizer used by every block's `render()` path (types: `string`, `text`, `url`, `email`, `color`, `int`, `bool`, `enum`, `array`).
+- `Blocks\Icons` — inline-SVG dictionary (12 utility icons + 14 social brand marks) so blocks emit icons without pulling an icon font.
+- `Frontend\PageRenderer` — orchestrates a page: header (avatar/headline/subheadline) + block stream, with `biolink/page/render/before` and `biolink/page/render` filters.
+- `Frontend\TemplateLoader` — hooks `template_include` so `biolink_page` CPT visits render via `templates/bio-page.php` instead of the active theme's `single.php`.
+- `Frontend\Assets` — enqueues `assets/frontend/biolink.{css,js}` only on bio pages.
+- `templates/bio-page.php` — minimal full-page template (no theme chrome) for fast LCP.
+- `assets/frontend/biolink.css` — mobile-first BEM stylesheet covering header + all 8 block types with CSS custom-property tokens.
+- `assets/frontend/biolink.js` — tiny progressive-enhancement bundle that swaps the YouTube facade for a real iframe on click.
+
+### Added — Phase 3: React block builder
+- 8 typed block editors in `admin/src/blocks/`: `LinkEditor`, `ButtonEditor`, `SocialIconsEditor`, `ImageGalleryEditor`, `RichTextEditor`, `DividerEditor`, `VideoEditor`, `YouTubeEditor`.
+- `admin/src/blocks/index.ts` — block catalog with default data + preview formatter per type.
+- `admin/src/components/builder/PageBuilder.tsx` — dnd-kit-powered canvas with sortable rows, inserter popover, right-rail inspector, and per-row delete; optimistic updates with rollback through `BlocksApi.append / update / remove / reorder`.
+- `admin/src/lib/mediaFrame.ts` — typed wrapper around `wp.media` for `ImageGalleryEditor` + `VideoEditor`. `Admin\Assets` now calls `wp_enqueue_media()` on plugin admin screens.
+- Replaces the Phase 2 placeholder inside `PageDetail.tsx`.
+
+### Dependencies
+- `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities` added for the sortable canvas.
+
 ## [0.1.0] - 2026-05-16
 
 ### Added — Release infrastructure

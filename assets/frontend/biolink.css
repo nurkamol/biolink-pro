@@ -1,0 +1,429 @@
+/**
+ * BioLink Pro — public bio page stylesheet.
+ *
+ * Mobile-first. BEM (`bio-block__element--modifier`). No framework, no resets
+ * beyond what we need. CSS custom properties scoped to .bio-page so themes
+ * can override without leaking into the host site.
+ */
+
+:root {
+	--bio-color-bg: #fafafa;
+	--bio-color-surface: #ffffff;
+	--bio-color-text: #1d2327;
+	--bio-color-muted: #646970;
+	--bio-color-accent: #2271b1;
+	--bio-color-accent-hover: #135e96;
+	--bio-color-border: #e0e0e0;
+	--bio-radius: 12px;
+	--bio-radius-pill: 999px;
+	--bio-space-xs: 6px;
+	--bio-space-sm: 10px;
+	--bio-space-md: 16px;
+	--bio-space-lg: 24px;
+	--bio-space-xl: 36px;
+	--bio-font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	--bio-shadow: 0 1px 2px rgba( 0, 0, 0, 0.04 );
+	--bio-shadow-hover: 0 4px 16px rgba( 0, 0, 0, 0.08 );
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+
+body.bio-body {
+	background: var( --bio-color-bg );
+	color: var( --bio-color-text );
+	font-family: var( --bio-font-stack );
+	font-size: 16px;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+	min-height: 100vh;
+	min-height: 100svh;
+}
+
+.bio-page {
+	max-width: 600px;
+	margin: 0 auto;
+	padding: var( --bio-space-xl ) var( --bio-space-md );
+}
+
+/* Header ---------------------------------------------------------------- */
+
+.bio-header {
+	text-align: center;
+	margin-bottom: var( --bio-space-xl );
+}
+
+.bio-header__avatar {
+	width: 96px;
+	height: 96px;
+	border-radius: 50%;
+	object-fit: cover;
+	margin: 0 auto var( --bio-space-md );
+	display: block;
+	box-shadow: var( --bio-shadow );
+}
+
+.bio-header__title {
+	margin: 0 0 var( --bio-space-xs );
+	font-size: 22px;
+	font-weight: 700;
+}
+
+.bio-header__subtitle {
+	margin: 0;
+	color: var( --bio-color-muted );
+	font-size: 15px;
+}
+
+/* Block container ------------------------------------------------------- */
+
+.bio-blocks {
+	display: flex;
+	flex-direction: column;
+	gap: var( --bio-space-md );
+}
+
+.bio-block {
+	display: flex;
+	align-items: center;
+	gap: var( --bio-space-sm );
+}
+
+.bio-block__icon {
+	display: inline-flex;
+	width: 20px;
+	height: 20px;
+	flex-shrink: 0;
+}
+
+.bio-block__icon svg {
+	width: 100%;
+	height: 100%;
+}
+
+.bio-block__label {
+	font-weight: 500;
+}
+
+/* Link block ------------------------------------------------------------ */
+
+.bio-block--link {
+	background: var( --bio-color-surface );
+	border: 1px solid var( --bio-color-border );
+	border-radius: var( --bio-radius );
+	padding: var( --bio-space-md ) var( --bio-space-lg );
+	text-decoration: none;
+	color: inherit;
+	box-shadow: var( --bio-shadow );
+	transition: transform 160ms ease, box-shadow 160ms ease;
+	justify-content: center;
+	text-align: center;
+}
+
+.bio-block--link:hover,
+.bio-block--link:focus-visible {
+	transform: translateY( -1px );
+	box-shadow: var( --bio-shadow-hover );
+	outline: none;
+}
+
+.bio-block--link.bio-block--featured {
+	background: var( --bio-color-accent );
+	color: #fff;
+	border-color: var( --bio-color-accent );
+}
+
+/* Button block ---------------------------------------------------------- */
+
+.bio-block--button {
+	justify-content: center;
+	text-decoration: none;
+	border-radius: var( --bio-radius-pill );
+	padding: var( --bio-space-sm ) var( --bio-space-lg );
+	font-weight: 600;
+	transition: transform 160ms ease, background 160ms ease;
+}
+
+.bio-block--button:hover,
+.bio-block--button:focus-visible {
+	transform: translateY( -1px );
+	outline: none;
+}
+
+.bio-block--button-primary {
+	background: var( --bio-color-accent );
+	color: #fff;
+}
+
+.bio-block--button-primary:hover {
+	background: var( --bio-color-accent-hover );
+}
+
+.bio-block--button-secondary {
+	background: var( --bio-color-surface );
+	color: var( --bio-color-text );
+	border: 1px solid var( --bio-color-border );
+}
+
+.bio-block--button-secondary:hover {
+	border-color: var( --bio-color-accent );
+	color: var( --bio-color-accent );
+}
+
+.bio-block--button-ghost {
+	background: transparent;
+	color: var( --bio-color-accent );
+	border: 1px solid transparent;
+}
+
+.bio-block--button-ghost:hover {
+	background: rgba( 34, 113, 177, 0.08 );
+}
+
+.bio-block--button-sm {
+	padding: 6px var( --bio-space-md );
+	font-size: 14px;
+}
+
+.bio-block--button-lg {
+	padding: var( --bio-space-md ) var( --bio-space-xl );
+	font-size: 17px;
+}
+
+/* Social icons ---------------------------------------------------------- */
+
+.bio-block--social {
+	justify-content: center;
+	gap: var( --bio-space-md );
+	flex-wrap: wrap;
+}
+
+.bio-block__social-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: var( --bio-color-surface );
+	color: var( --bio-color-text );
+	border: 1px solid var( --bio-color-border );
+	transition: transform 160ms ease, color 160ms ease, background 160ms ease;
+}
+
+.bio-block__social-link:hover,
+.bio-block__social-link:focus-visible {
+	transform: translateY( -2px );
+	color: var( --bio-color-accent );
+	background: var( --bio-color-bg );
+	outline: none;
+}
+
+.bio-block__social-link svg {
+	width: 18px;
+	height: 18px;
+}
+
+/* Image gallery --------------------------------------------------------- */
+
+.bio-block--gallery {
+	flex-wrap: wrap;
+	gap: var( --bio-space-sm );
+}
+
+.bio-block--gallery-grid {
+	display: grid;
+	grid-template-columns: repeat( 2, 1fr );
+}
+
+.bio-block--gallery-list {
+	flex-direction: column;
+}
+
+.bio-block__image-link,
+.bio-block__image {
+	display: block;
+	width: 100%;
+	border-radius: var( --bio-radius );
+	overflow: hidden;
+}
+
+.bio-block__image {
+	height: auto;
+}
+
+@media ( min-width: 480px ) {
+	.bio-block--gallery-grid {
+		grid-template-columns: repeat( 3, 1fr );
+	}
+}
+
+/* Rich text ------------------------------------------------------------- */
+
+.bio-block--text {
+	flex-direction: column;
+	align-items: stretch;
+	gap: 0;
+}
+
+.bio-block--text-left {
+	text-align: left;
+}
+
+.bio-block--text-center {
+	text-align: center;
+}
+
+.bio-block--text-right {
+	text-align: right;
+}
+
+.bio-block--text p {
+	margin: 0 0 var( --bio-space-sm );
+}
+
+.bio-block--text h2,
+.bio-block--text h3,
+.bio-block--text h4 {
+	margin: var( --bio-space-md ) 0 var( --bio-space-sm );
+}
+
+.bio-block--text ul {
+	margin: 0 0 var( --bio-space-sm );
+	padding-left: 1.4em;
+}
+
+.bio-block--text a {
+	color: var( --bio-color-accent );
+}
+
+.bio-block--text code {
+	background: rgba( 0, 0, 0, 0.05 );
+	padding: 1px 5px;
+	border-radius: 3px;
+	font-size: 0.9em;
+}
+
+/* Divider --------------------------------------------------------------- */
+
+.bio-block--divider {
+	background: transparent;
+	border: none;
+	height: var( --bio-space-md );
+	width: 100%;
+}
+
+.bio-block--divider-line {
+	border-top: 1px solid var( --bio-divider-color, var( --bio-color-border ) );
+}
+
+.bio-block--divider-dots {
+	display: flex;
+	gap: var( --bio-space-sm );
+	justify-content: center;
+	align-items: center;
+}
+
+.bio-block--divider-dots::before,
+.bio-block--divider-dots::after,
+.bio-block--divider-dots {
+	color: var( --bio-divider-color, var( --bio-color-border ) );
+}
+
+.bio-block--divider-dots::before,
+.bio-block--divider-dots::after {
+	content: "•";
+	color: var( --bio-divider-color, var( --bio-color-border ) );
+	font-size: 18px;
+}
+
+.bio-block--divider-space {
+	height: var( --bio-space-md );
+}
+
+.bio-block--divider-spacing-sm {
+	height: var( --bio-space-sm );
+}
+
+.bio-block--divider-spacing-lg {
+	height: var( --bio-space-xl );
+}
+
+/* Video ----------------------------------------------------------------- */
+
+.bio-block--video {
+	flex-direction: column;
+	align-items: stretch;
+}
+
+.bio-block--video video {
+	width: 100%;
+	border-radius: var( --bio-radius );
+	display: block;
+}
+
+/* YouTube facade -------------------------------------------------------- */
+
+.bio-block--youtube {
+	flex-direction: column;
+	align-items: stretch;
+}
+
+.bio-block__yt-facade {
+	position: relative;
+	display: block;
+	width: 100%;
+	border: none;
+	padding: 0;
+	background: #000;
+	border-radius: var( --bio-radius );
+	overflow: hidden;
+	cursor: pointer;
+	aspect-ratio: 16 / 9;
+}
+
+.bio-block__yt-thumb {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.bio-block__yt-play {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate( -50%, -50% );
+	width: 56px;
+	height: 56px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	background: rgba( 0, 0, 0, 0.7 );
+	border-radius: 50%;
+}
+
+.bio-block__yt-play svg {
+	width: 22px;
+	height: 22px;
+}
+
+.bio-block__yt-facade:hover .bio-block__yt-play {
+	background: var( --bio-color-accent );
+}
+
+.bio-block__yt-facade iframe {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}

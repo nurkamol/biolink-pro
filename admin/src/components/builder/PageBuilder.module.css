@@ -1,0 +1,242 @@
+.builder {
+	display: grid;
+	grid-template-columns: 1fr 340px;
+	gap: var( --biolink-space-lg );
+	align-items: flex-start;
+	margin-top: var( --biolink-space-lg );
+}
+
+@media ( max-width: 900px ) {
+	.builder {
+		grid-template-columns: 1fr;
+	}
+}
+
+.canvasColumn {
+	min-width: 0;
+}
+
+.canvasHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: var( --biolink-space-md );
+}
+
+.canvasHeader h2 {
+	margin: 0;
+	font-size: 16px;
+}
+
+.addButton {
+	padding: 6px 12px;
+	background: var( --biolink-color-primary );
+	color: #fff;
+	border: 1px solid var( --biolink-color-primary );
+	border-radius: var( --biolink-radius );
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.addButton:hover {
+	background: var( --biolink-color-primary-hover );
+}
+
+.error {
+	padding: var( --biolink-space-sm ) var( --biolink-space-md );
+	background: #fcf0f1;
+	border: 1px solid var( --biolink-color-danger );
+	color: var( --biolink-color-danger );
+	border-radius: var( --biolink-radius );
+	margin-bottom: var( --biolink-space-md );
+	font-size: 13px;
+}
+
+.inserter {
+	display: grid;
+	grid-template-columns: repeat( auto-fill, minmax( 140px, 1fr ) );
+	gap: var( --biolink-space-sm );
+	padding: var( --biolink-space-md );
+	background: var( --biolink-color-surface );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	margin-bottom: var( --biolink-space-md );
+}
+
+.inserterItem {
+	display: flex;
+	align-items: center;
+	gap: var( --biolink-space-sm );
+	padding: var( --biolink-space-sm ) var( --biolink-space-md );
+	background: var( --biolink-color-bg );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	cursor: pointer;
+	font-size: 13px;
+	text-align: left;
+}
+
+.inserterItem:hover {
+	border-color: var( --biolink-color-primary );
+	color: var( --biolink-color-primary );
+}
+
+.inserterIcon {
+	font-size: 16px;
+}
+
+.emptyCanvas {
+	padding: var( --biolink-space-xl );
+	background: var( --biolink-color-surface );
+	border: 1px dashed var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	text-align: center;
+	color: var( --biolink-color-muted );
+}
+
+.canvas {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.blockRow {
+	display: grid;
+	grid-template-columns: 24px 1fr auto auto;
+	gap: 6px;
+	align-items: center;
+	padding: 8px 10px;
+	background: var( --biolink-color-bg );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+}
+
+.blockRowSelected {
+	border-color: var( --biolink-color-primary );
+	box-shadow: 0 0 0 1px var( --biolink-color-primary );
+}
+
+.blockRowDragging {
+	cursor: grabbing;
+}
+
+.dragHandle {
+	background: none;
+	border: none;
+	color: var( --biolink-color-muted );
+	cursor: grab;
+	font-size: 14px;
+	padding: 2px 4px;
+	letter-spacing: -2px;
+}
+
+.dragHandle:active {
+	cursor: grabbing;
+}
+
+.blockBody {
+	display: flex;
+	align-items: center;
+	gap: var( --biolink-space-sm );
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 4px;
+	text-align: left;
+	min-width: 0;
+	width: 100%;
+	font-family: inherit;
+}
+
+.blockIcon {
+	font-size: 16px;
+}
+
+.blockLabel {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.blockType {
+	font-size: 13px;
+	font-weight: 500;
+	color: var( --biolink-color-text );
+}
+
+.blockPreview {
+	font-size: 11px;
+	color: var( --biolink-color-muted );
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 280px;
+}
+
+.savingDot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var( --biolink-color-primary );
+	animation: bio-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes bio-pulse {
+	0%, 100% { opacity: 0.5; }
+	50% { opacity: 1; }
+}
+
+.deleteButton {
+	background: none;
+	border: 1px solid transparent;
+	border-radius: var( --biolink-radius );
+	cursor: pointer;
+	font-size: 16px;
+	color: var( --biolink-color-muted );
+	width: 26px;
+	height: 26px;
+	line-height: 1;
+}
+
+.deleteButton:hover {
+	color: var( --biolink-color-danger );
+	border-color: var( --biolink-color-danger );
+}
+
+.inspector {
+	background: var( --biolink-color-bg );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	padding: var( --biolink-space-md );
+	position: sticky;
+	top: 60px;
+	max-height: calc( 100vh - 100px );
+	overflow-y: auto;
+}
+
+.inspectorHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: var( --biolink-space-md );
+}
+
+.inspectorHeader h3 {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.savingLabel {
+	font-size: 11px;
+	color: var( --biolink-color-primary );
+	font-weight: 500;
+}
+
+.inspectorEmpty {
+	color: var( --biolink-color-muted );
+	font-size: 13px;
+	padding: var( --biolink-space-lg ) 0;
+	text-align: center;
+}

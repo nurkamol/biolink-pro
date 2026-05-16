@@ -28,6 +28,9 @@ final class Assets implements Bootable
             return;
         }
 
+        // Make the wp.media frame available to block editors (image gallery, video).
+        wp_enqueue_media();
+
         $build_dir  = BIOLINK_PATH . 'assets/admin/';
         $build_url  = BIOLINK_URL . 'assets/admin/';
         $asset_file = $build_dir . 'main.asset.php';

@@ -1,7 +1,8 @@
 import { __ } from '@wordpress/i18n';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { PagesApi, type BioPage } from '../api/client';
+import { PagesApi, type BioBlock, type BioPage } from '../api/client';
+import { PageBuilder } from '../components/builder/PageBuilder';
 import styles from './PageDetail.module.css';
 
 export function PageDetail() {
@@ -116,15 +117,11 @@ export function PageDetail() {
 				</div>
 			</form>
 
-			<aside className={ styles.builderPlaceholder }>
-				<h2>{ __( 'Block builder', 'biolink-pro' ) }</h2>
-				<p>
-					{ __(
-						'The drag-and-drop block builder lands in Phase 3. For now you can manage page metadata above.',
-						'biolink-pro'
-					) }
-				</p>
-			</aside>
+			<PageBuilder
+				pageId={ page.id }
+				blocks={ page.blocks }
+				onChange={ ( next: BioBlock[] ) => setPage( { ...page, blocks: next } ) }
+			/>
 		</section>
 	);
 }

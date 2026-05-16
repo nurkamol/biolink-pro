@@ -4,7 +4,7 @@ Tags: bio link, linktree, link in bio, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.6
 Requires PHP: 8.2
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,11 @@ Yes. Everything runs on your own server. No external account required (unless yo
 PHP 8.2 or higher.
 
 == Changelog ==
+
+= 0.2.0 =
+* Phase 3: drag-and-drop block builder with 8 P1 blocks (link, button, social icons, image gallery, rich text, divider, video, YouTube).
+* Public bio page rendering at `/bio/{slug}` with a mobile-first stylesheet and progressive-enhancement JS for the YouTube facade.
+* Server-side render dispatcher and standalone bio template that bypasses the active theme for fast LCP.
 
 = 0.1.0 =
 * Initial release. Phase 1 (core bootstrap + CPT + custom tables + capabilities) and Phase 2 (REST API + React admin shell + CRUD UI) complete.

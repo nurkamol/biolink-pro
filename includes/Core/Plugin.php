@@ -16,9 +16,20 @@ use BioLinkPro\Api\ChangelogController;
 use BioLinkPro\Api\PagesController;
 use BioLinkPro\Api\RestRouter;
 use BioLinkPro\Blocks\BlockRegistry;
+use BioLinkPro\Blocks\Types\ButtonBlock;
+use BioLinkPro\Blocks\Types\DividerBlock;
+use BioLinkPro\Blocks\Types\ImageGalleryBlock;
+use BioLinkPro\Blocks\Types\LinkBlock;
+use BioLinkPro\Blocks\Types\RichTextBlock;
+use BioLinkPro\Blocks\Types\SocialIconsBlock;
+use BioLinkPro\Blocks\Types\VideoBlock;
+use BioLinkPro\Blocks\Types\YouTubeBlock;
 use BioLinkPro\Database\Migrator;
+use BioLinkPro\Frontend\Assets as FrontendAssets;
+use BioLinkPro\Frontend\PageRenderer;
 use BioLinkPro\Frontend\PostType\BioLinkPagePostType;
 use BioLinkPro\Frontend\Repository\PageRepository;
+use BioLinkPro\Frontend\TemplateLoader;
 use BioLinkPro\Updates\GitHubUpdater;
 
 defined('ABSPATH') || exit;
@@ -136,6 +147,26 @@ final class Plugin
 
         $registry = new BlockRegistry();
         $this->register(BlockRegistry::class, $registry);
+
+        // Register P1 blocks via the same public hook third parties use.
+        add_action(
+            'biolink/blocks/register',
+            static function (BlockRegistry $r): void {
+                $r->register(new LinkBlock());
+                $r->register(new ButtonBlock());
+                $r->register(new SocialIconsBlock());
+                $r->register(new ImageGalleryBlock());
+                $r->register(new RichTextBlock());
+                $r->register(new DividerBlock());
+                $r->register(new VideoBlock());
+                $r->register(new YouTubeBlock());
+            },
+            5
+        );
+
+        $this->register(PageRenderer::class, new PageRenderer($registry, $repository));
+        $this->register(TemplateLoader::class, new TemplateLoader());
+        $this->register(FrontendAssets::class, new FrontendAssets());
 
         $updater = new GitHubUpdater(
             'nurkamol',
