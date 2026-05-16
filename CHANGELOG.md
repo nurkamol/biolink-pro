@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-05-17
+
+### Added
+- **`[biolink]` shortcode** — embed a published bio page inside any post / page / widget. Accepts `id="123"` or `slug="alvasti"`, plus `header="0"` to hide the avatar block. Output is wrapped in `.bio-embed.bio-embed-{id}` with theme CSS scoped to that selector, so each embed is independently themed and can coexist with the host page's styles.
+- **`[biolink_block]` shortcode** — render a single block by uuid. `[biolink_block id="123" uuid="abc-…"]`. Useful for surfacing one product card / donation form / countdown without the whole bio header.
+- **`ThemeEngine::renderStyleBlock( $slug, $settings, $selector )`** — third arg defaults to `body.bio-body` (full-page renders) but accepts any selector. Shortcodes pass `.bio-embed-{post_id}` so each embedded page is independently themed. The background rule omits `background-attachment: fixed` for embeds so they don't escape their container.
+- **Shortcode-aware asset loading** — `Frontend\Shortcodes` enqueues `assets/frontend/biolink.{css,js}` on any post that contains `[biolink]` or `[biolink_block]` (via `has_shortcode`). Bio-page singulars already enqueue via `Assets`, so this only kicks in for embeds living elsewhere.
+- **`.bio-embed` styling** in `assets/frontend/biolink.css` — max-width 560px, centered, subtle elevation, internal gap between blocks.
+
+### Notes
+- Locked blocks inside an embed still gate correctly (the placeholder + inline unlock modal both work in shortcode contexts).
+- Click tracking, schedule windows, and visibility toggles all work in shortcode renders since they're enforced at `PageRenderer` level.
+- Unpublished pages render as nothing on the public site; logged-in editors see an HTML comment explaining why.
+
 ## [2.2.2] - 2026-05-17
 
 ### Changed

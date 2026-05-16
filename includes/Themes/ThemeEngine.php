@@ -88,7 +88,7 @@ final class ThemeEngine implements Bootable
      *
      * @param array<string, mixed> $settings Page-level settings (from _biolink_data.settings).
      */
-    public function renderStyleBlock(string $themeSlug, array $settings = []): string
+    public function renderStyleBlock(string $themeSlug, array $settings = [], string $selector = 'body.bio-body'): string
     {
         $preset = $this->get($themeSlug);
 
@@ -168,18 +168,29 @@ final class ThemeEngine implements Bootable
             $style = (string) $settings['button_style'];
         }
 
-        // Declare ALL theme tokens on body.bio-body so they cascade to .bio-page
-        // and everything inside. (CSS custom properties don't inherit upward —
-        // defining on .bio-page meant body.bio-body's background rule resolved
-        // against the fallback, hence the invisible image bg bug.)
+        // Declare ALL theme tokens on the scoping selector so they cascade to
+        // everything inside. Defaults to body.bio-body for full-page renders.
+        // Shortcodes pass a `.bio-embed-{id}` selector so each embedded page
+        // is independently themed inside the host page.
+        $background_rule = $selector === 'body.bio-body'
+            ? sprintf('%s{background:var(--bio-bg);background-attachment:fixed;color:var(--bio-color-text);font-family:var(--bio-font-stack);}', $selector)
+            : sprintf('%s{background:var(--bio-bg);color:var(--bio-color-text);font-family:var(--bio-font-stack);}', $selector);
+
+        $style_id = $selector === 'body.bio-body'
+            ? 'biolink-theme'
+            : 'biolink-theme-' . substr(md5($selector), 0, 8);
+
         return sprintf(
-            "<style id=\"biolink-theme\">\n%sbody.bio-body{%s%s%s--bio-button-shape:%s;--bio-button-style:%s;}\nbody.bio-body{background:var(--bio-bg);background-attachment:fixed;color:var(--bio-color-text);font-family:var(--bio-font-stack);}\n</style>",
+            "<style id=\"%s\">\n%s%s{%s%s%s--bio-button-shape:%s;--bio-button-style:%s;}\n%s\n</style>",
+            esc_attr($style_id),
             $fontImport,
+            $selector,
             $vars,
             $bg_override,
             $override_rules,
             esc_attr($shape),
-            esc_attr($style)
+            esc_attr($style),
+            $background_rule
         );
     }
 
