@@ -1,5 +1,5 @@
 === BioLink Pro ===
-Contributors: yourname
+Contributors: nurkamol
 Tags: bio link, linktree, link in bio, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.6
@@ -47,5 +47,7 @@ PHP 8.2 or higher.
 
 == Changelog ==
 
-= 0.1.0-dev =
-* Initial scaffold. See docs/ROADMAP.md for the delivery plan.
+= 0.1.0 =
+* Initial release. Phase 1 (core bootstrap + CPT + custom tables + capabilities) and Phase 2 (REST API + React admin shell + CRUD UI) complete.
+* GitHub-based auto-updater wired through the wp-admin Plugins screen.
+* What's New admin page with release history pulled from GitHub Releases.

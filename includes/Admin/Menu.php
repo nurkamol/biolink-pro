@@ -15,8 +15,9 @@ defined('ABSPATH') || exit;
 
 final class Menu implements Bootable
 {
-    public const MENU_SLUG     = 'biolink-pro';
-    public const SETTINGS_SLUG = 'biolink-pro-settings';
+    public const MENU_SLUG      = 'biolink-pro';
+    public const SETTINGS_SLUG  = 'biolink-pro-settings';
+    public const CHANGELOG_SLUG = 'biolink-pro-changelog';
 
     public function boot(): void
     {
@@ -41,6 +42,15 @@ final class Menu implements Bootable
             __('Dashboard', 'biolink-pro'),
             'biolink_manage_pages',
             self::MENU_SLUG,
+            [$this, 'renderApp']
+        );
+
+        add_submenu_page(
+            self::MENU_SLUG,
+            __('What\'s New', 'biolink-pro'),
+            __('What\'s New', 'biolink-pro'),
+            'biolink_manage_pages',
+            self::CHANGELOG_SLUG,
             [$this, 'renderApp']
         );
 
@@ -72,6 +82,7 @@ final class Menu implements Bootable
     {
         return [
             'toplevel_page_' . self::MENU_SLUG,
+            'bio-links_page_' . self::CHANGELOG_SLUG,
             'bio-links_page_' . self::SETTINGS_SLUG,
         ];
     }
@@ -83,6 +94,7 @@ final class Menu implements Bootable
     {
         return str_starts_with($hook, 'toplevel_page_' . self::MENU_SLUG)
             || str_starts_with($hook, 'bio-links_page_' . self::MENU_SLUG)
+            || $hook === 'bio-links_page_' . self::CHANGELOG_SLUG
             || $hook === 'bio-links_page_' . self::SETTINGS_SLUG;
     }
 }

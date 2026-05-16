@@ -5,6 +5,7 @@
 **Current phase:** Phase 2 — REST API + admin shell (in progress)
 **Next phase:** Phase 3 — Block builder
 **Decision (Phase 1):** Admin React app uses **CSS Modules** (not Tailwind).
+**Release channel:** GitHub Releases on `nurkamol/biolink-pro`. Stable tags only (`vX.Y.Z`). Updater = `BioLinkPro\Updates\GitHubUpdater`. See `bin/build-release.sh` for local builds; `.github/workflows/release.yml` runs on tag push.
 **Docs index:** `docs/` (start with `PROMPT.md` then `ARCHITECTURE.md`)
 
 ---

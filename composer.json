@@ -1,8 +1,21 @@
 {
-    "name": "biolink-pro/biolink-pro",
+    "name": "nurkamol/biolink-pro",
     "description": "Self-hosted bio link / link-in-bio builder for WordPress. Drag-and-drop blocks, themes, analytics, QR codes, monetization.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
+    "homepage": "https://github.com/nurkamol/biolink-pro",
+    "authors": [
+        {
+            "name": "Nurkamol Vakhidov",
+            "email": "nurkamol@gmail.com",
+            "homepage": "https://github.com/nurkamol",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/nurkamol/biolink-pro/issues",
+        "source": "https://github.com/nurkamol/biolink-pro"
+    },
     "require": {
         "php": ">=8.2"
     },

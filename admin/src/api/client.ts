@@ -95,6 +95,36 @@ export const PagesApi = {
 	},
 };
 
+export interface Release {
+	tag: string;
+	version: string;
+	name: string;
+	date: string;
+	body_html: string;
+	html_url: string;
+	is_current: boolean;
+	is_newer: boolean;
+	download_url: string | null;
+}
+
+export interface UpdateStatus {
+	current: string;
+	latest: string | null;
+	update_available: boolean;
+	release_url: string | null;
+	download_url: string | null;
+	published_at: string | null;
+}
+
+export const ChangelogApi = {
+	list( force = false ): Promise< Release[] > {
+		return request< Release[] >( `changelog${ force ? '?force=1' : '' }` );
+	},
+	status( force = false ): Promise< UpdateStatus > {
+		return request< UpdateStatus >( `changelog/update-status${ force ? '?force=1' : '' }` );
+	},
+};
+
 export const BlocksApi = {
 	types(): Promise< BioBlockType[] > {
 		return request< BioBlockType[] >( 'blocks' );

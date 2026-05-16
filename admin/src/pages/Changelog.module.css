@@ -1,0 +1,225 @@
+.root {
+	max-width: 860px;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var( --biolink-space-md );
+	margin-bottom: var( --biolink-space-lg );
+}
+
+.subtitle {
+	margin: 0;
+	color: var( --biolink-color-muted );
+	font-size: 13px;
+}
+
+.refresh {
+	padding: 8px 14px;
+	background: var( --biolink-color-bg );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.refresh:hover:not( :disabled ) {
+	border-color: var( --biolink-color-primary );
+	color: var( --biolink-color-primary );
+}
+
+.refresh:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.error {
+	padding: var( --biolink-space-sm ) var( --biolink-space-md );
+	background: #fcf0f1;
+	border: 1px solid var( --biolink-color-danger );
+	color: var( --biolink-color-danger );
+	border-radius: var( --biolink-radius );
+	margin-bottom: var( --biolink-space-md );
+}
+
+.updateBanner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var( --biolink-space-md );
+	padding: var( --biolink-space-md ) var( --biolink-space-lg );
+	background: #e7f3ff;
+	border: 1px solid #b3d4fc;
+	border-radius: var( --biolink-radius );
+	margin-bottom: var( --biolink-space-lg );
+}
+
+.updateBannerLede {
+	margin: 4px 0 0;
+	color: #4a4a4a;
+	font-size: 13px;
+}
+
+.updateActions {
+	display: flex;
+	gap: var( --biolink-space-sm );
+	flex-shrink: 0;
+}
+
+.primaryAction {
+	padding: 8px 14px;
+	background: var( --biolink-color-primary );
+	border: 1px solid var( --biolink-color-primary );
+	border-radius: var( --biolink-radius );
+	color: #fff;
+	text-decoration: none;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.primaryAction:hover {
+	background: var( --biolink-color-primary-hover );
+	color: #fff;
+}
+
+.secondaryAction {
+	padding: 8px 14px;
+	background: var( --biolink-color-bg );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	color: var( --biolink-color-text );
+	text-decoration: none;
+	font-size: 13px;
+}
+
+.secondaryAction:hover {
+	border-color: var( --biolink-color-primary );
+	color: var( --biolink-color-primary );
+}
+
+.empty {
+	padding: var( --biolink-space-lg );
+	text-align: center;
+	color: var( --biolink-color-muted );
+	background: var( --biolink-color-surface );
+	border-radius: var( --biolink-radius );
+}
+
+.list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.item {
+	background: var( --biolink-color-bg );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	padding: var( --biolink-space-lg );
+	margin-bottom: var( --biolink-space-md );
+}
+
+.itemHeader {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var( --biolink-space-md );
+	margin-bottom: var( --biolink-space-sm );
+}
+
+.version {
+	display: flex;
+	align-items: center;
+	gap: var( --biolink-space-sm );
+	font-size: 17px;
+	margin: 0;
+}
+
+.currentBadge,
+.newerBadge {
+	padding: 2px 8px;
+	border-radius: 999px;
+	font-size: 10px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.currentBadge {
+	background: #e8f5e9;
+	color: #1b5e20;
+}
+
+.newerBadge {
+	background: #e7f3ff;
+	color: #0b3d91;
+}
+
+.date {
+	color: var( --biolink-color-muted );
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+.body {
+	font-size: 14px;
+	line-height: 1.55;
+	color: var( --biolink-color-text );
+}
+
+.body h2,
+.body h3,
+.body h4 {
+	margin: var( --biolink-space-md ) 0 var( --biolink-space-sm );
+}
+
+.body p {
+	margin: 0 0 var( --biolink-space-sm );
+}
+
+.body ul {
+	margin: 0 0 var( --biolink-space-sm );
+	padding-left: 1.4em;
+}
+
+.body code {
+	background: var( --biolink-color-surface );
+	padding: 1px 5px;
+	border-radius: 3px;
+	font-size: 0.9em;
+}
+
+.body pre {
+	background: var( --biolink-color-surface );
+	padding: var( --biolink-space-sm ) var( --biolink-space-md );
+	border-radius: var( --biolink-radius );
+	overflow-x: auto;
+}
+
+.body pre code {
+	background: transparent;
+	padding: 0;
+}
+
+.body a {
+	color: var( --biolink-color-primary );
+}
+
+.itemFooter {
+	display: flex;
+	gap: var( --biolink-space-md );
+	margin-top: var( --biolink-space-md );
+	font-size: 13px;
+}
+
+.itemFooter a {
+	color: var( --biolink-color-muted );
+	text-decoration: none;
+}
+
+.itemFooter a:hover {
+	color: var( --biolink-color-primary );
+}

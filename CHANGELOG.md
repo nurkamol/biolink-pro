@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-05-16
+
+### Added — Release infrastructure
+- **GitHub-based update channel**: `BioLinkPro\Updates\GitHubUpdater` hooks `pre_set_site_transient_update_plugins`, `plugins_api`, `upgrader_source_selection`, and `upgrader_process_complete` so wp-admin offers one-click updates from `nurkamol/biolink-pro` GitHub Releases.
+  - Polls `https://api.github.com/repos/nurkamol/biolink-pro/releases/latest` with 12-hour transient cache; drops prereleases.
+  - "View version details" modal on the wp-admin Plugins screen renders the release body as the Changelog tab via `plugins_api`.
+  - Source-dir rename on `upgrader_source_selection` keeps installs landing back at `wp-content/plugins/biolink-pro/`.
+- `BioLinkPro\Updates\MarkdownRenderer` — tiny safe markdown→HTML converter (headings, lists, links, code) used for rendering GitHub release bodies, run through `wp_kses_post`.
+- `BioLinkPro\Api\ChangelogController` — REST endpoints `GET /biolink/v1/changelog` (release list with rendered HTML bodies) and `GET /biolink/v1/changelog/update-status` (current vs latest + download URL).
+- **What's New** admin submenu (BioLinks → What's New) with React `Changelog` page: installed-version badge, "Update available" banner with Go-to-Updates + Download-zip actions, scrollable release history, manual "Check for updates" refresh button.
+- Submenu deep-link handling in `admin/src/main.tsx` — `?page=biolink-pro-changelog` routes to `#/changelog`, same for Settings.
+
+### Added — Release tooling
+- `.distignore` — rsync exclusion patterns for the release zip (drops `tests/`, `docs/`, `admin/src/`, build configs, `node_modules/`, etc.).
+- `bin/build-release.sh` — local script that produces `dist/biolink-pro-vX.Y.Z.zip` with `biolink-pro/` as the top-level dir. Reads version from `plugin.php`, runs `composer install --no-dev` + `npm run build`, then re-installs dev deps.
+- `.github/workflows/release.yml` — on tag push `v*.*.*`, validates the tag matches both `plugin.php` header `Version:` and `BIOLINK_VERSION`, builds the zip, extracts the matching `CHANGELOG.md` section as the release body, and publishes a GitHub Release with the asset attached.
+
 ### Added — Phase 2: REST API + admin shell
 - `BioLinkPro\Api\AbstractController` base + `RestRouter` registering namespace `biolink/v1` on `rest_api_init`.
 - `BioLinkPro\Api\PagesController` — full CRUD on `biolink_page` (`GET /pages`, `GET /pages/{id}`, `POST /pages`, `PATCH /pages/{id}`, `DELETE /pages/{id}`, plus `/duplicate` and `/publish`), each cap-gated against `biolink_manage_pages` / `biolink_publish_pages`.

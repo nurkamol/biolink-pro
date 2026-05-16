@@ -10,6 +10,7 @@ interface AppShellProps {
 const navItems = [
 	{ to: '/', label: __( 'Dashboard', 'biolink-pro' ), end: true },
 	{ to: '/pages', label: __( 'Pages', 'biolink-pro' ), end: false },
+	{ to: '/changelog', label: __( "What's New", 'biolink-pro' ), end: false },
 	{ to: '/settings', label: __( 'Settings', 'biolink-pro' ), end: false },
 ];
 

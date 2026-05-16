@@ -4,6 +4,15 @@
     "description": "BioLink Pro admin React app build pipeline.",
     "private": true,
     "license": "GPL-2.0-or-later",
+    "author": "Nurkamol Vakhidov <nurkamol@gmail.com> (https://github.com/nurkamol)",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/nurkamol/biolink-pro.git"
+    },
+    "bugs": {
+        "url": "https://github.com/nurkamol/biolink-pro/issues"
+    },
+    "homepage": "https://github.com/nurkamol/biolink-pro",
     "scripts": {
         "build": "wp-scripts build",
         "dev": "wp-scripts start",

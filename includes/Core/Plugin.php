@@ -12,12 +12,14 @@ namespace BioLinkPro\Core;
 use BioLinkPro\Admin\Assets as AdminAssets;
 use BioLinkPro\Admin\Menu as AdminMenu;
 use BioLinkPro\Api\BlocksController;
+use BioLinkPro\Api\ChangelogController;
 use BioLinkPro\Api\PagesController;
 use BioLinkPro\Api\RestRouter;
 use BioLinkPro\Blocks\BlockRegistry;
 use BioLinkPro\Database\Migrator;
 use BioLinkPro\Frontend\PostType\BioLinkPagePostType;
 use BioLinkPro\Frontend\Repository\PageRepository;
+use BioLinkPro\Updates\GitHubUpdater;
 
 defined('ABSPATH') || exit;
 
@@ -135,11 +137,20 @@ final class Plugin
         $registry = new BlockRegistry();
         $this->register(BlockRegistry::class, $registry);
 
+        $updater = new GitHubUpdater(
+            'nurkamol',
+            'biolink-pro',
+            BIOLINK_FILE,
+            BIOLINK_VERSION
+        );
+        $this->register(GitHubUpdater::class, $updater);
+
         $this->register(
             RestRouter::class,
             new RestRouter([
                 new PagesController($repository),
                 new BlocksController($registry, $repository),
+                new ChangelogController($updater),
             ])
         );
 

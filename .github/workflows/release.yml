@@ -1,0 +1,120 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build zip + publish GitHub Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version from tag
+        id: ver
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          VERSION="${TAG#v}"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "zip_name=biolink-pro-${TAG}.zip" >> "$GITHUB_OUTPUT"
+
+      - name: Verify plugin.php Version matches tag
+        run: |
+          HEADER_VERSION="$(grep -E '^[[:space:]]*\*[[:space:]]*Version:' plugin.php | head -1 | awk '{print $3}')"
+          DEFINE_VERSION="$(grep -E "^define\('BIOLINK_VERSION'" plugin.php | sed -E "s/.*'BIOLINK_VERSION', *'([^']+)'.*/\1/")"
+          echo "Tag version:    ${{ steps.ver.outputs.version }}"
+          echo "Header Version: $HEADER_VERSION"
+          echo "BIOLINK_VERSION: $DEFINE_VERSION"
+          if [ "$HEADER_VERSION" != "${{ steps.ver.outputs.version }}" ]; then
+            echo "::error::plugin.php header Version ($HEADER_VERSION) does not match tag (${{ steps.ver.outputs.version }})"
+            exit 1
+          fi
+          if [ "$DEFINE_VERSION" != "${{ steps.ver.outputs.version }}" ]; then
+            echo "::error::BIOLINK_VERSION constant ($DEFINE_VERSION) does not match tag (${{ steps.ver.outputs.version }})"
+            exit 1
+          fi
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+          coverage: none
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install production Composer deps
+        run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+
+      - name: Install npm deps
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci --no-audit --no-fund
+          else
+            npm install --no-audit --no-fund
+          fi
+
+      - name: Build admin bundle
+        run: npm run build
+
+      - name: Stage release files
+        run: |
+          mkdir -p build/biolink-pro dist
+          rsync -a --exclude-from=.distignore ./ build/biolink-pro/
+
+      - name: Create release zip
+        run: |
+          cd build
+          zip -rq "../dist/${{ steps.ver.outputs.zip_name }}" biolink-pro
+          cd ..
+          ls -lh dist/
+
+      - name: Extract CHANGELOG section for this version
+        id: notes
+        run: |
+          VERSION="${{ steps.ver.outputs.version }}"
+          # Pull the section between `## [VERSION]` (or `## VERSION`) and the next `## ` heading.
+          BODY="$(awk -v v="$VERSION" '
+            BEGIN { found=0 }
+            /^## / {
+              if (found) exit
+              if ($0 ~ "\\[" v "\\]" || $0 ~ "\\b" v "\\b") { found=1; next }
+            }
+            found { print }
+          ' CHANGELOG.md)"
+
+          if [ -z "$BODY" ]; then
+            BODY="Release ${{ steps.ver.outputs.tag }}. See CHANGELOG.md for details."
+          fi
+
+          {
+            echo "body<<EOF"
+            echo "$BODY"
+            echo ""
+            echo "---"
+            echo "**Install:** download \`${{ steps.ver.outputs.zip_name }}\` below and upload via Plugins → Add New → Upload Plugin."
+            echo "**Auto-update:** if you already have BioLink Pro installed, this release will appear under Dashboard → Updates within ~12 hours (or click \"Check Again\" to force a refresh)."
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: BioLink Pro ${{ steps.ver.outputs.tag }}
+          tag_name: ${{ steps.ver.outputs.tag }}
+          body: ${{ steps.notes.outputs.body }}
+          draft: false
+          prerelease: false
+          files: dist/${{ steps.ver.outputs.zip_name }}

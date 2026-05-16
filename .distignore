@@ -1,0 +1,50 @@
+# Files and directories excluded from the release zip.
+# Used by bin/build-release.sh (and the GitHub Actions release workflow).
+# Patterns are passed to `rsync --exclude-from=` — leading `/` means repo-root anchored.
+
+/.git/
+/.github/
+/.gitignore
+/.gitattributes
+/.editorconfig
+/.idea/
+/.vscode/
+/.DS_Store
+
+# Node / TS / build tooling
+/node_modules/
+/admin/src/
+/package.json
+/package-lock.json
+/yarn.lock
+/webpack.config.js
+/tsconfig.json
+/.eslintrc.json
+/.eslintrc.js
+/.eslintignore
+/.stylelintrc.json
+/.babelrc
+/.prettierrc
+
+# PHP dev tooling
+/composer.lock
+/phpcs.xml
+/phpunit.xml.dist
+/.phpunit.cache/
+/.phpcs-cache
+/tests/
+
+# Reference / docs (kept in the GitHub repo, not shipped in the zip)
+/docs/
+/README.md
+
+# Build/output dirs (artifacts only)
+/build/
+/dist/
+/bin/
+
+# Local-only fixtures
+.env
+.env.local
+*.log
+*.zip
