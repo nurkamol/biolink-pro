@@ -45,20 +45,7 @@ Click events have the highest write volume. Strategy:
 2. Single-event cron (`wp_schedule_single_event(time(), …)`) → batched into background
 3. For sites > 1M clicks/month: optional queue adapter (Redis list) — Phase 10
 
-Reads aggregated daily into a `biolink_analytics_daily` rollup table (built in Phase 5):
-
-```sql
-CREATE TABLE {$prefix}biolink_analytics_daily (
-    page_id   BIGINT UNSIGNED NOT NULL,
-    date      DATE NOT NULL,
-    views     INT UNSIGNED NOT NULL DEFAULT 0,
-    clicks    INT UNSIGNED NOT NULL DEFAULT 0,
-    unique_v  INT UNSIGNED NOT NULL DEFAULT 0,
-    PRIMARY KEY (page_id, date)
-);
-```
-
-Dashboards query rollup; live counts only for "today".
+**Note (as of v2.3.1):** the rollup table is **not yet built**. `Analytics\Reporter` queries `wp_biolink_clicks` + `wp_biolink_views` directly with date-range indexes. Performant up to ~100k events per page; a `biolink_analytics_daily` rollup is a v2.4+ candidate when single-table queries start to hurt.
 
 ## Asset pipeline
 
@@ -67,14 +54,14 @@ Dashboards query rollup; live counts only for "today".
 - Tree-shaken admin bundle; vendor chunk split
 - SVG icons inlined (no icon font)
 
-## Cron + background jobs
+## Cron + background jobs (as of v2.3.1)
 
-| Job | Frequency | Purpose |
-|---|---|---|
-| `biolink/rollup_daily` | daily 02:00 site time | aggregate analytics |
-| `biolink/prune_events` | daily 03:00 | delete events beyond retention |
-| `biolink/prune_rate_limits` | hourly | clean expired buckets |
-| `biolink/refresh_qr_cache` | weekly | regenerate stale QR files |
+| Job | Frequency | Source | Purpose |
+|---|---|---|---|
+| `biolink_pro_daily_prune` | daily | `Cron\Pruner` | Delete click/view events past retention + expired rate-limit buckets. Fires `do_action('biolink/cron/pruned', $retention)`. |
+| `biolink_pro_gh_release_latest` (transient) | 12h | `Updates\GitHubUpdater` | Cached GitHub release lookup, busted on force-refresh. |
+
+The rollup + QR-refresh jobs from earlier drafts of this doc were never built. Add them when you actually need them.
 
 For sites without reliable `wp-cron`, settings page shows a CLI command to run via system cron:
 ```

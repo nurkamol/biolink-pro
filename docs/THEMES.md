@@ -2,132 +2,94 @@
 
 ## Concept
 
-A **theme** is a named set of CSS custom property values + an optional stylesheet override. Themes are stored as PHP arrays (built-ins) or DB rows (user-created). Rendering injects `--bio-*` variables into a `<style>` tag on the bio page root.
+A **theme** is a `BioLinkPro\Themes\Preset` value object — an immutable bundle of CSS custom property values plus a background descriptor. `ThemeEngine::renderStyleBlock()` injects them as a `<style>` tag scoped to a selector (default `body.bio-body`, or `.bio-embed-{id}` for shortcode embeds).
+
+Themes are PHP-defined and registered at boot. User-created themes via REST is on the roadmap (`/themes` POST endpoint declared but not built).
 
 ## Built-in presets
 
-| Slug | Description |
+8 presets, defined in `ThemeEngine::registerBuiltins()`:
+
+| Slug | Vibe |
 |---|---|
-| `minimal` | Clean white, subtle shadows, system font |
-| `dark` | OLED dark, high contrast, rounded corners |
-| `neon` | Black bg, neon pink/cyan accents, glow effects |
-| `creator` | Warm gradient, large avatar, bold sans |
-| `glassmorphism` | Frosted glass cards over gradient bg |
-| `professional` | Muted blues, serif headings, structured |
-| `retro` | 80s gradient, monospace, scanline overlay |
-| `gradient` | Animated gradient bg, white text, rounded |
-| `monochrome` | Black-on-white, no color, max readability |
+| `mono` | Clean white / black, system sans, default starter |
+| `glass` | Frosted glass cards over soft gradient |
+| `forest` | Earthy green, serif headings |
+| `midnight` | OLED dark, high contrast |
+| `neon` | Black bg, neon accent, mono font |
+| `sunset` | Warm orange→pink gradient |
+| `aurora` | Cool purple→teal gradient |
+| `sky` | Soft pastel blue |
 
-## Token catalog
+Each is wired in PHP via `new Preset(slug, label, description, background, textColor, mutedColor, accentColor, accentText, surfaceColor, borderColor, fontStack, headingFontStack, buttonShape, buttonStyle, shadow, swatch, googleFonts?)`.
 
-Every theme defines these tokens (any can be overridden by user):
+## Token catalog (what `Preset::toCssVars()` emits)
+
+Every preset emits these custom properties:
 
 ```css
-:root {
-  /* Surfaces */
-  --bio-color-bg: #ffffff;
-  --bio-color-surface: #f8f8f8;
-  --bio-color-surface-elevated: #ffffff;
-
-  /* Text */
-  --bio-color-text: #111111;
-  --bio-color-text-muted: #666666;
-  --bio-color-link: #0066ff;
-
-  /* Brand */
-  --bio-color-primary: #0066ff;
-  --bio-color-primary-contrast: #ffffff;
-  --bio-color-accent: #ff3366;
-
-  /* Borders + shadow */
-  --bio-color-border: rgba(0,0,0,0.08);
-  --bio-shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-  --bio-shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-  --bio-shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
-
-  /* Radius */
-  --bio-radius-sm: 6px;
-  --bio-radius-md: 12px;
-  --bio-radius-lg: 20px;
-  --bio-radius-full: 9999px;
-
-  /* Spacing scale (4px base) */
-  --bio-space-1: 4px;
-  --bio-space-2: 8px;
-  --bio-space-3: 12px;
-  --bio-space-4: 16px;
-  --bio-space-6: 24px;
-  --bio-space-8: 32px;
-  --bio-space-12: 48px;
-  --bio-space-16: 64px;
-
-  /* Typography */
-  --bio-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
-  --bio-font-serif: ui-serif, Georgia, serif;
-  --bio-font-mono: ui-monospace, "SF Mono", Menlo, monospace;
-  --bio-font-display: var(--bio-font-sans);
-  --bio-text-base: 16px;
-  --bio-text-scale: 1.2;
-
-  /* Motion */
-  --bio-motion-fast: 120ms;
-  --bio-motion-normal: 200ms;
-  --bio-motion-slow: 400ms;
-  --bio-easing: cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* Layout */
-  --bio-container-width: 480px;
-  --bio-page-padding: var(--bio-space-6);
-}
+--bio-bg                  /* color | linear-gradient(…) | url(…) */
+--bio-color-text          /* body copy */
+--bio-color-muted         /* secondary text */
+--bio-color-accent        /* primary action color */
+--bio-color-accent-text   /* foreground on the accent surface */
+--bio-color-surface       /* card / link background */
+--bio-color-border        /* hairline borders */
+--bio-font-stack          /* CSS font-family for body */
+--bio-heading-stack       /* CSS font-family for headings */
+--bio-button-radius       /* derived from buttonShape: 999 / 14 / 4 px */
+--bio-shadow              /* card shadow */
+--bio-button-shape        /* pill | rounded | square (raw token) */
+--bio-button-style        /* filled | outline | glass (raw token) */
 ```
 
-## Theme definition shape (PHP)
+Per-page settings can override `--bio-color-accent`, `--bio-color-accent-text`, `--bio-button-radius`, and the background — applied as a narrow override layer on the same selector. See `Themes\ThemeEngine::renderStyleBlock()`.
+
+## Per-page background override
+
+Stored in `block.settings`:
+
+| `bg_type` | Extra fields |
+|---|---|
+| `theme` | none — uses preset's background |
+| `color` | `bg_color` (hex) |
+| `gradient` | `bg_gradient_from`, `bg_gradient_to`, `bg_gradient_angle` (deg) |
+| `image` | `bg_image_id` (attachment), `bg_overlay` (0–100, dark scrim %) |
+
+`ThemeEngine::renderStyleBlock()` reads these and emits a `--bio-bg:…` override rule alongside the preset tokens.
+
+## Scoped rendering (shortcodes)
 
 ```php
-return [
-    'slug'        => 'neon',
-    'label'       => __('Neon', 'biolink-pro'),
-    'preview'     => BIOLINK_URL . 'themes/previews/neon.jpg',
-    'tokens'      => [
-        '--bio-color-bg'      => '#0a0a0a',
-        '--bio-color-text'    => '#ffffff',
-        '--bio-color-primary' => '#ff10f0',
-        '--bio-color-accent'  => '#00fff0',
-        '--bio-radius-md'     => '4px',
-        '--bio-font-display'  => '"VT323", monospace',
-    ],
-    'stylesheet'  => 'themes/neon/neon.css',  // optional extra CSS
-    'fonts'       => [
-        ['family' => 'VT323', 'source' => 'google', 'weights' => [400]],
-    ],
-    'backgrounds' => [
-        'type' => 'gradient-animated',
-        'value' => 'linear-gradient(45deg, #ff10f0, #00fff0)',
-    ],
-];
+$style = $themes->renderStyleBlock(
+    themeSlug: 'sunset',
+    settings:  $page_settings,
+    selector:  '.bio-embed-42'
+);
 ```
 
-## Custom CSS
+Wrap your rendered markup in a matching `.bio-embed-42` container. Background rule omits `background-attachment: fixed` for embeds so they don't escape the wrapper. Used by `Frontend\Shortcodes` for `[biolink]` / `[biolink_block]` to keep multiple embeds independently themed inside the same host page.
 
-User-provided CSS is allowed but sanitized through `Themes\CssSanitizer`:
-- Rejects `@import`, `expression()`, `javascript:` URLs
-- Strips comments containing CDATA or HTML
-- Whitelists property names against a known-safe list
-- Scopes all rules to `.bio-page` to prevent admin/global bleed
+## Google Fonts
 
-## Background options
+Presets that need a Google Font set `googleFonts: ['Family Name' => '300;400;700']`. `renderStyleBlock` emits an `@import url('https://fonts.googleapis.com/css2?…&display=swap')` at the top of the inline style block.
 
-| Type | Value |
-|---|---|
-| `solid` | `#hex` |
-| `gradient` | `linear-gradient(…)` |
-| `gradient-animated` | gradient + CSS keyframes |
-| `image` | attachment ID (uses `srcset` + WebP) |
-| `video` | attachment ID (muted, autoplay, `playsinline`, lazy) |
+## Performance notes
 
-## Performance rules
+- Theme CSS is **inlined** in `<head>` for first paint (no extra request).
+- The body / wrapper sets `background-attachment: fixed` for fullpage renders so the background doesn't jump on scroll; embeds skip this.
+- `prefers-reduced-motion` honored for the highlight pulse animation in `assets/frontend/biolink.css`.
 
-- Theme CSS is **inlined** in `<head>` for above-the-fold paint (<8 KB compressed budget)
-- Custom fonts use `font-display: swap` and preconnect
-- Animated backgrounds respect `prefers-reduced-motion`
-- Background videos load only after `requestIdleCallback`
+## Custom themes (not yet implemented)
+
+A custom theme REST surface (`POST /themes`, `PATCH /themes/{slug}`, `DELETE`) is declared in `API.md` but the controller is not built. Filing under v2.4+ candidates in `ROADMAP.md`. For now, extend `ThemeEngine::registerBuiltins()` or hook `biolink/themes/register`:
+
+```php
+add_action( 'biolink/themes/register', function ( $themes ) {
+    $themes->register( new \BioLinkPro\Themes\Preset(
+        slug:        'my-theme',
+        label:       __( 'My Theme', 'my-plugin' ),
+        // …16 more positional or named args
+    ) );
+} );
+```

@@ -15,7 +15,7 @@ A production WordPress plugin for self-hosted bio link pages — Linktree-class 
 - **6 starter templates** covering Creator, Agency, Musician, Restaurant, Coach, Personal
 
 ### Theming
-- **8 built-in presets** mixing minimal (Mono, Linen, Velvet) and vibrant (Sunset, Aurora, Neon, Glass, Paper)
+- **8 built-in presets** — Mono, Glass, Forest, Midnight, Neon, Sunset, Aurora, Sky
 - **Card-based Design page** — Theme, Header, Wallpaper, Buttons (style + corner radius + accent + text color), Text, Footer
 - **Per-page overrides** for accent color, button shape, button style, background (theme / color / gradient / image + overlay)
 - **Live phone-frame preview** in the builder, auto-refreshes 350ms after every save

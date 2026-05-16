@@ -95,15 +95,32 @@ Bot traffic (matching common UA patterns) is silently dropped before counting.
 
 ## Secrets at rest
 
-- API keys stored in `wp_options` encrypted with `Core\Crypto`
-- Encryption uses `sodium_crypto_secretbox` with a key derived from `AUTH_KEY` (already in `wp-config.php`)
-- Keys never echoed back to admin UI — show last 4 chars only
+- Integration credentials (Stripe secret key, PayPal client+secret, Mailchimp API key, MailerLite token, Resend API key, OpenAI key) stored in `wp_options` under `biolink_integrations`, encrypted via `Core\Crypto`.
+- Encryption uses `sodium_crypto_secretbox` with a key derived from `AUTH_KEY` (already required to be set in `wp-config.php`).
+- On activation, `Core\Activator` checks `sodium_*` functions are available; emits an admin notice + falls back to plaintext storage with a visible warning if not.
+- Keys never echoed back to the admin UI — `SettingsController` returns masked values (last 4 chars only).
 
 ## Embed sandbox
 
 - iframes for YouTube/TikTok/Spotify get `sandbox="allow-scripts allow-same-origin allow-popups"`
 - `referrerpolicy="strict-origin-when-cross-origin"`
 - `loading="lazy"` always
+
+## Passcode-gated content (v2.2+)
+
+Per-block passcodes secure individual links / embeds / donation forms without an account system.
+
+- **Hashing** — admin sends `_passcode` plaintext via REST; `Api\BlocksController::hashPasscode()` runs `wp_hash_password()` (phpass) immediately and stores the result as `_passcode_hash`. The plaintext is never persisted to the database and never returned to the admin. Sending `_passcode: ""` clears the lock.
+- **Verification** — `wp_check_password($submitted, $hash, 0)` (the third arg pins it to phpass without legacy MD5 fallback).
+- **Unlock cookie** — `biolink_unlocked` (HttpOnly, SameSite=Lax, Secure when SSL, 30-day TTL). Value is a comma-separated list of `wp_hash('biolink_unlock|{page_id}|{uuid}')` tokens. Tokens are HMAC-signed with `wp_salt()` so visitors can't forge unlock state by editing the cookie. Capped at 50 tokens per cookie to limit growth.
+- **Cookie injection** — `UnlockHandler::rememberUnlockForRequest()` writes the cookie *and* updates `$_COOKIE` in the current request so `PageRenderer` sees the unlocked state when rendering the response HTML for the inline unlock modal swap.
+- **No rate limit yet** — passcode brute-force protection is on the v2.4 candidate list. Threat model today is casual sharing, not determined attackers; passcode lengths up to the user.
+
+## Update channel security
+
+- `Updates\GitHubUpdater` only fetches from the configured GitHub repo (`nurkamol/biolink-pro`), no remote-configurable URL.
+- In-app updater (`POST /changelog/install-update`) requires the `update_plugins` capability (which only admins have by default).
+- Release zip is downloaded via `Plugin_Upgrader`, which validates the zip + uses `upgrader_source_selection` to rewrite the GitHub-style folder name. Same flow as wp.org plugins — no bypass of WP's signature/integrity checks.
 
 ## Disabled in production
 

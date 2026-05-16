@@ -122,8 +122,11 @@ CREATE TABLE {$prefix}biolink_rate_limit (
 |---|---|---|
 | `biolink_db_version` | string | Schema version, drives migrations |
 | `biolink_settings` | array | Global settings JSON |
-| `biolink_integrations` | array | Provider credentials (encrypted at rest) |
-| `biolink_onboarding_complete` | bool | Show wizard until true |
+| `biolink_integrations` | array | Provider credentials (encrypted via `Core\Crypto` / `sodium_crypto_secretbox`, key derived from `AUTH_KEY`) |
+| `biolink_onboarding_complete` | bool | Show first-activation wizard until true |
+| `biolink_paypal_log` | array | Last 200 captured PayPal orders (audit trail for the return-handler flow) |
+| `biolink_stripe_log` | array | Last 200 completed Stripe Checkout sessions |
+| `biolink_pro_gh_release_latest` | transient (12h) | Cached GitHub Releases API response for the in-app updater |
 
 ---
 
