@@ -4,7 +4,7 @@ import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import { PagesApi, type BioBlock, type BioPage, type BioPageSettings } from '../../api/client';
 import { LivePreview } from '../../components/builder/LivePreview';
 import { QrDialog } from '../../components/builder/QrDialog';
-import { IconCheck, IconCopy, IconExternal, IconQr } from '../../components/ui/Icons';
+import { IconCheck, IconCode, IconCopy, IconExternal, IconQr } from '../../components/ui/Icons';
 import { BuilderContext, type BuilderContextValue } from './BuilderContext';
 import styles from './BuilderShell.module.css';
 
@@ -21,6 +21,7 @@ export function BuilderShell() {
 	const [ error, setError ] = useState< string | null >( null );
 	const [ previewTick, setPreviewTick ] = useState( 0 );
 	const [ qrOpen, setQrOpen ] = useState( false );
+	const [ copiedShortcode, setCopiedShortcode ] = useState( false );
 
 	const settingsTimer = useRef< number | null >( null );
 	const seoTimer = useRef< number | null >( null );
@@ -189,6 +190,26 @@ export function BuilderShell() {
 							{ __( 'Publish', 'biolink-pro' ) }
 						</button>
 					) }
+					<button
+						type="button"
+						className={ `${ styles.iconBtn } ${ copiedShortcode ? styles.iconBtnSuccess : '' }` }
+						onClick={ () => {
+							const code = `[biolink id="${ page.id }"]`;
+							void navigator.clipboard?.writeText( code );
+							setCopiedShortcode( true );
+							window.setTimeout( () => setCopiedShortcode( false ), 1800 );
+						} }
+						title={ copiedShortcode
+							? __( 'Copied!', 'biolink-pro' )
+							: sprintf(
+									/* translators: %s: shortcode */
+									__( 'Copy shortcode: %s', 'biolink-pro' ),
+									`[biolink id="${ page.id }"]`
+							  ) }
+						aria-label={ __( 'Copy shortcode', 'biolink-pro' ) }
+					>
+						{ copiedShortcode ? <IconCheck size={ 16 } /> : <IconCode size={ 16 } /> }
+					</button>
 					<button
 						type="button"
 						className={ styles.iconBtn }

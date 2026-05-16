@@ -3,7 +3,7 @@
  * Plugin Name:       BioLink Pro
  * Plugin URI:        https://github.com/nurkamol/biolink-pro
  * Description:       Self-hosted bio link / link-in-bio builder. Drag-and-drop blocks, themes, analytics, QR codes, monetization.
- * Version:           2.3.0
+ * Version:           2.3.1
  * Requires at least: 6.5
  * Requires PHP:      8.2
  * Author:            Nurkamol Vakhidov
@@ -24,7 +24,7 @@ if (defined('BIOLINK_VERSION')) {
     return;
 }
 
-define('BIOLINK_VERSION', '2.3.0');
+define('BIOLINK_VERSION', '2.3.1');
 define('BIOLINK_DB_VERSION', '1');
 define('BIOLINK_FILE', __FILE__);
 define('BIOLINK_PATH', plugin_dir_path(__FILE__));

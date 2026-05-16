@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.3.1] - 2026-05-17
+
+### Added
+- **Copy-shortcode button** in the builder top bar (`</>` icon, sits between Publish and the QR launcher). Click → `[biolink id="N"]` is copied to the clipboard, the icon flips to a green check + "Copied!" tooltip for 1.8s. Tooltip on hover shows the exact shortcode so you can preview before clicking.
+
 ## [2.3.0] - 2026-05-17
 
 ### Added

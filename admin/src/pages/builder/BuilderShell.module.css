@@ -88,6 +88,12 @@
 	background: var( --biolink-color-surface );
 }
 
+.iconBtnSuccess {
+	background: #e3fbe8 !important;
+	border-color: #66bb6a !important;
+	color: #1b5e20 !important;
+}
+
 .primaryBtn {
 	padding: 8px 16px;
 	background: var( --biolink-color-text );
