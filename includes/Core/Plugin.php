@@ -11,6 +11,7 @@ namespace BioLinkPro\Core;
 
 use BioLinkPro\Admin\Assets as AdminAssets;
 use BioLinkPro\Admin\Menu as AdminMenu;
+use BioLinkPro\Admin\PluginActionLinks;
 use BioLinkPro\Api\BlocksController;
 use BioLinkPro\Api\ChangelogController;
 use BioLinkPro\Api\PagesController;
@@ -187,6 +188,7 @@ final class Plugin
 
         $this->register(AdminMenu::class, new AdminMenu());
         $this->register(AdminAssets::class, new AdminAssets());
+        $this->register(PluginActionLinks::class, new PluginActionLinks());
     }
 
     /**
