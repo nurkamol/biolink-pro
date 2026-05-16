@@ -51,10 +51,27 @@ final class LinkBlock extends AbstractBlock
         // Preserve the meta keys (_thumbnail_id etc.) the validator would strip.
         $thumbnail_id  = isset($data['_thumbnail_id']) ? (int) $data['_thumbnail_id'] : 0;
         $passcode_hash = isset($data['_passcode_hash']) ? (string) $data['_passcode_hash'] : '';
+        $variants      = isset($data['_variants']) && is_array($data['_variants']) ? $data['_variants'] : [];
 
         $data = FieldValidator::validate($this->schema(), $data);
         if (empty($data['label']) || empty($data['url'])) {
             return '';
+        }
+
+        // A/B variant pick — deterministic per visitor for a given (page, block).
+        $variant_key = '';
+        $page_id_for_seed = (int) (get_the_ID() ?: 0);
+        if ($variants !== [] && $uuid !== null && $page_id_for_seed > 0) {
+            $variant = self::pickVariant($variants, $uuid, $page_id_for_seed);
+            if ($variant !== null) {
+                $variant_key = isset($variant['key']) ? sanitize_key((string) $variant['key']) : '';
+                if (isset($variant['label']) && is_string($variant['label']) && $variant['label'] !== '') {
+                    $data['label'] = $variant['label'];
+                }
+                if (isset($variant['url']) && is_string($variant['url']) && $variant['url'] !== '') {
+                    $data['url'] = $variant['url'];
+                }
+            }
         }
 
         $url = $data['url'];
@@ -74,15 +91,21 @@ final class LinkBlock extends AbstractBlock
                 get_permalink($page_id)
             );
         } else {
+            // Reset $page_id for the click-tracking block below using $page_id_for_seed
+            // since we may have already established it for variant picking.
+            $page_id = $page_id_for_seed > 0 ? $page_id_for_seed : $page_id;
             // Route through /click/{id} when we have a stable link_id so analytics
             // can record the click + apply UTM at redirect time.
-            $page_id = (int) (get_the_ID() ?: 0);
             if ($page_id > 0 && $uuid !== null) {
                 $sync = Plugin::instance()->get(LinkSync::class);
                 if ($sync instanceof LinkSync) {
                     $link_id = $sync->linkIdFor($page_id, $uuid);
                     if ($link_id > 0) {
-                        $url = rest_url('biolink/v1/click/' . $link_id);
+                        $click_url = rest_url('biolink/v1/click/' . $link_id);
+                        if ($variant_key !== '') {
+                            $click_url = add_query_arg(['v' => $variant_key], $click_url);
+                        }
+                        $url = $click_url;
                     }
                 }
             } elseif (! empty($data['utm'])) {
@@ -138,6 +161,41 @@ final class LinkBlock extends AbstractBlock
             esc_html($data['label']),
             $lock_indicator
         );
+    }
+
+    /**
+     * Pick an A/B variant deterministically based on (visitor IP + page + uuid)
+     * so the same visitor sees the same variant on repeat visits.
+     *
+     * @param list<array<string, mixed>> $variants
+     * @return array<string, mixed>|null
+     */
+    private static function pickVariant(array $variants, string $uuid, int $page_id): ?array
+    {
+        $valid = [];
+        $total = 0;
+        foreach ($variants as $v) {
+            if (! is_array($v)) {
+                continue;
+            }
+            $weight = max(1, (int) ($v['weight'] ?? 50));
+            $valid[] = ['v' => $v, 'w' => $weight];
+            $total  += $weight;
+        }
+        if ($valid === []) {
+            return null;
+        }
+        $ip   = isset($_SERVER['REMOTE_ADDR']) ? (string) wp_unslash($_SERVER['REMOTE_ADDR']) : '0';
+        $seed = $ip . '|' . $page_id . '|' . $uuid;
+        $bucket = hexdec(substr(md5($seed), 0, 8)) % $total;
+        $running = 0;
+        foreach ($valid as $entry) {
+            $running += $entry['w'];
+            if ($bucket < $running) {
+                return $entry['v'];
+            }
+        }
+        return $valid[array_key_last($valid)]['v'];
     }
 
     /**

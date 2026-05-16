@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-05-17
+
+### Added
+- **A/B testing on link blocks** — disclosure section in `LinkEditor` lets you add N variants (key, label, URL, weight). `LinkBlock::pickVariant()` picks deterministically per visitor (hash of IP + page + uuid) so the same visitor sees the same variant on repeat visits. Variant key is appended to the click URL (`?v=A`) and recorded in a new `variant_key` column on `wp_biolink_clicks`. Equal weights work out of the box; weighted splits supported.
+- **Passcode-unlock analytics** — new `wp_biolink_unlocks` table, written from a single `biolink/link/unlocked` action subscriber so both the inline modal (`UnlockController`) and the no-JS template_redirect (`UnlockHandler`) feed the same metric. New REST `GET /analytics/pages/{id}/unlocks` returns per-block counts. Lock chip in admin shows a small purple badge with the lifetime unlock count.
+- **Real Shop page UI** — replaces the v2.0 stub. Filtered grid view of `product_card` blocks on the current page with thumbnail, name, price, on/off toggle, inline `ProductCardEditor`, and "+ Add product" that appends a new product_card block directly (skipping the centralized Add modal). Products still live in the same `blocks` array — no schema split.
+- **Per-page Custom CSS** — new "Advanced" card on the Design page. Textarea writes to `settings.custom_css`; `ThemeEngine` emits it in a separate `<style id="biolink-theme-…-custom">` block right after the theme block. `</style>` sequences are stripped to prevent escape; users target `.bio-page`, `.bio-block--{type}`, `.bio-header`, etc.
+- **Pages list search + status filter** — debounced search input + Published/Draft dropdown at the top of the Pages list, wired through `PagesApi.list({ search, status })`.
+- **Migrations 006 + 007** — `biolink_unlocks` table and `variant_key` column on `biolink_clicks`. `BIOLINK_DB_VERSION` bumped to `2`.
+
+### Changed
+- **`Reporter::unlockCounts( $page_id )`** returns `{ uuid: count }` map. Light query — no date-range arg since unlock counts are lifetime today.
+- **Click rate limit** unchanged (10/IP/link/60s); A/B variant key passes through cleanly so rate limiting still applies per link regardless of variant.
+
+### Notes
+- Per-variant click breakdown isn't surfaced in the admin yet — column is being written, dashboard card is a v2.5 candidate. Until then, query directly: `SELECT variant_key, COUNT(*) FROM wp_biolink_clicks WHERE link_id = X GROUP BY variant_key`.
+- Custom CSS is trusted input from `biolink_manage_pages` users — same model as the WordPress theme editor. No CSS parser, no per-property whitelist; the `</style>` strip is the only safety net.
+
 ## [2.3.1] - 2026-05-17
 
 ### Added

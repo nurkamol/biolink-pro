@@ -42,6 +42,7 @@ final class Tracker
     {
         global $wpdb;
         $table = $wpdb->prefix . 'biolink_clicks';
+        $variant = (string) ($event['variant_key'] ?? '');
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery
         $wpdb->insert(
             $table,
@@ -58,6 +59,7 @@ final class Tracker
                 'utm_source'    => substr((string) ($event['utm_source'] ?? ''), 0, 64) ?: null,
                 'utm_medium'    => substr((string) ($event['utm_medium'] ?? ''), 0, 64) ?: null,
                 'utm_campaign'  => substr((string) ($event['utm_campaign'] ?? ''), 0, 64) ?: null,
+                'variant_key'   => $variant !== '' ? substr($variant, 0, 32) : null,
             ]
         );
     }
@@ -88,6 +90,31 @@ final class Tracker
     public static function hashIp(string $ip): string
     {
         return hash('sha256', $ip . '|' . wp_salt('secure_auth'));
+    }
+
+    /**
+     * Record a passcode-unlock event. Called via the `biolink/link/unlocked`
+     * action so PageRenderer / UnlockController / UnlockHandler share the
+     * same write path.
+     */
+    public function persistUnlock(string $uuid, int $page_id): void
+    {
+        if ($uuid === '' || $page_id <= 0) {
+            return;
+        }
+        global $wpdb;
+        $table = $wpdb->prefix . 'biolink_unlocks';
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? (string) wp_unslash($_SERVER['REMOTE_ADDR']) : '';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $wpdb->insert(
+            $table,
+            [
+                'page_id'     => $page_id,
+                'block_uuid'  => $uuid,
+                'unlocked_at' => current_time('mysql', true),
+                'ip_hash'     => $ip !== '' ? self::hashIp($ip) : null,
+            ]
+        );
     }
 
     /**

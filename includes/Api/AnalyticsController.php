@@ -54,6 +54,23 @@ final class AnalyticsController extends AbstractController
                 'args'                => $args,
             ]
         );
+
+        // Per-block unlock counts (no date range — lifetime tally).
+        register_rest_route(
+            self::NAMESPACE,
+            '/analytics/pages/(?P<id>\d+)/unlocks',
+            [
+                'methods'             => WP_REST_Server::READABLE,
+                'callback'            => [$this, 'unlocks'],
+                'permission_callback' => $this->requireCap('biolink_manage_pages'),
+                'args'                => ['id' => ['type' => 'integer', 'sanitize_callback' => 'absint']],
+            ]
+        );
+    }
+
+    public function unlocks(WP_REST_Request $request): WP_REST_Response
+    {
+        return $this->ok($this->reporter->unlockCounts((int) $request['id']));
     }
 
     /**

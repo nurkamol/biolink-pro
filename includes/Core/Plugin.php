@@ -237,6 +237,12 @@ final class Plugin
         $this->register(Reporter::class, $reporter);
         $this->register(Pruner::class, new Pruner());
 
+        // Wire passcode unlocks → analytics. Fires from both UnlockHandler
+        // (no-JS path) and UnlockController (inline modal path).
+        add_action('biolink/link/unlocked', static function (string $uuid, int $page_id) use ($tracker): void {
+            $tracker->persistUnlock($uuid, $page_id);
+        }, 10, 2);
+
         // Phase 6 — QR + SEO
         $this->register(QrGenerator::class, new QrGenerator());
         $this->register(MetaTags::class, new MetaTags($repository, $themes));

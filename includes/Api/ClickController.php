@@ -33,6 +33,7 @@ final class ClickController extends AbstractController
                 'args'                => [
                     'id'  => ['type' => 'integer', 'sanitize_callback' => 'absint'],
                     'ref' => ['type' => 'string', 'default' => '', 'sanitize_callback' => 'sanitize_text_field'],
+                    'v'   => ['type' => 'string', 'default' => '', 'sanitize_callback' => 'sanitize_text_field'],
                 ],
             ]
         );
@@ -77,6 +78,7 @@ final class ClickController extends AbstractController
                     'utm_source'    => (string) $request->get_param('utm_source'),
                     'utm_medium'    => (string) $request->get_param('utm_medium'),
                     'utm_campaign'  => (string) $request->get_param('utm_campaign'),
+                    'variant_key'   => (string) $request->get_param('v'),
                 ];
                 /**
                  * Short-circuit click recording. Return false to skip.

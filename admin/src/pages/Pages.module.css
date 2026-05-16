@@ -47,6 +47,17 @@
 	margin-bottom: var( --biolink-space-md );
 }
 
+.filterBar {
+	display: flex;
+	gap: var( --biolink-space-sm );
+	margin-bottom: var( --biolink-space-md );
+	align-items: center;
+}
+
+.filterBar select {
+	flex: 0 0 180px;
+}
+
 .input {
 	flex: 1;
 	padding: 8px 12px;

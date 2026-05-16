@@ -160,6 +160,30 @@ final class Reporter
     }
 
     /**
+     * Per-block unlock counts for a page, keyed by block uuid.
+     *
+     * @return array<string, int>
+     */
+    public function unlockCounts(int $page_id): array
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . 'biolink_unlocks';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $rows = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT block_uuid, COUNT(*) AS c FROM {$table} WHERE page_id = %d GROUP BY block_uuid",
+                $page_id
+            ),
+            ARRAY_A
+        );
+        $out = [];
+        foreach ((array) $rows as $row) {
+            $out[(string) $row['block_uuid']] = (int) $row['c'];
+        }
+        return $out;
+    }
+
+    /**
      * @return list<array{bucket:string, count:int}>
      */
     private function groupedCount(string $table_suffix, string $column, string $date_col, int $page_id, string $from, string $to): array

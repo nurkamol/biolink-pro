@@ -302,6 +302,24 @@
 	color: var( --biolink-color-text-muted );
 	font-family: inherit;
 	transition: background 120ms, color 120ms;
+	position: relative;
+}
+
+.chipBadge {
+	position: absolute;
+	top: -2px;
+	right: -2px;
+	min-width: 14px;
+	height: 14px;
+	padding: 0 4px;
+	background: var( --biolink-color-primary );
+	color: #fff;
+	border-radius: 999px;
+	font-size: 9px;
+	font-weight: 700;
+	display: grid;
+	place-items: center;
+	line-height: 1;
 }
 
 .actionBtn:hover:not( :disabled ) {

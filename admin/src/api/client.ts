@@ -30,6 +30,7 @@ export interface BioPageSettings {
 	accent_text_color?: string;
 	button_shape?: '' | 'pill' | 'rounded' | 'square';
 	button_style?: '' | 'filled' | 'outline' | 'glass';
+	custom_css?: string;
 	[ key: string ]: unknown;
 }
 
@@ -128,6 +129,9 @@ export const AnalyticsApi = {
 	},
 	referrers( id: number, r: AnalyticsRange = {} ): Promise< AnalyticsBucket[] > {
 		return request< AnalyticsBucket[] >( `${ NS }/analytics/pages/${ id }/referrers${ range( r ) }` );
+	},
+	unlocks( id: number ): Promise< Record< string, number > > {
+		return request< Record< string, number > >( `${ NS }/analytics/pages/${ id }/unlocks` );
 	},
 	exportCsvUrl( id: number, r: AnalyticsRange = {} ): string {
 		return `${ window.BIOLINK_PRO.restBase }analytics/pages/${ id }/export.csv${ range( r ) }${ range( r ) ? '&' : '?' }_wpnonce=${ encodeURIComponent( window.BIOLINK_PRO.restNonce ) }`;

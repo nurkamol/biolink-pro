@@ -6,7 +6,7 @@ import { ThemePicker } from '../../components/builder/ThemePicker';
 import { useBuilder } from './BuilderContext';
 import styles from './DesignPage.module.css';
 
-type Section = 'theme' | 'header' | 'wallpaper' | 'buttons' | 'text' | 'footer';
+type Section = 'theme' | 'header' | 'wallpaper' | 'buttons' | 'text' | 'footer' | 'advanced';
 
 export function DesignPage() {
 	const { page, setSettings, setTheme } = useBuilder();
@@ -171,6 +171,39 @@ export function DesignPage() {
 							) }
 						</div>
 					</div>
+				</div>
+			</DesignCard>
+
+			<DesignCard
+				id="advanced"
+				title={ __( 'Advanced', 'biolink-pro' ) }
+				summary={
+					( settings.custom_css ?? '' ).length > 0
+						? `${ ( settings.custom_css as string ).length } chars custom CSS`
+						: __( 'No custom CSS', 'biolink-pro' )
+				}
+				open={ open === 'advanced' }
+				onToggle={ () => toggle( 'advanced' ) }
+			>
+				<div className={ styles.section }>
+					<label className={ styles.rowLabel } htmlFor="biolink-custom-css">
+						{ __( 'Per-page custom CSS', 'biolink-pro' ) }
+					</label>
+					<textarea
+						id="biolink-custom-css"
+						className={ styles.cssArea }
+						value={ ( settings.custom_css as string ) ?? '' }
+						onChange={ ( e ) => setSettings( { ...settings, custom_css: e.target.value } ) }
+						placeholder={ '/* Target .bio-page, .bio-block--link, .bio-header, etc. */\n.bio-block--link {\n  font-weight: 700;\n}' }
+						spellCheck={ false }
+						rows={ 12 }
+					/>
+					<p className={ styles.disabledHint }>
+						{ __(
+							'Applied only to this bio page. Target the .bio-page wrapper, .bio-block--{type} classes, .bio-header, etc. </style> sequences are stripped for safety.',
+							'biolink-pro'
+						) }
+					</p>
 				</div>
 			</DesignCard>
 		</div>

@@ -16,7 +16,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { BlocksApi, type BioBlock } from '../../api/client';
+import { AnalyticsApi, BlocksApi, type BioBlock } from '../../api/client';
 import { findBlockMeta, type BlockData } from '../../blocks';
 import { AddBlockModal } from '../../components/ui/AddBlockModal';
 import {
@@ -52,6 +52,13 @@ export function LinksPage() {
 	const [ showAdd, setShowAdd ] = useState( false );
 	const [ editHeader, setEditHeader ] = useState( false );
 	const [ avatarUrl, setAvatarUrl ] = useState< string | null >( null );
+	const [ unlockCounts, setUnlockCounts ] = useState< Record< string, number > >( {} );
+
+	useEffect( () => {
+		void AnalyticsApi.unlocks( page.id )
+			.then( setUnlockCounts )
+			.catch( () => setUnlockCounts( {} ) );
+	}, [ page.id ] );
 
 	const sensors = useSensors(
 		useSensor( PointerSensor, { activationConstraint: { distance: 4 } } ),
@@ -237,6 +244,7 @@ export function LinksPage() {
 									block={ block }
 									selected={ selectedUuid === block.uuid }
 									saving={ saving === block.uuid }
+									unlockCount={ unlockCounts[ block.uuid ] ?? 0 }
 									onSelect={ () =>
 										setSelectedUuid( ( prev ) =>
 											prev === block.uuid ? null : block.uuid
@@ -261,6 +269,7 @@ interface LinkRowProps {
 	block: BioBlock;
 	selected: boolean;
 	saving: boolean;
+	unlockCount: number;
 	onSelect: () => void;
 	onUpdate: ( uuid: string, next: BlockData ) => void;
 	onDelete: ( uuid: string ) => void;
@@ -269,7 +278,7 @@ interface LinkRowProps {
 
 type PopoverKind = null | 'schedule' | 'lock';
 
-function LinkRow( { block, selected, saving, onSelect, onUpdate, onDelete, onPatchMeta }: LinkRowProps ) {
+function LinkRow( { block, selected, saving, unlockCount, onSelect, onUpdate, onDelete, onPatchMeta }: LinkRowProps ) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable( {
 		id: block.uuid,
 	} );
@@ -425,10 +434,20 @@ function LinkRow( { block, selected, saving, onSelect, onUpdate, onDelete, onPat
 					type="button"
 					className={ `${ styles.actionBtn } ${ locked ? styles.actionBtnActive : '' }` }
 					onClick={ () => setPopover( ( v ) => ( v === 'lock' ? null : 'lock' ) ) }
-					title={ locked ? __( 'Edit passcode', 'biolink-pro' ) : __( 'Lock with passcode', 'biolink-pro' ) }
+					title={
+						locked
+							? __( 'Edit passcode', 'biolink-pro' ) +
+							  ( unlockCount > 0
+									? ` · ${ unlockCount } ${ __( 'unlocks', 'biolink-pro' ) }`
+									: '' )
+							: __( 'Lock with passcode', 'biolink-pro' )
+					}
 					aria-label={ __( 'Lock', 'biolink-pro' ) }
 				>
 					<IconLock />
+					{ locked && unlockCount > 0 && (
+						<span className={ styles.chipBadge }>{ unlockCount }</span>
+					) }
 				</button>
 				<span className={ styles.actionChip }>
 					{ saving ? __( 'Saving…', 'biolink-pro' ) : '' }

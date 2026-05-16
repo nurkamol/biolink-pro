@@ -67,6 +67,7 @@ final class PageRepository
             'accent_text_color'  => '',
             'button_shape'       => '',
             'button_style'       => '',
+            'custom_css'         => '',
         ];
     }
 

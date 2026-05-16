@@ -12,6 +12,8 @@ export function Pages() {
 	const [ newTitle, setNewTitle ] = useState( '' );
 	const [ selected, setSelected ] = useState< Set< number > >( new Set() );
 	const [ busyBulk, setBusyBulk ] = useState( false );
+	const [ search, setSearch ] = useState( '' );
+	const [ statusFilter, setStatusFilter ] = useState< 'any' | 'publish' | 'draft' >( 'any' );
 	const fileInputRef = useRef< HTMLInputElement | null >( null );
 	const navigate = useNavigate();
 
@@ -19,7 +21,11 @@ export function Pages() {
 		setLoading( true );
 		setError( null );
 		try {
-			const result = await PagesApi.list( { perPage: 100 } );
+			const result = await PagesApi.list( {
+				perPage: 100,
+				search: search.trim() || undefined,
+				status: statusFilter === 'any' ? undefined : statusFilter,
+			} );
 			setPages( result );
 			setSelected( new Set() );
 		} catch ( err ) {
@@ -27,10 +33,11 @@ export function Pages() {
 		} finally {
 			setLoading( false );
 		}
-	}, [] );
+	}, [ search, statusFilter ] );
 
 	useEffect( () => {
-		void reload();
+		const t = window.setTimeout( () => void reload(), 200 );
+		return () => window.clearTimeout( t );
 	}, [ reload ] );
 
 	const handleCreate = async ( event: React.FormEvent< HTMLFormElement > ) => {
@@ -172,6 +179,40 @@ export function Pages() {
 					{ creating ? __( 'Creating…', 'biolink-pro' ) : __( 'Add page', 'biolink-pro' ) }
 				</button>
 			</form>
+
+			<div className={ styles.filterBar }>
+				<input
+					type="search"
+					placeholder={ __( 'Search by title…', 'biolink-pro' ) }
+					value={ search }
+					onChange={ ( e ) => setSearch( e.target.value ) }
+					className={ styles.input }
+				/>
+				<select
+					value={ statusFilter }
+					onChange={ ( e ) =>
+						setStatusFilter( e.target.value as 'any' | 'publish' | 'draft' )
+					}
+					className={ styles.input }
+					aria-label={ __( 'Filter by status', 'biolink-pro' ) }
+				>
+					<option value="any">{ __( 'All statuses', 'biolink-pro' ) }</option>
+					<option value="publish">{ __( 'Published', 'biolink-pro' ) }</option>
+					<option value="draft">{ __( 'Draft', 'biolink-pro' ) }</option>
+				</select>
+				{ ( search || statusFilter !== 'any' ) && (
+					<button
+						type="button"
+						className={ styles.linkAction }
+						onClick={ () => {
+							setSearch( '' );
+							setStatusFilter( 'any' );
+						} }
+					>
+						{ __( 'Clear filters', 'biolink-pro' ) }
+					</button>
+				) }
+			</div>
 
 			{ error && (
 				<div className={ styles.error } role="alert">

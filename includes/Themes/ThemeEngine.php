@@ -180,7 +180,7 @@ final class ThemeEngine implements Bootable
             ? 'biolink-theme'
             : 'biolink-theme-' . substr(md5($selector), 0, 8);
 
-        return sprintf(
+        $base = sprintf(
             "<style id=\"%s\">\n%s%s{%s%s%s--bio-button-shape:%s;--bio-button-style:%s;}\n%s\n</style>",
             esc_attr($style_id),
             $fontImport,
@@ -192,6 +192,21 @@ final class ThemeEngine implements Bootable
             esc_attr($style),
             $background_rule
         );
+
+        // Per-page custom CSS, appended in its own style block. Trusted input
+        // from `biolink_manage_pages` users — we strip </style> to prevent
+        // breaking out, but otherwise emit verbatim.
+        $custom_css = isset($settings['custom_css']) ? (string) $settings['custom_css'] : '';
+        if ($custom_css !== '') {
+            $clean = preg_replace('#</\s*style#i', '<\\/style', $custom_css) ?? '';
+            $base .= sprintf(
+                "\n<style id=\"%s-custom\">\n%s\n</style>",
+                esc_attr($style_id),
+                $clean
+            );
+        }
+
+        return $base;
     }
 
     private function sanitizeCssColor(string $value): string

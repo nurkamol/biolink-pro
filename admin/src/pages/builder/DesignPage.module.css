@@ -225,3 +225,23 @@
 	font-size: 12px;
 	margin-top: 6px;
 }
+
+.cssArea {
+	width: 100%;
+	padding: 12px 14px;
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 13px;
+	line-height: 1.5;
+	background: var( --biolink-color-surface );
+	color: var( --biolink-color-text );
+	resize: vertical;
+	min-height: 200px;
+}
+
+.cssArea:focus {
+	outline: 2px solid var( --biolink-color-primary );
+	outline-offset: 2px;
+	background: var( --biolink-color-bg );
+}

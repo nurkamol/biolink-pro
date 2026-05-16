@@ -4,7 +4,7 @@ Tags: link in bio, linktree, bio link, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.9
 Requires PHP: 8.2
-Stable tag: 2.3.1
+Stable tag: 2.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,13 @@ GitHub: https://github.com/nurkamol/biolink-pro/issues
 First stable release. Production-ready: 18 block types, 8 themes, analytics, QR codes, SEO coexistence with Rank Math / Yoast, JSON portability, encrypted integrations vault, AI suggestions, onboarding wizard, accessibility pass. Tested on WordPress 6.9 and PHP 8.2 / 8.3.
 
 == Changelog ==
+
+= 2.4.0 =
+* A/B testing on Link blocks — add 2+ variants (label, URL, weight) per link. Visitors are deterministically split by IP; each click records which variant was active in a new `variant_key` column.
+* Passcode-unlock analytics — every successful unlock is recorded in a new `wp_biolink_unlocks` table. Lock chip in admin shows lifetime unlock count.
+* Real Shop page UI — replaces the v2.0 stub. Grid of product cards with inline edit, on/off toggle, +Add product.
+* Per-page Custom CSS — new Advanced card on the Design page. Textarea writes to `settings.custom_css`, emitted in its own `<style>` block on the public bio page.
+* Pages list search + Published/Draft status filter.
 
 = 2.3.1 =
 * Copy-shortcode button in the builder top bar. Click `</>` to copy `[biolink id="N"]` to your clipboard.
