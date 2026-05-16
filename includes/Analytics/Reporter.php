@@ -160,6 +160,44 @@ final class Reporter
     }
 
     /**
+     * Per-variant click counts per link on a page.
+     *
+     * @return list<array{link_id:int, label:string, variant_key:string, clicks:int}>
+     */
+    public function variantBreakdown(int $page_id, string $from, string $to): array
+    {
+        global $wpdb;
+        $clicks = $wpdb->prefix . 'biolink_clicks';
+        $links  = $wpdb->prefix . 'biolink_links';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $rows = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT c.link_id AS link_id, l.label AS label, c.variant_key AS variant_key, COUNT(*) AS clicks
+                 FROM {$clicks} c LEFT JOIN {$links} l ON l.id = c.link_id
+                 WHERE c.page_id = %d
+                   AND c.variant_key IS NOT NULL AND c.variant_key <> ''
+                   AND c.clicked_at BETWEEN %s AND %s
+                 GROUP BY c.link_id, c.variant_key
+                 ORDER BY c.link_id, c.variant_key",
+                $page_id,
+                $from,
+                $to
+            ),
+            ARRAY_A
+        );
+        $out = [];
+        foreach ((array) $rows as $row) {
+            $out[] = [
+                'link_id'     => (int) $row['link_id'],
+                'label'       => (string) ($row['label'] ?? ''),
+                'variant_key' => (string) $row['variant_key'],
+                'clicks'      => (int) $row['clicks'],
+            ];
+        }
+        return $out;
+    }
+
+    /**
      * Per-block unlock counts for a page, keyed by block uuid.
      *
      * @return array<string, int>

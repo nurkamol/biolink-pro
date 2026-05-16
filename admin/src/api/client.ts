@@ -98,6 +98,67 @@ export interface AnalyticsBucket {
 	count: number;
 }
 
+export interface AnalyticsVariant {
+	link_id: number;
+	label: string;
+	variant_key: string;
+	clicks: number;
+}
+
+export interface PageRevision {
+	id: number;
+	saved_at: string;
+	saved_by: number;
+	author: string;
+}
+
+export const RevisionsApi = {
+	list( pageId: number ): Promise< PageRevision[] > {
+		return request< PageRevision[] >( `${ NS }/pages/${ pageId }/revisions` );
+	},
+	restore(
+		pageId: number,
+		revId: number
+	): Promise< { restored: boolean; rev_id: number; page: unknown } > {
+		return request( `${ NS }/pages/${ pageId }/revisions/${ revId }/restore`, { method: 'POST' } );
+	},
+};
+
+export interface AudienceSubmission {
+	id: number;
+	page_id: number;
+	block_uuid: string;
+	kind: 'newsletter' | 'contact' | string;
+	email: string;
+	name: string;
+	message: string;
+	created_at: string;
+}
+
+export interface AudienceList {
+	items: AudienceSubmission[];
+	total: number;
+	page: number;
+	per_page: number;
+}
+
+export const AudienceApi = {
+	list( params: { page?: number; perPage?: number; kind?: string } = {} ): Promise< AudienceList > {
+		const q = new URLSearchParams();
+		if ( params.page ) q.set( 'page', String( params.page ) );
+		if ( params.perPage ) q.set( 'per_page', String( params.perPage ) );
+		if ( params.kind ) q.set( 'kind', params.kind );
+		const qs = q.toString();
+		return request< AudienceList >( `${ NS }/audience${ qs ? `?${ qs }` : '' }` );
+	},
+	exportUrl( kind = '' ): string {
+		const qs = new URLSearchParams();
+		if ( kind ) qs.set( 'kind', kind );
+		qs.set( '_wpnonce', window.BIOLINK_PRO.restNonce );
+		return `${ window.BIOLINK_PRO.restBase }audience/export.csv?${ qs.toString() }`;
+	},
+};
+
 export interface AnalyticsRange {
 	from?: string;
 	to?: string;
@@ -132,6 +193,9 @@ export const AnalyticsApi = {
 	},
 	unlocks( id: number ): Promise< Record< string, number > > {
 		return request< Record< string, number > >( `${ NS }/analytics/pages/${ id }/unlocks` );
+	},
+	variants( id: number, r: AnalyticsRange = {} ): Promise< AnalyticsVariant[] > {
+		return request< AnalyticsVariant[] >( `${ NS }/analytics/pages/${ id }/variants${ range( r ) }` );
 	},
 	exportCsvUrl( id: number, r: AnalyticsRange = {} ): string {
 		return `${ window.BIOLINK_PRO.restBase }analytics/pages/${ id }/export.csv${ range( r ) }${ range( r ) ? '&' : '?' }_wpnonce=${ encodeURIComponent( window.BIOLINK_PRO.restNonce ) }`;

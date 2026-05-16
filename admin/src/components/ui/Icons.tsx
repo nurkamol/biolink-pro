@@ -179,6 +179,16 @@ export function IconPencil( { size = 14, className }: IconProps = {} ) {
 	);
 }
 
+export function IconHistory( { size = 16, className }: IconProps = {} ) {
+	return (
+		<svg { ...svgProps( size ) } className={ className } aria-hidden>
+			<path d="M3 12a9 9 0 109-9 9.7 9.7 0 00-7 3" />
+			<path d="M3 4v5h5" />
+			<path d="M12 8v4l3 2" />
+		</svg>
+	);
+}
+
 export function IconCode( { size = 16, className }: IconProps = {} ) {
 	return (
 		<svg { ...svgProps( size ) } className={ className } aria-hidden>

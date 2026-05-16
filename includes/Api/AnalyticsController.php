@@ -66,11 +66,29 @@ final class AnalyticsController extends AbstractController
                 'args'                => ['id' => ['type' => 'integer', 'sanitize_callback' => 'absint']],
             ]
         );
+
+        // Per-variant click breakdown (A/B testing).
+        register_rest_route(
+            self::NAMESPACE,
+            '/analytics/pages/(?P<id>\d+)/variants',
+            [
+                'methods'             => WP_REST_Server::READABLE,
+                'callback'            => [$this, 'variants'],
+                'permission_callback' => $cap,
+                'args'                => $args,
+            ]
+        );
     }
 
     public function unlocks(WP_REST_Request $request): WP_REST_Response
     {
         return $this->ok($this->reporter->unlockCounts((int) $request['id']));
+    }
+
+    public function variants(WP_REST_Request $request): WP_REST_Response
+    {
+        $r = $this->range($request);
+        return $this->ok($this->reporter->variantBreakdown((int) $request['id'], $r['from'], $r['to']));
     }
 
     /**

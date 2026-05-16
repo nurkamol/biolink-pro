@@ -7,6 +7,7 @@ import {
 	type AnalyticsLink,
 	type AnalyticsPoint,
 	type AnalyticsSummary,
+	type AnalyticsVariant,
 	type BioPage,
 } from '../api/client';
 import styles from './Analytics.module.css';
@@ -36,6 +37,7 @@ export function Analytics( { initialPageId }: AnalyticsProps = {} ) {
 	const [ devices, setDevices ] = useState< AnalyticsBucket[] >( [] );
 	const [ geo, setGeo ] = useState< AnalyticsBucket[] >( [] );
 	const [ referrers, setReferrers ] = useState< AnalyticsBucket[] >( [] );
+	const [ variants, setVariants ] = useState< AnalyticsVariant[] >( [] );
 	const [ loading, setLoading ] = useState( false );
 
 	useEffect( () => {
@@ -56,13 +58,14 @@ export function Analytics( { initialPageId }: AnalyticsProps = {} ) {
 		if ( ! pageId ) return;
 		setLoading( true );
 		try {
-			const [ s, t, l, d, g, r ] = await Promise.all( [
+			const [ s, t, l, d, g, r, v ] = await Promise.all( [
 				AnalyticsApi.summary( pageId, range ),
 				AnalyticsApi.timeseries( pageId, range ),
 				AnalyticsApi.links( pageId, range ),
 				AnalyticsApi.devices( pageId, range ),
 				AnalyticsApi.geo( pageId, range ),
 				AnalyticsApi.referrers( pageId, range ),
+				AnalyticsApi.variants( pageId, range ),
 			] );
 			setSummary( s );
 			setSeries( t );
@@ -70,6 +73,7 @@ export function Analytics( { initialPageId }: AnalyticsProps = {} ) {
 			setDevices( d );
 			setGeo( g );
 			setReferrers( r );
+			setVariants( v );
 		} finally {
 			setLoading( false );
 		}
@@ -192,9 +196,55 @@ export function Analytics( { initialPageId }: AnalyticsProps = {} ) {
 						<BucketCard label={ __( 'Countries', 'biolink-pro' ) } items={ geo } />
 						<BucketCard label={ __( 'Referrers', 'biolink-pro' ) } items={ referrers } />
 					</div>
+
+					{ variants.length > 0 && <VariantsCard variants={ variants } /> }
 				</>
 			) }
 		</section>
+	);
+}
+
+function VariantsCard( { variants }: { variants: AnalyticsVariant[] } ) {
+	// Group by link_id so we can show % of total per variant within a link.
+	const byLink: Record< number, { label: string; rows: AnalyticsVariant[]; total: number } > = {};
+	for ( const v of variants ) {
+		if ( ! byLink[ v.link_id ] ) {
+			byLink[ v.link_id ] = { label: v.label, rows: [], total: 0 };
+		}
+		byLink[ v.link_id ].rows.push( v );
+		byLink[ v.link_id ].total += v.clicks;
+	}
+
+	return (
+		<div className={ styles.tableCard }>
+			<h2>🧪 { __( 'A/B test results', 'biolink-pro' ) }</h2>
+			<table className={ styles.table }>
+				<thead>
+					<tr>
+						<th>{ __( 'Link', 'biolink-pro' ) }</th>
+						<th>{ __( 'Variant', 'biolink-pro' ) }</th>
+						<th className={ styles.numCol }>{ __( 'Clicks', 'biolink-pro' ) }</th>
+						<th className={ styles.numCol }>{ __( 'Share', 'biolink-pro' ) }</th>
+					</tr>
+				</thead>
+				<tbody>
+					{ Object.entries( byLink ).flatMap( ( [ id, group ] ) =>
+						group.rows.map( ( v, i ) => (
+							<tr key={ `${ id }-${ v.variant_key }` }>
+								{ i === 0 ? (
+									<td rowSpan={ group.rows.length }>{ group.label || `#${ id }` }</td>
+								) : null }
+								<td className={ styles.mono }>{ v.variant_key }</td>
+								<td className={ styles.numCol }>{ v.clicks }</td>
+								<td className={ styles.numCol }>
+									{ group.total > 0 ? Math.round( ( v.clicks / group.total ) * 100 ) : 0 }%
+								</td>
+							</tr>
+						) )
+					) }
+				</tbody>
+			</table>
+		</div>
 	);
 }
 

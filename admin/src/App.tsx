@@ -2,6 +2,7 @@ import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { OnboardingOverlay } from './components/onboarding/OnboardingOverlay';
 import { AppShell } from './components/ui/AppShell';
 import { Analytics } from './pages/Analytics';
+import { Audience } from './pages/Audience';
 import { Changelog } from './pages/Changelog';
 import { Dashboard } from './pages/Dashboard';
 import { Pages } from './pages/Pages';
@@ -28,6 +29,7 @@ export function App() {
 						<Route path="insights" element={ <InsightsPage /> } />
 					</Route>
 					<Route path="/analytics" element={ <Analytics /> } />
+					<Route path="/audience" element={ <Audience /> } />
 					<Route path="/changelog" element={ <Changelog /> } />
 					<Route path="/settings" element={ <Settings /> } />
 					<Route path="*" element={ <Navigate to="/" replace /> } />

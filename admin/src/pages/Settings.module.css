@@ -1,5 +1,7 @@
 .root {
 	max-width: 720px;
+	margin: 0 auto;
+	padding: 24px 28px 60px;
 }
 
 .groupTitle {

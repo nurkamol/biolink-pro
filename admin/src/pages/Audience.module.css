@@ -1,0 +1,172 @@
+.root {
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 24px 28px 60px;
+}
+
+.header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: var( --biolink-space-md );
+	margin-bottom: var( --biolink-space-lg );
+	flex-wrap: wrap;
+}
+
+.subtitle {
+	color: var( --biolink-color-text-muted );
+	font-size: 14px;
+	margin: 4px 0 0;
+}
+
+.controls {
+	display: flex;
+	align-items: center;
+	gap: var( --biolink-space-sm );
+}
+
+.tabs {
+	display: flex;
+	gap: 4px;
+	background: var( --biolink-color-surface );
+	padding: 4px;
+	border-radius: var( --biolink-radius-pill );
+}
+
+.tab {
+	padding: 6px 14px;
+	background: none;
+	border: 0;
+	border-radius: var( --biolink-radius-pill );
+	font: inherit;
+	font-size: 13px;
+	font-weight: 500;
+	cursor: pointer;
+	color: var( --biolink-color-text-muted );
+}
+
+.tab:hover {
+	color: var( --biolink-color-text );
+}
+
+.tabActive {
+	background: var( --biolink-color-bg );
+	color: var( --biolink-color-text );
+	font-weight: 600;
+	box-shadow: 0 1px 2px rgba( 0, 0, 0, 0.05 );
+}
+
+.exportBtn {
+	padding: 8px 14px;
+	background: var( --biolink-color-text );
+	color: #fff;
+	border: 0;
+	border-radius: var( --biolink-radius-pill );
+	font-size: 13px;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.exportBtn:hover {
+	background: #1d1d1d;
+	color: #fff;
+}
+
+.count {
+	color: var( --biolink-color-text-muted );
+	font-size: 13px;
+	margin: 0 0 12px;
+}
+
+.empty {
+	padding: 48px 24px;
+	text-align: center;
+	color: var( --biolink-color-text-muted );
+	background: var( --biolink-color-bg );
+	border: 1px dashed var( --biolink-color-border-strong );
+	border-radius: var( --biolink-radius-lg );
+}
+
+.error {
+	padding: 8px 14px;
+	background: #fdecea;
+	border: 1px solid var( --biolink-color-danger );
+	color: var( --biolink-color-danger );
+	border-radius: var( --biolink-radius );
+	font-size: 13px;
+	margin-bottom: var( --biolink-space-md );
+}
+
+.table {
+	width: 100%;
+	border-collapse: collapse;
+	background: var( --biolink-color-bg );
+	border-radius: var( --biolink-radius-lg );
+	overflow: hidden;
+	box-shadow: 0 1px 2px rgba( 0, 0, 0, 0.04 );
+}
+
+.table thead th {
+	text-align: left;
+	padding: 12px 16px;
+	font-size: 12px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var( --biolink-color-text-muted );
+	background: var( --biolink-color-surface );
+	border-bottom: 1px solid var( --biolink-color-border );
+}
+
+.table tbody td {
+	padding: 14px 16px;
+	font-size: 13px;
+	border-bottom: 1px solid var( --biolink-color-border );
+	vertical-align: top;
+}
+
+.table tbody tr:last-child td {
+	border-bottom: 0;
+}
+
+.dateCell {
+	white-space: nowrap;
+	color: var( --biolink-color-text-muted );
+}
+
+.mono {
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 12px;
+}
+
+.mono a {
+	color: var( --biolink-color-primary );
+}
+
+.message {
+	max-width: 360px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.badge {
+	display: inline-block;
+	padding: 2px 10px;
+	background: var( --biolink-color-surface-2 );
+	color: var( --biolink-color-text-muted );
+	border-radius: var( --biolink-radius-pill );
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.kind_newsletter {
+	background: #e7f3ff;
+	color: #1546a3;
+}
+
+.kind_contact {
+	background: #e8f5e9;
+	color: #1b5e20;
+}

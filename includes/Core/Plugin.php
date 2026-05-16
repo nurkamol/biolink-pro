@@ -11,6 +11,7 @@ namespace BioLinkPro\Core;
 
 use BioLinkPro\Admin\Assets as AdminAssets;
 use BioLinkPro\Admin\Menu as AdminMenu;
+use BioLinkPro\Audience\SubmissionRepository;
 use BioLinkPro\Admin\PluginActionLinks;
 use BioLinkPro\Ai\AiController;
 use BioLinkPro\Ai\OpenAiProvider;
@@ -31,6 +32,8 @@ use BioLinkPro\Api\RestRouter;
 use BioLinkPro\Api\SettingsController;
 use BioLinkPro\Api\TemplatesController;
 use BioLinkPro\Api\ThemesController;
+use BioLinkPro\Api\AudienceController;
+use BioLinkPro\Api\RevisionsController;
 use BioLinkPro\Api\TrackController;
 use BioLinkPro\Api\UnlockController;
 use BioLinkPro\Api\WebhookController;
@@ -66,6 +69,7 @@ use BioLinkPro\Frontend\Assets as FrontendAssets;
 use BioLinkPro\Frontend\PageRenderer;
 use BioLinkPro\Frontend\PostType\BioLinkPagePostType;
 use BioLinkPro\Frontend\Repository\PageRepository;
+use BioLinkPro\Frontend\Repository\RevisionRepository;
 use BioLinkPro\Frontend\Shortcodes;
 use BioLinkPro\Frontend\TemplateLoader;
 use BioLinkPro\Frontend\UnlockHandler;
@@ -243,6 +247,17 @@ final class Plugin
             $tracker->persistUnlock($uuid, $page_id);
         }, 10, 2);
 
+        // Page revisions. Snapshot on every save; keep last 20 per page.
+        $revisions = new RevisionRepository();
+        $this->register(RevisionRepository::class, $revisions);
+        add_action('biolink/page/saved', static function (int $page_id, array $data) use ($revisions): void {
+            $revisions->record($page_id, $data);
+        }, 10, 2);
+
+        // Audience — persist newsletter + contact submissions for the audience tab.
+        $submissions = new SubmissionRepository();
+        $this->register(SubmissionRepository::class, $submissions);
+
         // Phase 6 — QR + SEO
         $this->register(QrGenerator::class, new QrGenerator());
         $this->register(MetaTags::class, new MetaTags($repository, $themes));
@@ -298,6 +313,8 @@ final class Plugin
                 new PortabilityController($repository),
                 new CheckoutController($stripe, $paypal),
                 new UnlockController($repository, $this->get(PageRenderer::class)),
+                new RevisionsController($repository, $revisions),
+                new AudienceController($submissions),
             ])
         );
 

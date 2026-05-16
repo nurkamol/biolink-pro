@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-05-17
+
+### Added
+- **Per-variant click breakdown UI** — closes the v2.4 A/B testing loop. `Reporter::variantBreakdown()` + `GET /analytics/pages/{id}/variants` return rows grouped by `(link_id, variant_key)` with click counts. Analytics page now renders a "🧪 A/B test results" card showing per-variant click count + share % when any variant data exists for the selected window.
+- **Schedule rollup drawer** — new clock icon in the BuilderShell top bar opens a right-side drawer listing every block with `_start_at` or `_end_at` set. Status dot (active / upcoming / expired / open-ended), sorted by date, derived from the in-memory page blocks — no extra REST call.
+- **Page revisions** — every save snapshots the full `_biolink_data` JSON into the new `wp_biolink_revisions` table (last 20 per page, older ones pruned). New `GET /pages/{id}/revisions` + `POST /pages/{id}/revisions/{rev_id}/restore`. History icon in the BuilderShell top bar opens the Revisions drawer with relative timestamps, author names, and a Restore button per row (current revision is read-only).
+- **Audience tab + CSV export** — new top-level `/audience` route with All / Newsletter / Contact tabs. Newsletter and contact-form submissions are persisted into the new `wp_biolink_submissions` table via subscribers on `biolink/newsletter/subscribed` + `biolink/contact/submitted` actions. `Export CSV` downloads the current filter as a UTF-8 CSV with up to 10,000 rows. Audience nav entry restored to the sidebar.
+- **OG image generator** — `Seo\OgImageGenerator` renders a 1200×630 PNG per bio page using GD (no font dep, uses GD's built-in pixel font; brand-font upload is a v2.6 candidate). Caches to `uploads/biolink-pro/og/{page_id}-{hash}.png`, hash includes headline/handle/subheadline/avatar_id/theme so it regenerates on relevant changes. `Seo\MetaTags` falls back to the generated card when no custom `og_image_id` is set.
+- **New `biolink/page/saved` action** — fires after `PageRepository::saveData()` succeeds. Used internally by the revisions subscriber; available to third parties.
+
+### Changed
+- **Padding on top-level admin pages** — `Dashboard`, `Pages`, `Analytics`, `Audience`, `Changelog`, `Settings` all get `padding: 24px 28px 60px; margin: 0 auto;` so they breathe away from the sidebar like Links and Design do.
+
+### DB
+- `BIOLINK_DB_VERSION` bumped to `4`. New migrations 008 (revisions table) + 009 (submissions table). Both run automatically on next activation or `plugins_loaded` version check.
+
+### Notes
+- OG cards are intentionally lightweight (bitmap font). A brand-font upgrade with bundled Inter is in the v2.6+ queue if you want pretty social cards.
+- Revisions only snapshot the builder JSON, not the WP post itself (title / slug / status). For those, WP core's built-in revisions still work since the CPT supports `revisions`.
+
 ## [2.4.0] - 2026-05-17
 
 ### Added

@@ -4,7 +4,7 @@ Tags: link in bio, linktree, bio link, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.9
 Requires PHP: 8.2
-Stable tag: 2.4.0
+Stable tag: 2.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,14 @@ GitHub: https://github.com/nurkamol/biolink-pro/issues
 First stable release. Production-ready: 18 block types, 8 themes, analytics, QR codes, SEO coexistence with Rank Math / Yoast, JSON portability, encrypted integrations vault, AI suggestions, onboarding wizard, accessibility pass. Tested on WordPress 6.9 and PHP 8.2 / 8.3.
 
 == Changelog ==
+
+= 2.5.0 =
+* Per-variant click breakdown in Analytics (finishes the v2.4 A/B testing feature).
+* Schedule rollup drawer — see every block with a visible-from/until window from the builder top bar.
+* Page revisions UI — every save snapshots into a new table; restore from a history drawer.
+* Audience tab + CSV export — newsletter + contact submissions persist locally and export as CSV.
+* OG image generator — auto-generated 1200x630 social cards per bio page.
+* Top-level admin pages now have consistent padding to match Links + Design.
 
 = 2.4.0 =
 * A/B testing on Link blocks — add 2+ variants (label, URL, weight) per link. Visitors are deterministically split by IP; each click records which variant was active in a new `variant_key` column.

@@ -4,7 +4,9 @@ import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import { PagesApi, type BioBlock, type BioPage, type BioPageSettings } from '../../api/client';
 import { LivePreview } from '../../components/builder/LivePreview';
 import { QrDialog } from '../../components/builder/QrDialog';
-import { IconCheck, IconCode, IconCopy, IconExternal, IconQr } from '../../components/ui/Icons';
+import { RevisionsDrawer } from '../../components/builder/RevisionsDrawer';
+import { ScheduleDrawer } from '../../components/builder/ScheduleDrawer';
+import { IconCheck, IconClock, IconCode, IconCopy, IconExternal, IconHistory, IconQr } from '../../components/ui/Icons';
 import { BuilderContext, type BuilderContextValue } from './BuilderContext';
 import styles from './BuilderShell.module.css';
 
@@ -21,6 +23,8 @@ export function BuilderShell() {
 	const [ error, setError ] = useState< string | null >( null );
 	const [ previewTick, setPreviewTick ] = useState( 0 );
 	const [ qrOpen, setQrOpen ] = useState( false );
+	const [ scheduleOpen, setScheduleOpen ] = useState( false );
+	const [ historyOpen, setHistoryOpen ] = useState( false );
 	const [ copiedShortcode, setCopiedShortcode ] = useState( false );
 
 	const settingsTimer = useRef< number | null >( null );
@@ -213,6 +217,24 @@ export function BuilderShell() {
 					<button
 						type="button"
 						className={ styles.iconBtn }
+						onClick={ () => setHistoryOpen( true ) }
+						title={ __( 'Version history', 'biolink-pro' ) }
+						aria-label={ __( 'Version history', 'biolink-pro' ) }
+					>
+						<IconHistory size={ 16 } />
+					</button>
+					<button
+						type="button"
+						className={ styles.iconBtn }
+						onClick={ () => setScheduleOpen( true ) }
+						title={ __( 'Scheduled blocks', 'biolink-pro' ) }
+						aria-label={ __( 'Scheduled blocks', 'biolink-pro' ) }
+					>
+						<IconClock size={ 16 } />
+					</button>
+					<button
+						type="button"
+						className={ styles.iconBtn }
 						onClick={ () => setQrOpen( true ) }
 						title={ __( 'QR code', 'biolink-pro' ) }
 						aria-label={ __( 'QR code', 'biolink-pro' ) }
@@ -264,6 +286,17 @@ export function BuilderShell() {
 				pageUrl={ page.url }
 				open={ qrOpen }
 				onClose={ () => setQrOpen( false ) }
+			/>
+			<ScheduleDrawer
+				open={ scheduleOpen }
+				blocks={ page.blocks }
+				onClose={ () => setScheduleOpen( false ) }
+			/>
+			<RevisionsDrawer
+				open={ historyOpen }
+				pageId={ page.id }
+				onClose={ () => setHistoryOpen( false ) }
+				onRestored={ () => void reload() }
 			/>
 		</BuilderContext.Provider>
 	);

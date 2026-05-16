@@ -134,6 +134,17 @@ final class MetaTags implements Bootable
                 $og_image = $url;
             }
         }
+        if ($og_image === '') {
+            // Auto-generate a basic 1200x630 OG card if no custom one is set.
+            $generated = ( new OgImageGenerator() )->urlFor(
+                (int) $post->ID,
+                $settings,
+                (string) ($data['theme'] ?? 'mono')
+            );
+            if ($generated !== null) {
+                $og_image = $generated;
+            }
+        }
         if ($og_image === '' && ! empty($settings['avatar_id'])) {
             $url = wp_get_attachment_image_url((int) $settings['avatar_id'], 'full');
             if ($url) {

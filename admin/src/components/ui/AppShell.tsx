@@ -9,6 +9,17 @@ import {
 	IconGrid,
 	IconSparkle,
 } from './Icons';
+
+function IconUsers() {
+	return (
+		<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+			<circle cx="9" cy="8" r="4" />
+			<path d="M3 21c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+			<circle cx="17" cy="9" r="3" />
+			<path d="M21 21c0-2.5-1.8-4.5-4-5" />
+		</svg>
+	);
+}
 import styles from './AppShell.module.css';
 
 interface AppShellProps {
@@ -88,6 +99,13 @@ export function AppShell( { children }: AppShellProps ) {
 							<IconBars />
 						</span>
 						{ __( 'Insights', 'biolink-pro' ) }
+					</NavLink>
+
+					<NavLink to="/audience" className={ navLinkClass }>
+						<span className={ styles.navIcon }>
+							<IconUsers />
+						</span>
+						{ __( 'Audience', 'biolink-pro' ) }
 					</NavLink>
 
 					<div className={ styles.navSectionLabel }>{ __( 'Account', 'biolink-pro' ) }</div>

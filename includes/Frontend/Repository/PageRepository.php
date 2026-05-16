@@ -104,6 +104,18 @@ final class PageRepository
             return false;
         }
         $result = update_post_meta($page_id, BioLinkPagePostType::META_DATA, wp_slash($encoded));
+
+        if ($result !== false) {
+            /**
+             * Fires after a page's builder JSON is saved. Used by RevisionRepository
+             * to snapshot, but any subscriber can hook in.
+             *
+             * @param int                  $page_id
+             * @param array<string, mixed> $data        The normalized data just written.
+             */
+            do_action('biolink/page/saved', $page_id, $normalized);
+        }
+
         return $result !== false;
     }
 
