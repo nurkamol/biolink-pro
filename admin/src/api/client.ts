@@ -1,7 +1,11 @@
 import apiFetch from '@wordpress/api-fetch';
 
+// WP already installs a nonce middleware (from wpApiSettings) and a root URL
+// middleware pointing at `/wp-json/` when wp-api-fetch is enqueued. We only
+// need to ensure our nonce stays valid if the page outlives the cookie.
 apiFetch.use( apiFetch.createNonceMiddleware( window.BIOLINK_PRO.restNonce ) );
-apiFetch.use( apiFetch.createRootURLMiddleware( window.BIOLINK_PRO.restBase ) );
+
+const NS = '/biolink/v1';
 
 export interface BioBlock {
 	uuid: string;
@@ -61,34 +65,34 @@ export const PagesApi = {
 		if ( params.status ) query.set( 'status', params.status );
 		if ( params.search ) query.set( 'search', params.search );
 		const qs = query.toString();
-		return request< BioPage[] >( `pages${ qs ? `?${ qs }` : '' }` );
+		return request< BioPage[] >( `${ NS }/pages${ qs ? `?${ qs }` : '' }` );
 	},
 
 	get( id: number ): Promise< BioPage > {
-		return request< BioPage >( `pages/${ id }` );
+		return request< BioPage >( `${ NS }/pages/${ id }` );
 	},
 
 	create( payload: CreatePagePayload ): Promise< BioPage > {
-		return request< BioPage >( 'pages', { method: 'POST', data: payload } );
+		return request< BioPage >( `${ NS }/pages`, { method: 'POST', data: payload } );
 	},
 
 	update( id: number, payload: UpdatePagePayload ): Promise< BioPage > {
-		return request< BioPage >( `pages/${ id }`, { method: 'PATCH', data: payload } );
+		return request< BioPage >( `${ NS }/pages/${ id }`, { method: 'PATCH', data: payload } );
 	},
 
 	remove( id: number, force = false ): Promise< { deleted: boolean; id: number } > {
 		const query = force ? '?force=1' : '';
-		return request< { deleted: boolean; id: number } >( `pages/${ id }${ query }`, {
+		return request< { deleted: boolean; id: number } >( `${ NS }/pages/${ id }${ query }`, {
 			method: 'DELETE',
 		} );
 	},
 
 	duplicate( id: number ): Promise< BioPage > {
-		return request< BioPage >( `pages/${ id }/duplicate`, { method: 'POST' } );
+		return request< BioPage >( `${ NS }/pages/${ id }/duplicate`, { method: 'POST' } );
 	},
 
 	publish( id: number, when: string = 'now' ): Promise< BioPage > {
-		return request< BioPage >( `pages/${ id }/publish`, {
+		return request< BioPage >( `${ NS }/pages/${ id }/publish`, {
 			method: 'POST',
 			data: { publish: when },
 		} );
@@ -118,27 +122,27 @@ export interface UpdateStatus {
 
 export const ChangelogApi = {
 	list( force = false ): Promise< Release[] > {
-		return request< Release[] >( `changelog${ force ? '?force=1' : '' }` );
+		return request< Release[] >( `${ NS }/changelog${ force ? '?force=1' : '' }` );
 	},
 	status( force = false ): Promise< UpdateStatus > {
-		return request< UpdateStatus >( `changelog/update-status${ force ? '?force=1' : '' }` );
+		return request< UpdateStatus >( `${ NS }/changelog/update-status${ force ? '?force=1' : '' }` );
 	},
 };
 
 export const BlocksApi = {
 	types(): Promise< BioBlockType[] > {
-		return request< BioBlockType[] >( 'blocks' );
+		return request< BioBlockType[] >( `${ NS }/blocks` );
 	},
 
 	append( pageId: number, type: string, data: Record< string, unknown > = {} ): Promise< BioBlock > {
-		return request< BioBlock >( `pages/${ pageId }/blocks`, {
+		return request< BioBlock >( `${ NS }/pages/${ pageId }/blocks`, {
 			method: 'POST',
 			data: { type, data },
 		} );
 	},
 
 	update( pageId: number, uuid: string, patch: Partial< BioBlock > ): Promise< BioBlock > {
-		return request< BioBlock >( `pages/${ pageId }/blocks/${ uuid }`, {
+		return request< BioBlock >( `${ NS }/pages/${ pageId }/blocks/${ uuid }`, {
 			method: 'PATCH',
 			data: patch,
 		} );
@@ -146,13 +150,13 @@ export const BlocksApi = {
 
 	remove( pageId: number, uuid: string ): Promise< { deleted: boolean; uuid: string } > {
 		return request< { deleted: boolean; uuid: string } >(
-			`pages/${ pageId }/blocks/${ uuid }`,
+			`${ NS }/pages/${ pageId }/blocks/${ uuid }`,
 			{ method: 'DELETE' }
 		);
 	},
 
 	reorder( pageId: number, order: string[] ): Promise< BioBlock[] > {
-		return request< BioBlock[] >( `pages/${ pageId }/blocks/reorder`, {
+		return request< BioBlock[] >( `${ NS }/pages/${ pageId }/blocks/reorder`, {
 			method: 'POST',
 			data: { order },
 		} );

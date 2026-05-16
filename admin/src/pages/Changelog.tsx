@@ -54,7 +54,7 @@ export function Changelog() {
 						{ sprintf(
 							/* translators: %s: version string */
 							__( 'Installed version: %s', 'biolink-pro' ),
-							status?.current ?? '—'
+							status?.current ?? window.BIOLINK_PRO.version
 						) }
 					</p>
 				</div>
