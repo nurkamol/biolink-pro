@@ -48,7 +48,7 @@ final class DonationBlock extends AbstractBlock
             'currency'    => ['type' => 'string', 'max' => 4, 'default' => 'USD'],
             'cta_label'   => ['type' => 'string', 'max' => 40, 'default' => __('Donate', 'biolink-pro')],
             'cta_url'     => ['type' => 'url', 'default' => ''],
-            'provider'    => ['type' => 'enum', 'enum' => ['link', 'stripe', 'paypal'], 'default' => 'link'],
+            'provider'    => ['type' => 'enum', 'enum' => ['link', 'stripe', 'paypal', 'stripe_and_paypal'], 'default' => 'link'],
         ];
     }
 
@@ -77,19 +77,38 @@ final class DonationBlock extends AbstractBlock
 
     private function resolveProvider(string $provider, string $cta_url): string
     {
-        if ($provider === 'stripe') {
-            $stripe = Plugin::instance()->get(StripeCheckout::class);
-            if ($stripe instanceof StripeCheckout && $stripe->isConfigured()) {
+        if ($provider === 'stripe_and_paypal') {
+            $stripe_ok = $this->isStripeReady();
+            $paypal_ok = $this->isPayPalReady();
+            if ($stripe_ok && $paypal_ok) {
+                return 'stripe_and_paypal';
+            }
+            if ($stripe_ok) {
                 return 'stripe';
             }
-        }
-        if ($provider === 'paypal') {
-            $paypal = Plugin::instance()->get(PayPalCheckout::class);
-            if ($paypal instanceof PayPalCheckout && $paypal->isConfigured()) {
+            if ($paypal_ok) {
                 return 'paypal';
             }
         }
+        if ($provider === 'stripe' && $this->isStripeReady()) {
+            return 'stripe';
+        }
+        if ($provider === 'paypal' && $this->isPayPalReady()) {
+            return 'paypal';
+        }
         return 'link';
+    }
+
+    private function isStripeReady(): bool
+    {
+        $svc = Plugin::instance()->get(StripeCheckout::class);
+        return $svc instanceof StripeCheckout && $svc->isConfigured();
+    }
+
+    private function isPayPalReady(): bool
+    {
+        $svc = Plugin::instance()->get(PayPalCheckout::class);
+        return $svc instanceof PayPalCheckout && $svc->isConfigured();
     }
 
     /**
@@ -136,6 +155,23 @@ final class DonationBlock extends AbstractBlock
             );
         }
 
+        if ($provider === 'stripe_and_paypal') {
+            // Stripe primary on top, PayPal secondary below.
+            return $this->renderCheckoutForm($data, 'stripe', $uuid, $cta_label, 'primary')
+                 . $this->renderCheckoutForm($data, 'paypal', $uuid, __('or pay with PayPal', 'biolink-pro'), 'secondary');
+        }
+
+        return $this->renderCheckoutForm($data, $provider, $uuid, $cta_label, 'primary');
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @param 'stripe'|'paypal'    $provider
+     * @param 'primary'|'secondary' $style
+     */
+    private function renderCheckoutForm(array $data, string $provider, ?string $uuid, string $cta_label, string $style): string
+    {
+        $currency       = strtoupper((string) ($data['currency'] ?? 'USD'));
         $page_id        = (int) (get_the_ID() ?: 0);
         $endpoint       = $provider === 'stripe' ? '/biolink/v1/stripe/checkout' : '/biolink/v1/paypal/checkout';
         $name           = (string) ($data['heading'] ?? 'Donation');
@@ -149,10 +185,14 @@ final class DonationBlock extends AbstractBlock
             }
         }
 
+        $cta_class = $style === 'secondary' ? 'bio-block__donation-cta bio-block__donation-cta--secondary' : 'bio-block__donation-cta';
+        // For the secondary form (e.g. PayPal alt), hide the amount input + chips (they share state with the primary form's amount).
+        $input_class = $style === 'secondary' ? 'bio-block__donation-input bio-block__donation-input--hidden' : 'bio-block__donation-input';
+
         return sprintf(
-            '<form class="bio-block__donation-form" data-action="checkout" data-provider="%1$s" data-endpoint="%2$s" data-page="%3$d" data-block="%4$s" data-currency="%5$s" data-name="%6$s">' .
-                '<input type="number" name="amount" min="1" step="0.01" placeholder="%7$s" value="%8$s" required class="bio-block__donation-input">' .
-                '<button type="submit" class="bio-block__donation-cta">%9$s</button>' .
+            '<form class="bio-block__donation-form bio-block__donation-form--%10$s" data-action="checkout" data-provider="%1$s" data-endpoint="%2$s" data-page="%3$d" data-block="%4$s" data-currency="%5$s" data-name="%6$s">' .
+                '<input type="number" name="amount" min="1" step="0.01" placeholder="%7$s" value="%8$s" required class="%11$s">' .
+                '<button type="submit" class="%12$s">%9$s</button>' .
                 '<div class="bio-block__donation-status" aria-live="polite"></div>' .
             '</form>',
             esc_attr($provider),
@@ -163,7 +203,10 @@ final class DonationBlock extends AbstractBlock
             esc_attr($name),
             esc_attr__('Amount', 'biolink-pro'),
             esc_attr($default_amount),
-            esc_html($cta_label)
+            esc_html($cta_label),
+            esc_attr($style),
+            esc_attr($input_class),
+            esc_attr($cta_class)
         );
     }
 }

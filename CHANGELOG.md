@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-05-16
+
+### Added — Closed loops
+- **PayPal `ReturnHandler`** — `template_redirect` listener on `biolink_page` CPT catches `?biolink_paypal=return&token={order_id}` after approval, calls `Checkout::captureAndLog()`, then `wp_safe_redirect()`s to a clean URL with `?biolink_payment=success|failed`. Cancel returns redirect to `?biolink_payment=cancel`.
+- **`Checkout::captureAndLog($order_id)`** — extracted from `CheckoutController::paypalCapture`. Shared between the REST endpoint and the new return handler. Returns the compact entry array on success, null on failure.
+- **ProductCard provider support** — new `provider` field (`link | stripe | paypal | stripe_and_paypal`), `price_value` (numeric for checkout), `currency` fields. Same flow as DonationBlock.
+- **"Stripe + PayPal" dual-provider option** on both DonationBlock and ProductCardBlock — when both providers are configured AND the block is set to `stripe_and_paypal`, renders Stripe primary button + secondary "or pay with PayPal" button below. Falls back to whichever single provider is configured if one is missing.
+
+### Fixed
+- `PageRenderer` now passes `$uuid` to ProductCardBlock (was already passed to LinkBlock + DonationBlock).
+
+### Changed
+- `DonationEditor` / `ProductCardEditor` provider dropdown order: **Stripe first** (recommended), then Stripe+PayPal, then PayPal only, then External link.
+
 ## [1.1.0] - 2026-05-16
 
 Real integrations — no more hook-only scaffolding. Stripe + PayPal accept real payments; Mailchimp / MailerLite / Resend receive real subscribers.

@@ -742,6 +742,42 @@ body.bio-body .bio-page button {
 	text-align: center;
 }
 
+/* Dual-provider — Stripe primary + PayPal alt below. */
+
+.bio-block__donation-form--secondary,
+.bio-block__product-form--secondary {
+	margin-top: 4px;
+}
+
+.bio-block__donation-input--hidden {
+	display: none;
+}
+
+.bio-block__donation-cta--secondary,
+.bio-block__product-cta--secondary {
+	background: transparent;
+	color: var( --bio-color-text );
+	border: 1px solid var( --bio-color-border );
+	font-weight: 500;
+	font-size: 13px;
+	padding: 8px 16px;
+}
+
+.bio-block__donation-cta--secondary:hover,
+.bio-block__product-cta--secondary:hover {
+	border-color: var( --bio-color-accent );
+	color: var( --bio-color-accent );
+}
+
+.bio-block__product-form,
+.bio-block__product-form--primary,
+.bio-block__product-form--secondary {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	margin-top: 8px;
+}
+
 /* Newsletter + Contact forms */
 .bio-block--newsletter,
 .bio-block--contact {

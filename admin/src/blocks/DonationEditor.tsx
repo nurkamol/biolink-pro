@@ -8,7 +8,7 @@ export interface DonationData {
 	currency?: string;
 	cta_label?: string;
 	cta_url?: string;
-	provider?: 'link' | 'stripe' | 'paypal';
+	provider?: 'link' | 'stripe' | 'paypal' | 'stripe_and_paypal';
 }
 
 interface Props {
@@ -31,9 +31,12 @@ export function DonationEditor( { data, onChange }: Props ) {
 						onChange( { ...data, provider: e.target.value as DonationData[ 'provider' ] } )
 					}
 				>
-					<option value="link">{ __( 'External link', 'biolink-pro' ) }</option>
 					<option value="stripe">{ __( 'Stripe Checkout', 'biolink-pro' ) }</option>
-					<option value="paypal">{ __( 'PayPal', 'biolink-pro' ) }</option>
+					<option value="stripe_and_paypal">
+						{ __( 'Stripe + PayPal (Stripe primary)', 'biolink-pro' ) }
+					</option>
+					<option value="paypal">{ __( 'PayPal only', 'biolink-pro' ) }</option>
+					<option value="link">{ __( 'External link (Payment Link / PayPal.me)', 'biolink-pro' ) }</option>
 				</select>
 				<span className={ styles.hint }>
 					{ provider === 'link'

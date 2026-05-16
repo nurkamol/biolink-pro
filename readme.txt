@@ -4,7 +4,7 @@ Tags: link in bio, linktree, bio link, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.9
 Requires PHP: 8.2
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,11 @@ GitHub: https://github.com/nurkamol/biolink-pro/issues
 First stable release. Production-ready: 18 block types, 8 themes, analytics, QR codes, SEO coexistence with Rank Math / Yoast, JSON portability, encrypted integrations vault, AI suggestions, onboarding wizard, accessibility pass. Tested on WordPress 6.9 and PHP 8.2 / 8.3.
 
 == Changelog ==
+
+= 1.1.1 =
+* PayPal return loop closed — when visitors return from PayPal approval, the order is captured automatically and they're redirected to a clean URL with `?biolink_payment=success|failed`.
+* ProductCard block now supports Stripe / PayPal / Stripe+PayPal providers (same flow as Donation block).
+* New "Stripe + PayPal" provider option on both Donation and ProductCard — renders Stripe as the primary button with a secondary "or pay with PayPal" beneath it.
 
 = 1.1.0 =
 * Real Stripe Checkout — Donation block can now open a hosted Checkout session instead of just linking out (set Provider = Stripe in the block editor).

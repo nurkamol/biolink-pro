@@ -125,29 +125,10 @@ final class CheckoutController extends AbstractController
     public function paypalCapture(WP_REST_Request $request): WP_REST_Response|\WP_Error
     {
         $order_id = (string) $request['order_id'];
-        $captured = $this->paypal->captureOrder($order_id);
-        if ($captured === null) {
+        $entry    = $this->paypal->captureAndLog($order_id);
+        if ($entry === null) {
             return $this->error('paypal_capture_failed', __('Could not capture PayPal order.', 'biolink-pro'), 502);
         }
-        $entry = [
-            'order_id' => $order_id,
-            'status'   => (string) ($captured['status'] ?? 'unknown'),
-            'amount'   => (string) ($captured['purchase_units'][0]['payments']['captures'][0]['amount']['value'] ?? ''),
-            'currency' => (string) ($captured['purchase_units'][0]['payments']['captures'][0]['amount']['currency_code'] ?? ''),
-            'payer'    => (string) ($captured['payer']['email_address'] ?? ''),
-            'time'     => current_time('mysql', true),
-        ];
-        $log = (array) get_option('biolink_paypal_log', []);
-        $log[] = $entry;
-        update_option('biolink_paypal_log', array_slice($log, -200), false);
-
-        /**
-         * Fires on a successful PayPal capture.
-         *
-         * @param array<string, mixed> $entry
-         */
-        do_action('biolink/paypal/captured', $entry);
-
         return $this->ok(['ok' => true, 'status' => $entry['status']]);
     }
 }

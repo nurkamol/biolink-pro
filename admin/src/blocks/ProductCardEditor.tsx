@@ -78,6 +78,29 @@ export function ProductCardEditor( { data, onChange }: Props ) {
 				</button>
 			</div>
 			<label className={ styles.field }>
+				<span className={ styles.label }>{ __( 'Provider', 'biolink-pro' ) }</span>
+				<select
+					className={ styles.select }
+					value={ data.provider ?? 'link' }
+					onChange={ ( e ) =>
+						onChange( { ...data, provider: e.target.value as ProductCardData[ 'provider' ] } )
+					}
+				>
+					<option value="stripe">{ __( 'Stripe Checkout', 'biolink-pro' ) }</option>
+					<option value="stripe_and_paypal">
+						{ __( 'Stripe + PayPal (Stripe primary)', 'biolink-pro' ) }
+					</option>
+					<option value="paypal">{ __( 'PayPal only', 'biolink-pro' ) }</option>
+					<option value="link">{ __( 'External link', 'biolink-pro' ) }</option>
+				</select>
+				<span className={ styles.hint }>
+					{ ( data.provider ?? 'link' ) === 'link'
+						? __( 'Link to a Payment Link / Gumroad / external store.', 'biolink-pro' )
+						: __( 'Configure the provider in Settings → Integrations first.', 'biolink-pro' ) }
+				</span>
+			</label>
+
+			<label className={ styles.field }>
 				<span className={ styles.label }>{ __( 'Name', 'biolink-pro' ) }</span>
 				<input
 					type="text"
@@ -95,16 +118,49 @@ export function ProductCardEditor( { data, onChange }: Props ) {
 					onChange={ ( e ) => onChange( { ...data, description: e.target.value } ) }
 				/>
 			</label>
-			<label className={ styles.field }>
-				<span className={ styles.label }>{ __( 'Price', 'biolink-pro' ) }</span>
-				<input
-					type="text"
-					className={ styles.input }
-					value={ data.price ?? '' }
-					onChange={ ( e ) => onChange( { ...data, price: e.target.value } ) }
-					placeholder="$19"
-				/>
-			</label>
+			<div className={ styles.row }>
+				<label className={ styles.field }>
+					<span className={ styles.label }>{ __( 'Display price', 'biolink-pro' ) }</span>
+					<input
+						type="text"
+						className={ styles.input }
+						value={ data.price ?? '' }
+						onChange={ ( e ) => onChange( { ...data, price: e.target.value } ) }
+						placeholder="$19"
+					/>
+				</label>
+				<label className={ styles.field }>
+					<span className={ styles.label }>{ __( 'Currency', 'biolink-pro' ) }</span>
+					<input
+						type="text"
+						className={ styles.input }
+						value={ data.currency ?? 'USD' }
+						maxLength={ 3 }
+						onChange={ ( e ) =>
+							onChange( { ...data, currency: e.target.value.toUpperCase() } )
+						}
+					/>
+				</label>
+			</div>
+			{ ( data.provider ?? 'link' ) !== 'link' && (
+				<label className={ styles.field }>
+					<span className={ styles.label }>
+						{ __( 'Amount (numeric, e.g. 19.00)', 'biolink-pro' ) }
+					</span>
+					<input
+						type="number"
+						min={ 0 }
+						step="0.01"
+						className={ styles.input }
+						value={ data.price_value ?? '' }
+						onChange={ ( e ) => onChange( { ...data, price_value: e.target.value } ) }
+						placeholder="19.00"
+					/>
+					<span className={ styles.hint }>
+						{ __( 'Used by Stripe / PayPal checkout. Charged in the currency above.', 'biolink-pro' ) }
+					</span>
+				</label>
+			) }
 			<div className={ styles.row }>
 				<label className={ styles.field }>
 					<span className={ styles.label }>{ __( 'Button text', 'biolink-pro' ) }</span>
@@ -115,16 +171,18 @@ export function ProductCardEditor( { data, onChange }: Props ) {
 						onChange={ ( e ) => onChange( { ...data, cta_label: e.target.value } ) }
 					/>
 				</label>
-				<label className={ styles.field }>
-					<span className={ styles.label }>{ __( 'Button URL', 'biolink-pro' ) }</span>
-					<input
-						type="url"
-						className={ styles.input }
-						value={ data.cta_url ?? '' }
-						onChange={ ( e ) => onChange( { ...data, cta_url: e.target.value } ) }
-						placeholder="https://"
-					/>
-				</label>
+				{ ( data.provider ?? 'link' ) === 'link' && (
+					<label className={ styles.field }>
+						<span className={ styles.label }>{ __( 'Button URL', 'biolink-pro' ) }</span>
+						<input
+							type="url"
+							className={ styles.input }
+							value={ data.cta_url ?? '' }
+							onChange={ ( e ) => onChange( { ...data, cta_url: e.target.value } ) }
+							placeholder="https://"
+						/>
+					</label>
+				) }
 			</div>
 		</>
 	);

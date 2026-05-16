@@ -38,6 +38,7 @@ use BioLinkPro\Integrations\Email\MailchimpAdapter;
 use BioLinkPro\Integrations\Email\MailerLiteAdapter;
 use BioLinkPro\Integrations\Email\ResendAdapter;
 use BioLinkPro\Integrations\PayPal\Checkout as PayPalCheckout;
+use BioLinkPro\Integrations\PayPal\ReturnHandler as PayPalReturnHandler;
 use BioLinkPro\Integrations\Stripe\Checkout as StripeCheckout;
 use BioLinkPro\Integrations\Stripe\StripeWebhookListener;
 use BioLinkPro\Blocks\BlockRegistry;
@@ -254,6 +255,7 @@ final class Plugin
         $this->register(StripeCheckout::class, $stripe);
         $this->register(PayPalCheckout::class, $paypal);
         $this->register(StripeWebhookListener::class, new StripeWebhookListener($stripe));
+        $this->register(PayPalReturnHandler::class, new PayPalReturnHandler($paypal));
         $this->register(MailchimpAdapter::class, new MailchimpAdapter());
         $this->register(MailerLiteAdapter::class, new MailerLiteAdapter());
         $this->register(ResendAdapter::class, new ResendAdapter());
