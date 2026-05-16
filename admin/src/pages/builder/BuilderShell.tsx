@@ -3,7 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import { PagesApi, type BioBlock, type BioPage, type BioPageSettings } from '../../api/client';
 import { LivePreview } from '../../components/builder/LivePreview';
-import { IconCheck, IconCopy, IconExternal } from '../../components/ui/Icons';
+import { QrDialog } from '../../components/builder/QrDialog';
+import { IconCheck, IconCopy, IconExternal, IconQr } from '../../components/ui/Icons';
 import { BuilderContext, type BuilderContextValue } from './BuilderContext';
 import styles from './BuilderShell.module.css';
 
@@ -19,6 +20,7 @@ export function BuilderShell() {
 	const [ savedAt, setSavedAt ] = useState< Date | null >( null );
 	const [ error, setError ] = useState< string | null >( null );
 	const [ previewTick, setPreviewTick ] = useState( 0 );
+	const [ qrOpen, setQrOpen ] = useState( false );
 
 	const settingsTimer = useRef< number | null >( null );
 	const seoTimer = useRef< number | null >( null );
@@ -187,6 +189,15 @@ export function BuilderShell() {
 							{ __( 'Publish', 'biolink-pro' ) }
 						</button>
 					) }
+					<button
+						type="button"
+						className={ styles.iconBtn }
+						onClick={ () => setQrOpen( true ) }
+						title={ __( 'QR code', 'biolink-pro' ) }
+						aria-label={ __( 'QR code', 'biolink-pro' ) }
+					>
+						<IconQr size={ 16 } />
+					</button>
 					<a
 						className={ styles.iconBtn }
 						href={ page.url }
@@ -227,6 +238,12 @@ export function BuilderShell() {
 					</aside>
 				) }
 			</div>
+			<QrDialog
+				pageId={ page.id }
+				pageUrl={ page.url }
+				open={ qrOpen }
+				onClose={ () => setQrOpen( false ) }
+			/>
 		</BuilderContext.Provider>
 	);
 }

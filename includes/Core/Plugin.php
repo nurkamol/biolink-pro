@@ -66,6 +66,7 @@ use BioLinkPro\Frontend\PageRenderer;
 use BioLinkPro\Frontend\PostType\BioLinkPagePostType;
 use BioLinkPro\Frontend\Repository\PageRepository;
 use BioLinkPro\Frontend\TemplateLoader;
+use BioLinkPro\Frontend\UnlockHandler;
 use BioLinkPro\Qr\Generator as QrGenerator;
 use BioLinkPro\Seo\MetaTags;
 use BioLinkPro\Seo\Sitemap;
@@ -256,6 +257,7 @@ final class Plugin
         $this->register(PayPalCheckout::class, $paypal);
         $this->register(StripeWebhookListener::class, new StripeWebhookListener($stripe));
         $this->register(PayPalReturnHandler::class, new PayPalReturnHandler($paypal));
+        $this->register(UnlockHandler::class, new UnlockHandler($repository));
         $this->register(MailchimpAdapter::class, new MailchimpAdapter());
         $this->register(MailerLiteAdapter::class, new MailerLiteAdapter());
         $this->register(ResendAdapter::class, new ResendAdapter());

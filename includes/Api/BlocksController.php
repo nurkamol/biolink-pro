@@ -113,17 +113,44 @@ final class BlocksController extends AbstractController
             return $this->error('block_type_required', __('Block type is required.', 'biolink-pro'), 400);
         }
 
+        $data = is_array($request['data'] ?? null) ? $request['data'] : [];
+        $data = self::hashPasscode($data);
+
         $entry = $this->repository->appendBlock(
             $id,
             [
                 'type' => $type,
-                'data' => is_array($request['data'] ?? null) ? $request['data'] : [],
+                'data' => $data,
             ]
         );
         if ($entry === null) {
             return $this->error('append_failed', __('Could not append block.', 'biolink-pro'), 500);
         }
         return $this->ok($entry, 201);
+    }
+
+    /**
+     * Transform an incoming `_passcode` plaintext field into `_passcode_hash`.
+     * - `_passcode: 'foo'`  → hash + store as `_passcode_hash`, strip plaintext.
+     * - `_passcode: ''`     → explicit unlock, remove `_passcode_hash`.
+     * - `_passcode` absent  → leave any existing `_passcode_hash` untouched.
+     *
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    private static function hashPasscode(array $data): array
+    {
+        if (! array_key_exists('_passcode', $data)) {
+            return $data;
+        }
+        $plain = is_string($data['_passcode']) ? $data['_passcode'] : '';
+        unset($data['_passcode']);
+        if ($plain === '') {
+            unset($data['_passcode_hash']);
+            return $data;
+        }
+        $data['_passcode_hash'] = wp_hash_password($plain);
+        return $data;
     }
 
     public function update(WP_REST_Request $request): WP_REST_Response|WP_Error
@@ -140,7 +167,7 @@ final class BlocksController extends AbstractController
             $patch['type'] = (string) $request['type'];
         }
         if ($request->has_param('data') && is_array($request['data'])) {
-            $patch['data'] = $request['data'];
+            $patch['data'] = self::hashPasscode($request['data']);
         }
         if ($patch === []) {
             return $this->error('no_changes', __('No block fields supplied.', 'biolink-pro'), 400);

@@ -21,7 +21,6 @@ import { findBlockMeta, type BlockData } from '../../blocks';
 import { AddBlockModal } from '../../components/ui/AddBlockModal';
 import {
 	IconClock,
-	IconExternal,
 	IconGrip,
 	IconImage,
 	IconLock,
@@ -41,6 +40,8 @@ type BlockMetaData = Record< string, unknown > & {
 	_thumbnail_id?: number;
 	_start_at?: string;
 	_end_at?: string;
+	_passcode?: string;
+	_passcode_hash?: string;
 };
 
 export function LinksPage() {
@@ -285,6 +286,7 @@ function LinkRow( { block, selected, saving, onSelect, onUpdate, onDelete, onPat
 	const highlight = data._highlight === true;
 	const thumbId = ( data._thumbnail_id as number ) || 0;
 	const scheduled = Boolean( data._start_at || data._end_at );
+	const locked = Boolean( data._passcode_hash );
 
 	const [ popover, setPopover ] = useState< PopoverKind >( null );
 	const [ thumbUrl, setThumbUrl ] = useState< string | null >( null );
@@ -343,6 +345,13 @@ function LinkRow( { block, selected, saving, onSelect, onUpdate, onDelete, onPat
 			_start_at: startAt || ( null as unknown as string ),
 			_end_at: endAt || ( null as unknown as string ),
 		} );
+		setPopover( null );
+	};
+
+	const handleSavePasscode = async ( passcode: string ) => {
+		// Server detects _passcode and hashes it into _passcode_hash; empty
+		// string clears any existing lock.
+		await onPatchMeta( block.uuid, { _passcode: passcode } );
 		setPopover( null );
 	};
 
@@ -414,9 +423,9 @@ function LinkRow( { block, selected, saving, onSelect, onUpdate, onDelete, onPat
 				</button>
 				<button
 					type="button"
-					className={ styles.actionBtn }
+					className={ `${ styles.actionBtn } ${ locked ? styles.actionBtnActive : '' }` }
 					onClick={ () => setPopover( ( v ) => ( v === 'lock' ? null : 'lock' ) ) }
-					title={ __( 'Lock', 'biolink-pro' ) }
+					title={ locked ? __( 'Edit passcode', 'biolink-pro' ) : __( 'Lock with passcode', 'biolink-pro' ) }
 					aria-label={ __( 'Lock', 'biolink-pro' ) }
 				>
 					<IconLock />
@@ -442,7 +451,13 @@ function LinkRow( { block, selected, saving, onSelect, onUpdate, onDelete, onPat
 						onClose={ () => setPopover( null ) }
 					/>
 				) }
-				{ popover === 'lock' && <LockPopover onClose={ () => setPopover( null ) } /> }
+				{ popover === 'lock' && (
+					<LockPopover
+						locked={ locked }
+						onSave={ handleSavePasscode }
+						onClose={ () => setPopover( null ) }
+					/>
+				) }
 			</div>
 
 			{ selected && meta && (
@@ -512,8 +527,16 @@ function SchedulePopover( { startAt, endAt, onSave, onClose }: SchedulePopoverPr
 	);
 }
 
-function LockPopover( { onClose }: { onClose: () => void } ) {
+interface LockPopoverProps {
+	locked: boolean;
+	onSave: ( passcode: string ) => Promise< void >;
+	onClose: () => void;
+}
+
+function LockPopover( { locked, onSave, onClose }: LockPopoverProps ) {
 	const popRef = useRef< HTMLDivElement >( null );
+	const [ pass, setPass ] = useState( '' );
+
 	useEffect( () => {
 		const onDoc = ( ev: MouseEvent ) => {
 			if ( ! popRef.current?.contains( ev.target as Node ) ) onClose();
@@ -522,20 +545,57 @@ function LockPopover( { onClose }: { onClose: () => void } ) {
 		return () => document.removeEventListener( 'mousedown', onDoc );
 	}, [ onClose ] );
 
+	const save = () => {
+		if ( pass.length < 1 ) return;
+		void onSave( pass );
+	};
+	const clear = () => {
+		void onSave( '' );
+	};
+
 	return (
 		<div ref={ popRef } className={ styles.popover }>
 			<h3 className={ styles.popoverTitle }>
-				<IconExternal /> { __( 'Passcode-gated links', 'biolink-pro' ) }
+				{ locked ? __( 'Change passcode', 'biolink-pro' ) : __( 'Lock with passcode', 'biolink-pro' ) }
 			</h3>
 			<p className={ styles.popoverHint }>
-				{ __(
-					'Coming in v2.2: require visitors to enter a passcode before the link reveals. Stored hashed; redirect handled server-side.',
-					'biolink-pro'
-				) }
+				{ locked
+					? __( 'A passcode is currently set. Enter a new one to change it, or remove the lock.', 'biolink-pro' )
+					: __( 'Visitors must enter this passcode before being redirected to the link.', 'biolink-pro' ) }
 			</p>
+			<div className={ styles.popoverField }>
+				<label htmlFor="biolink-lock-pass">
+					{ locked ? __( 'New passcode', 'biolink-pro' ) : __( 'Passcode', 'biolink-pro' ) }
+				</label>
+				<input
+					id="biolink-lock-pass"
+					type="password"
+					autoComplete="new-password"
+					value={ pass }
+					onChange={ ( e ) => setPass( e.target.value ) }
+					onKeyDown={ ( e ) => {
+						if ( e.key === 'Enter' ) save();
+					} }
+					placeholder={ __( 'At least 4 characters', 'biolink-pro' ) }
+				/>
+			</div>
 			<div className={ styles.popoverActions }>
-				<button type="button" className={ styles.popoverPrimary } onClick={ onClose }>
-					{ __( 'Got it', 'biolink-pro' ) }
+				{ locked ? (
+					<button type="button" onClick={ clear }>
+						{ __( 'Remove lock', 'biolink-pro' ) }
+					</button>
+				) : (
+					<button type="button" onClick={ onClose }>
+						{ __( 'Cancel', 'biolink-pro' ) }
+					</button>
+				) }
+				<button
+					type="button"
+					className={ styles.popoverPrimary }
+					onClick={ save }
+					disabled={ pass.length === 0 }
+				>
+					{ locked ? __( 'Update', 'biolink-pro' ) : __( 'Save passcode', 'biolink-pro' ) }
 				</button>
 			</div>
 		</div>

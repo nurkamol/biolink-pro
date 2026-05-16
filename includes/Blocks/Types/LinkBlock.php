@@ -48,7 +48,8 @@ final class LinkBlock extends AbstractBlock
     public function render(array $data, ?string $uuid = null): string
     {
         // Preserve the meta keys (_thumbnail_id etc.) the validator would strip.
-        $thumbnail_id = isset($data['_thumbnail_id']) ? (int) $data['_thumbnail_id'] : 0;
+        $thumbnail_id  = isset($data['_thumbnail_id']) ? (int) $data['_thumbnail_id'] : 0;
+        $passcode_hash = isset($data['_passcode_hash']) ? (string) $data['_passcode_hash'] : '';
 
         $data = FieldValidator::validate($this->schema(), $data);
         if (empty($data['label']) || empty($data['url'])) {
@@ -57,25 +58,40 @@ final class LinkBlock extends AbstractBlock
 
         $url = $data['url'];
 
-        // Route through /click/{id} when we have a stable link_id so analytics
-        // can record the click + apply UTM at redirect time.
-        $page_id = (int) (get_the_ID() ?: 0);
-        if ($page_id > 0 && $uuid !== null) {
-            $sync = Plugin::instance()->get(LinkSync::class);
-            if ($sync instanceof LinkSync) {
-                $link_id = $sync->linkIdFor($page_id, $uuid);
-                if ($link_id > 0) {
-                    $url = rest_url('biolink/v1/click/' . $link_id);
-                }
+        // Passcode-gated links bypass click tracking + UTM — visitors hit the
+        // unlock form first; analytics on locked links is a v2.3 follow-up.
+        if ($passcode_hash !== '' && $uuid !== null) {
+            $page_id = (int) (get_the_ID() ?: 0);
+            if ($page_id > 0) {
+                $url = add_query_arg(
+                    ['biolink_unlock' => $uuid],
+                    get_permalink($page_id)
+                );
             }
-        } elseif (! empty($data['utm'])) {
-            // Fallback: append UTM inline if click tracking isn't wired up.
-            $url = add_query_arg(self::parseUtm((string) $data['utm']), $url);
+        } else {
+            // Route through /click/{id} when we have a stable link_id so analytics
+            // can record the click + apply UTM at redirect time.
+            $page_id = (int) (get_the_ID() ?: 0);
+            if ($page_id > 0 && $uuid !== null) {
+                $sync = Plugin::instance()->get(LinkSync::class);
+                if ($sync instanceof LinkSync) {
+                    $link_id = $sync->linkIdFor($page_id, $uuid);
+                    if ($link_id > 0) {
+                        $url = rest_url('biolink/v1/click/' . $link_id);
+                    }
+                }
+            } elseif (! empty($data['utm'])) {
+                // Fallback: append UTM inline if click tracking isn't wired up.
+                $url = add_query_arg(self::parseUtm((string) $data['utm']), $url);
+            }
         }
 
         $classes = 'bio-block bio-block--link';
         if (! empty($data['featured'])) {
             $classes .= ' bio-block--featured';
+        }
+        if ($passcode_hash !== '') {
+            $classes .= ' bio-block--locked';
         }
 
         $icon_svg = Icons::utility((string) ($data['icon'] ?? 'link'));
@@ -102,12 +118,20 @@ final class LinkBlock extends AbstractBlock
             $leading = '<span class="bio-block__icon" aria-hidden="true">' . $icon_svg . '</span>';
         }
 
+        // Locked links open in the same window so the passcode form lands cleanly.
+        $target = $passcode_hash !== '' ? '_self' : '_blank';
+        $lock_indicator = $passcode_hash !== ''
+            ? '<span class="bio-block__lock" aria-hidden="true">🔒</span>'
+            : '';
+
         return sprintf(
-            '<a class="%1$s" href="%2$s" rel="noopener" target="_blank">%3$s<span class="bio-block__label">%4$s</span></a>',
+            '<a class="%1$s" href="%2$s" rel="noopener" target="%3$s">%4$s<span class="bio-block__label">%5$s</span>%6$s</a>',
             esc_attr($classes),
             esc_url($url),
+            esc_attr($target),
             $leading,
-            esc_html($data['label'])
+            esc_html($data['label']),
+            $lock_indicator
         );
     }
 

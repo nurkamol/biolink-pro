@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-05-17
+
+### Added
+- **Passcode-gated links** — the Lock chip on every link row is now functional. Setting a passcode wraps the link with `?biolink_unlock={uuid}`; visitors land on a standalone unlock page (centered card, light/dark color-scheme aware) that requires the correct passcode before the 302 to the destination. Passcodes are stored hashed (`wp_hash_password`, phpass) — the plaintext never persists. Editing returns "Locked" without exposing the passcode; admins can update it or remove the lock entirely.
+- **`Frontend\UnlockHandler`** — new `Bootable` hooked on `template_redirect`. Reads `?biolink_unlock=UUID` on bio pages, finds the block, renders the passcode form on GET, verifies via `wp_check_password` on POST, fires `do_action('biolink/link/unlocked', $uuid, $page_id)` on success.
+- **`BlocksController::hashPasscode()`** — append + update paths inspect incoming `_passcode` plaintext, hash it, store as `_passcode_hash`, strip the plaintext. Sending `_passcode: ""` clears the lock.
+- **`LinkBlock`** now renders a lock-icon indicator on locked rows (public page) and routes the href through the unlock URL when `_passcode_hash` is set. Locked links open in `_self` (not `_blank`) so the form lands cleanly. Click-tracking + UTM are bypassed for locked links — analytics on gated links is a v2.3 follow-up.
+
+### Fixed
+- **QR code button restored** — the v2.0.0 top-bar rewrite dropped the QR launcher. Added back to `BuilderShell` as an icon button next to View ↗. The `QrDialog` component itself was unchanged, just unreachable.
+
 ## [2.1.0] - 2026-05-17
 
 Polish + functionality pass on the v2.0.0 redesign. Sidebar trimmed, action chips wired up, emoji UI replaced with consistent SVG icons.
