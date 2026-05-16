@@ -2,11 +2,12 @@
 
 > Read this file at the start of every session. Update the phase status line below when moving between phases.
 
-**Current phase:** v1.0.0 — first stable release
-**Next phase:** v1.1 — real Stripe Checkout + Mailchimp / MailerLite / Resend SDK adapters; A/B testing module
+**Current release:** v2.3.1 — copy-shortcode button in builder top bar
+**Active surface:** mature plugin. All 10 original phases shipped; v2.0–v2.3 added the Linktree-class admin redesign, functional row chips (thumbnail/highlight/schedule/lock), inline passcode unlock modal, `[biolink]` / `[biolink_block]` shortcodes, and the in-app updater.
+**Next candidates (no commitment):** A/B testing module, per-page revisions UI, link scheduling rollups, custom domain CNAME, real Shop UI (currently a stub in v2.0+).
 **Decision (Phase 1):** Admin React app uses **CSS Modules** (not Tailwind).
-**Release channel:** GitHub Releases on `nurkamol/biolink-pro`. Stable tags only (`vX.Y.Z`). Updater = `BioLinkPro\Updates\GitHubUpdater`. See `bin/build-release.sh` for local builds; `.github/workflows/release.yml` runs on tag push.
-**Docs index:** `docs/` (start with `PROMPT.md` then `ARCHITECTURE.md`)
+**Release channel:** GitHub Releases on `nurkamol/biolink-pro`. Stable tags only (`vX.Y.Z`). Updater = `BioLinkPro\Updates\GitHubUpdater`. See `bin/build-release.sh` for local builds; `.github/workflows/release.yml` runs on tag push. In-app one-click updater lives at `Api\ChangelogController::installUpdate` (`POST /biolink/v1/changelog/install-update`).
+**Docs index:** `docs/` (start with `PROMPT.md` then `ARCHITECTURE.md`). `CHANGELOG.md` is the source of truth for what shipped when.
 
 ---
 
@@ -129,3 +130,35 @@ npm run lint       # ESLint + Stylelint
 - [ ] Asset enqueue scoped to relevant pages only
 - [ ] Inline docblocks for public methods
 - [ ] Entry added to `CHANGELOG.md`
+
+---
+
+## Release workflow (v2.x established pattern)
+
+1. Land changes on `main`, ensure `npm run build` produces a fresh `assets/admin/main.*` bundle and **commit the built files** (the WP plugin install doesn't run npm).
+2. PHPUnit + PHP lint must pass: `vendor/bin/phpunit` (60 tests) and `php -l` on touched files.
+3. Bump four version markers in lockstep:
+   - `plugin.php` header `Version:` + `BIOLINK_VERSION` constant
+   - `package.json` `version`
+   - `readme.txt` `Stable tag:`
+4. Add a `CHANGELOG.md` entry under `## [Unreleased]` → renamed to `## [X.Y.Z] - YYYY-MM-DD` on tag.
+5. Add a matching `readme.txt` `== Changelog ==` short entry.
+6. Commit (no Claude / Co-Authored-By attribution — user preference).
+7. `git tag -a vX.Y.Z -m "…"` then push both `main` and the tag. The GitHub Actions release workflow builds + publishes the `biolink-pro-vX.Y.Z.zip` asset.
+8. Verify the release with `gh release view vX.Y.Z`.
+
+---
+
+## Per-block extension keys (admin chip row → block.data._*)
+
+These leading-underscore keys are stored on individual block data and honored at render time by `Frontend\PageRenderer` and `Blocks\Types\LinkBlock`:
+
+| Key | Type | Read by | Notes |
+|---|---|---|---|
+| `_active` | bool | `PageRenderer` | `false` → block is skipped entirely |
+| `_highlight` | bool | `PageRenderer` | wraps output in `bio-block--highlight` (CSS pulse) |
+| `_thumbnail_id` | int | `LinkBlock` | WP attachment ID; renders as 36×36 rounded square next to label |
+| `_start_at` / `_end_at` | ISO string | `PageRenderer::isScheduleActive()` | site-local time; outside-window blocks are skipped |
+| `_passcode_hash` | string | `PageRenderer` / `LinkBlock` | `wp_hash_password`; plaintext (`_passcode`) is hashed by `BlocksController::hashPasscode()` on save, never persisted or returned |
+
+Visibility cookie for passcode unlocks: `biolink_unlocked` (HMAC tokens via `wp_hash`), HttpOnly, SameSite=Lax, 30 days. See `Frontend\UnlockHandler::tokenFor()`.

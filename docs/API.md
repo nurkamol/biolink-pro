@@ -1,6 +1,6 @@
 # REST API
 
-All endpoints are namespaced under `/wp-json/biolink/v1/`.
+All endpoints are namespaced under `/wp-json/biolink/v1/`. ~40 endpoints across the controllers below.
 
 ## Conventions
 
@@ -62,6 +62,30 @@ Query params: `from`, `to` (ISO date), `granularity` (`day`/`week`/`month`).
 |---|---|---|
 | GET    | `/click/{link_id}` | Record click + 302 redirect (rate-limited) |
 | POST   | `/track/view` | Beacon view ping from frontend (rate-limited) |
+
+## Public unlock (no auth)
+
+| Method | Path | Purpose |
+|---|---|---|
+| POST   | `/unlock/{page_id}/{uuid}` | Verify passcode against `_passcode_hash`. On success, sets the signed `biolink_unlocked` cookie + returns `{ ok: true, html: <rendered block> }`. Wrong passcode → 401. Powers the inline unlock modal in `assets/frontend/biolink.js`. |
+
+## Checkout
+
+| Method | Path | Purpose |
+|---|---|---|
+| POST   | `/stripe/checkout` | Create a Stripe Checkout session (donation / product) |
+| POST   | `/paypal/checkout` | Create a PayPal Orders v2 order |
+| POST   | `/paypal/capture` | Capture an approved PayPal order |
+
+`?biolink_paypal=return&token={order_id}` on a bio page is intercepted by `Integrations\PayPal\ReturnHandler` (template_redirect) and captured automatically.
+
+## Changelog + in-app updater
+
+| Method | Path | Cap | Purpose |
+|---|---|---|---|
+| GET    | `/changelog` | `biolink_manage_pages` | GitHub release history (markdown rendered server-side) |
+| GET    | `/changelog/update-status` | `biolink_manage_pages` | Current vs. latest version + download URL |
+| POST   | `/changelog/install-update` | `update_plugins` | Runs `Plugin_Upgrader` against the latest release zip |
 
 ## QR codes
 
