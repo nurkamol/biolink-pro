@@ -4,7 +4,7 @@ Tags: link in bio, linktree, bio link, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.9
 Requires PHP: 8.2
-Stable tag: 2.5.1
+Stable tag: 2.5.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,9 @@ GitHub: https://github.com/nurkamol/biolink-pro/issues
 First stable release. Production-ready: 18 block types, 8 themes, analytics, QR codes, SEO coexistence with Rank Math / Yoast, JSON portability, encrypted integrations vault, AI suggestions, onboarding wizard, accessibility pass. Tested on WordPress 6.9 and PHP 8.2 / 8.3.
 
 == Changelog ==
+
+= 2.5.2 =
+* Fix: the Version history + Schedule drawer headers were getting clipped by the WordPress admin bar. Drawer now sits below the admin bar with a much higher z-index.
 
 = 2.5.1 =
 * Top-level pages (Dashboard, Pages, Insights, Audience, What's New, Settings) now align flush-left next to the sidebar instead of being centered with empty gutters.

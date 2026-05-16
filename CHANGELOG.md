@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.5.2] - 2026-05-17
+
+### Fixed
+- **Version history + Schedule drawer no longer hide under the WP admin bar.** The drawer overlay was using `z-index: 100` and `inset: 0`, so the header ("Version history") was clipped by the WordPress admin bar at the top of the screen. Drawer overlay now sits at `top: 32px` (46px on small screens) with `z-index: 99998` — admin bar remains visible above, drawer header is fully readable.
+
 ## [2.5.1] - 2026-05-17
 
 ### Changed

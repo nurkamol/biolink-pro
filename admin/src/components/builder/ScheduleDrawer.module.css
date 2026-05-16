@@ -1,10 +1,21 @@
 .overlay {
 	position: fixed;
-	inset: 0;
+	/* Offset top by the WP admin bar (32px) so the drawer header
+	 * isn't clipped. z-index sits above plugin chrome but below the
+	 * WP admin bar (99999) so the bar stays usable. */
+	top: 32px;
+	right: 0;
+	bottom: 0;
+	left: 0;
 	background: rgba( 24, 22, 16, 0.4 );
-	z-index: 100;
+	z-index: 99998;
 	display: flex;
 	justify-content: flex-end;
+}
+
+/* WP admin bar shrinks on small screens; offset accordingly. */
+@media screen and ( max-width: 782px ) {
+	.overlay { top: 46px; }
 }
 
 .drawer {
