@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.2.2] - 2026-05-17
+
+### Changed
+- **Unlock UX is now fully inline.** Clicking a locked block opens a modal overlay on the same page (centered card, light/dark aware, escape/click-outside to dismiss). On correct passcode, the placeholder's `outerHTML` is replaced in place with the rendered block — no page reload, no separate `/?biolink_unlock=…` page. YouTube embeds, image galleries, donation forms etc. appear in-line and animate in.
+- The standalone `template_redirect` unlock page from v2.2.0–v2.2.1 stays as a graceful-degradation path for visitors with JavaScript disabled.
+
+### Added
+- **`POST /biolink/v1/unlock/{page_id}/{uuid}`** — public REST endpoint. Body `{ passcode }`. Verifies via `wp_check_password`, sets the signed `biolink_unlocked` cookie, renders the unlocked block server-side via `PageRenderer`, returns `{ ok: true, html }`. Wrong passcode → 401.
+- **`UnlockHandler::rememberUnlockForRequest()`** — public static so the REST endpoint can persist + inject the cookie token in the current request (so `PageRenderer` sees the unlock state when it renders the response HTML).
+- **Modal styling in `assets/frontend/biolink.css`** — `.bio-unlock-overlay` / `.bio-unlock-modal` with fade + pop animations, honors `prefers-reduced-motion`.
+- **Re-init pattern for swapped-in blocks.** `initYouTube` / `initCountdowns` / `initForms` / `initCheckout` all accept an optional `root` argument and skip elements already marked `data-bio-init`. After a swap, `enhance(newBlock)` re-initializes only the newly inserted DOM — no double-binding, no duplicate countdown ticks.
+- Placeholder anchors now carry `data-biolink-unlock` / `data-biolink-page` / `data-biolink-uuid` so JS knows what to unlock.
+
 ## [2.2.1] - 2026-05-17
 
 ### Fixed

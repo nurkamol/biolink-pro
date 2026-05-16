@@ -105,12 +105,14 @@ final class PageRenderer
     {
         $url = add_query_arg(['biolink_unlock' => $uuid], get_permalink($page_id));
         return sprintf(
-            '<a class="bio-block bio-block--locked-placeholder" href="%s">'
+            '<a class="bio-block bio-block--locked-placeholder" href="%1$s" data-biolink-unlock="1" data-biolink-page="%2$d" data-biolink-uuid="%3$s">'
             . '<span class="bio-block__lock" aria-hidden="true">🔒</span>'
-            . '<span class="bio-block__label">%s</span>'
-            . '<span class="bio-block__sub">%s</span>'
+            . '<span class="bio-block__label">%4$s</span>'
+            . '<span class="bio-block__sub">%5$s</span>'
             . '</a>',
             esc_url($url),
+            $page_id,
+            esc_attr($uuid),
             esc_html($label),
             esc_html__('Click to unlock', 'biolink-pro')
         );

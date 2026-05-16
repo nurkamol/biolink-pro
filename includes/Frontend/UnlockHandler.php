@@ -62,6 +62,16 @@ final class UnlockHandler implements Bootable
 
     private function rememberUnlock(int $page_id, string $uuid): void
     {
+        self::rememberUnlockForRequest($page_id, $uuid);
+    }
+
+    /**
+     * Public helper so the REST UnlockController can persist + inject the unlock
+     * cookie in one call. Sets the response cookie *and* updates $_COOKIE in
+     * the current request so PageRenderer sees the unlocked state immediately.
+     */
+    public static function rememberUnlockForRequest(int $page_id, string $uuid): void
+    {
         $token = self::tokenFor($page_id, $uuid);
         $raw   = isset($_COOKIE[self::COOKIE_NAME])
             ? sanitize_text_field(wp_unslash((string) $_COOKIE[self::COOKIE_NAME]))
@@ -70,25 +80,24 @@ final class UnlockHandler implements Bootable
         if (! in_array($token, $tokens, true)) {
             $tokens[] = $token;
         }
-        // Cap cookie growth — keep the most recent N unlocks.
         $tokens = array_slice($tokens, -50);
 
-        // Make the cookie visible to subsequent PHP requests too, so PageRenderer
-        // sees the unlock state on the redirect target.
         $_COOKIE[self::COOKIE_NAME] = implode(',', $tokens);
 
-        setcookie(
-            self::COOKIE_NAME,
-            implode(',', $tokens),
-            [
-                'expires'  => time() + self::COOKIE_TTL,
-                'path'     => COOKIEPATH ?: '/',
-                'domain'   => COOKIE_DOMAIN ?: '',
-                'secure'   => is_ssl(),
-                'httponly' => true,
-                'samesite' => 'Lax',
-            ]
-        );
+        if (! headers_sent()) {
+            setcookie(
+                self::COOKIE_NAME,
+                implode(',', $tokens),
+                [
+                    'expires'  => time() + self::COOKIE_TTL,
+                    'path'     => COOKIEPATH ?: '/',
+                    'domain'   => COOKIE_DOMAIN ?: '',
+                    'secure'   => is_ssl(),
+                    'httponly' => true,
+                    'samesite' => 'Lax',
+                ]
+            );
+        }
     }
 
     public function maybeUnlock(): void

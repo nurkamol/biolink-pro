@@ -32,6 +32,7 @@ use BioLinkPro\Api\SettingsController;
 use BioLinkPro\Api\TemplatesController;
 use BioLinkPro\Api\ThemesController;
 use BioLinkPro\Api\TrackController;
+use BioLinkPro\Api\UnlockController;
 use BioLinkPro\Api\WebhookController;
 use BioLinkPro\Cron\Pruner;
 use BioLinkPro\Integrations\Email\MailchimpAdapter;
@@ -288,6 +289,7 @@ final class Plugin
                 new WebhookController(),
                 new PortabilityController($repository),
                 new CheckoutController($stripe, $paypal),
+                new UnlockController($repository, $this->get(PageRenderer::class)),
             ])
         );
 

@@ -176,6 +176,154 @@ body.bio-body .bio-page button {
 	opacity: 0.7;
 }
 
+/* Inline unlock modal -------------------------------------------------- */
+
+.bio-unlock-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba( 12, 10, 6, 0.55 );
+	display: grid;
+	place-items: center;
+	padding: 20px;
+	z-index: 9999;
+	animation: bio-unlock-fade 160ms ease-out;
+}
+
+.bio-unlock-modal {
+	width: 100%;
+	max-width: 360px;
+	background: #fff;
+	border-radius: 22px;
+	padding: 26px 22px;
+	box-shadow: 0 24px 64px rgba( 0, 0, 0, 0.22 );
+	position: relative;
+	text-align: center;
+	color: #0a0a0a;
+	font-family: inherit;
+	animation: bio-unlock-pop 180ms cubic-bezier( 0.22, 1, 0.36, 1 );
+}
+
+.bio-unlock-close {
+	position: absolute;
+	top: 10px;
+	right: 12px;
+	width: 30px;
+	height: 30px;
+	border: 0;
+	background: rgba( 0, 0, 0, 0.05 );
+	border-radius: 50%;
+	font-size: 18px;
+	line-height: 1;
+	cursor: pointer;
+	color: inherit;
+}
+
+.bio-unlock-close:hover {
+	background: rgba( 0, 0, 0, 0.1 );
+}
+
+.bio-unlock-icon {
+	font-size: 28px;
+	margin-bottom: 4px;
+}
+
+.bio-unlock-title {
+	font-size: 17px;
+	font-weight: 700;
+	margin: 4px 0 4px;
+	line-height: 1.3;
+	color: inherit;
+}
+
+.bio-unlock-hint {
+	font-size: 13px;
+	color: #5b5b5b;
+	margin: 0 0 16px;
+}
+
+.bio-unlock-form {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.bio-unlock-form input[type="password"] {
+	padding: 12px 14px;
+	border: 1px solid #e6e2d6;
+	border-radius: 12px;
+	font: inherit;
+	font-size: 15px;
+	text-align: center;
+	letter-spacing: 0.08em;
+}
+
+.bio-unlock-form input[type="password"]:focus {
+	outline: 2px solid #672ac0;
+	outline-offset: 2px;
+	border-color: transparent;
+}
+
+.bio-unlock-submit {
+	padding: 12px 14px;
+	border: 0;
+	background: #672ac0;
+	color: #fff;
+	border-radius: 999px;
+	font: inherit;
+	font-weight: 700;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.bio-unlock-submit:hover:not( :disabled ) {
+	background: #571eaa;
+}
+
+.bio-unlock-submit:disabled {
+	opacity: 0.65;
+	cursor: progress;
+}
+
+.bio-unlock-error {
+	background: #fdecea;
+	color: #c41e3a;
+	padding: 8px 12px;
+	border-radius: 8px;
+	font-size: 13px;
+	margin-bottom: 10px;
+	text-align: left;
+}
+
+@keyframes bio-unlock-fade {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+@keyframes bio-unlock-pop {
+	from { opacity: 0; transform: translateY( 8px ) scale( 0.98 ); }
+	to { opacity: 1; transform: translateY( 0 ) scale( 1 ); }
+}
+
+@media ( prefers-color-scheme: dark ) {
+	.bio-unlock-modal {
+		background: #2a2823;
+		color: #f4f1ea;
+	}
+	.bio-unlock-hint { color: #a8a8a8; }
+	.bio-unlock-form input[type="password"] {
+		background: #1c1a16;
+		border-color: #3a3833;
+		color: inherit;
+	}
+	.bio-unlock-close { background: rgba( 255, 255, 255, 0.08 ); color: inherit; }
+	.bio-unlock-close:hover { background: rgba( 255, 255, 255, 0.16 ); }
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.bio-unlock-overlay,
+	.bio-unlock-modal { animation: none; }
+}
+
 /* Generic locked placeholder for non-link blocks ----------------------- */
 
 .bio-block--locked-placeholder {

@@ -29,8 +29,10 @@
 		facade.replaceWith( iframe );
 	}
 
-	function initYouTube() {
-		document.querySelectorAll( '.bio-block__yt-facade' ).forEach( ( facade ) => {
+	function initYouTube( root ) {
+		( root || document ).querySelectorAll( '.bio-block__yt-facade' ).forEach( ( facade ) => {
+			if ( facade.dataset.bioInit ) return;
+			facade.dataset.bioInit = '1';
 			facade.addEventListener(
 				'click',
 				( event ) => {
@@ -79,12 +81,18 @@
 		return true;
 	}
 
-	function initCountdowns() {
-		const blocks = document.querySelectorAll( '.bio-block--countdown' );
-		if ( blocks.length === 0 ) return;
+	function initCountdowns( root ) {
+		const blocks = ( root || document ).querySelectorAll( '.bio-block--countdown' );
+		const fresh = [];
+		blocks.forEach( ( b ) => {
+			if ( b.dataset.bioInit ) return;
+			b.dataset.bioInit = '1';
+			fresh.push( b );
+		} );
+		if ( fresh.length === 0 ) return;
 		const tick = () => {
 			let anyActive = false;
-			blocks.forEach( ( block ) => {
+			fresh.forEach( ( block ) => {
 				if ( updateCountdown( block ) ) anyActive = true;
 			} );
 			if ( anyActive ) {
@@ -152,17 +160,24 @@
 		} );
 	}
 
-	function initForms() {
-		document
-			.querySelectorAll( 'form[data-action="newsletter"]' )
-			.forEach( ( form ) => handleFormSubmit( form, 'newsletter/subscribe', '.bio-block__nl-status' ) );
-		document
-			.querySelectorAll( 'form[data-action="contact"]' )
-			.forEach( ( form ) => handleFormSubmit( form, 'contact/submit', '.bio-block__contact-status' ) );
+	function initForms( root ) {
+		( root || document )
+			.querySelectorAll( 'form[data-action="newsletter"]:not([data-bio-init])' )
+			.forEach( ( form ) => {
+				form.dataset.bioInit = '1';
+				handleFormSubmit( form, 'newsletter/subscribe', '.bio-block__nl-status' );
+			} );
+		( root || document )
+			.querySelectorAll( 'form[data-action="contact"]:not([data-bio-init])' )
+			.forEach( ( form ) => {
+				form.dataset.bioInit = '1';
+				handleFormSubmit( form, 'contact/submit', '.bio-block__contact-status' );
+			} );
 	}
 
-	function initCheckout() {
-		document.querySelectorAll( 'form[data-action="checkout"]' ).forEach( ( form ) => {
+	function initCheckout( root ) {
+		( root || document ).querySelectorAll( 'form[data-action="checkout"]:not([data-bio-init])' ).forEach( ( form ) => {
+			form.dataset.bioInit = '1';
 			form.addEventListener( 'submit', async ( event ) => {
 				event.preventDefault();
 				const button = form.querySelector( 'button[type="submit"]' );
@@ -235,12 +250,117 @@
 		}
 	}
 
-	function init() {
-		initYouTube();
-		initCountdowns();
+	function enhance( root ) {
+		initYouTube( root );
+		initCountdowns( root );
 		initTikTok();
-		initForms();
-		initCheckout();
+		initForms( root );
+		initCheckout( root );
+	}
+
+	function openUnlockModal( anchor ) {
+		const pageId = anchor.getAttribute( 'data-biolink-page' );
+		const uuid = anchor.getAttribute( 'data-biolink-uuid' );
+		const labelEl = anchor.querySelector( '.bio-block__label' );
+		const label = labelEl ? labelEl.textContent : '';
+
+		const overlay = document.createElement( 'div' );
+		overlay.className = 'bio-unlock-overlay';
+		overlay.innerHTML =
+			'<div class="bio-unlock-modal" role="dialog" aria-modal="true" aria-labelledby="bio-unlock-title">' +
+			'<button type="button" class="bio-unlock-close" aria-label="Close">&times;</button>' +
+			'<div class="bio-unlock-icon" aria-hidden="true">🔒</div>' +
+			'<h2 id="bio-unlock-title" class="bio-unlock-title">' + escapeHtml( label ) + '</h2>' +
+			'<p class="bio-unlock-hint">Enter the passcode to view this content.</p>' +
+			'<div class="bio-unlock-error" hidden></div>' +
+			'<form class="bio-unlock-form">' +
+			'<input type="password" name="passcode" placeholder="Passcode" autocomplete="off" required />' +
+			'<button type="submit" class="bio-unlock-submit">Unlock</button>' +
+			'</form>' +
+			'</div>';
+		document.body.appendChild( overlay );
+
+		const input = overlay.querySelector( 'input[name="passcode"]' );
+		const errorEl = overlay.querySelector( '.bio-unlock-error' );
+		const form = overlay.querySelector( 'form' );
+		const closeBtn = overlay.querySelector( '.bio-unlock-close' );
+		const submit = overlay.querySelector( '.bio-unlock-submit' );
+
+		setTimeout( () => input.focus(), 30 );
+
+		const close = () => {
+			overlay.remove();
+			document.removeEventListener( 'keydown', onKey );
+		};
+		const onKey = ( e ) => {
+			if ( e.key === 'Escape' ) close();
+		};
+		document.addEventListener( 'keydown', onKey );
+		overlay.addEventListener( 'click', ( e ) => {
+			if ( e.target === overlay ) close();
+		} );
+		closeBtn.addEventListener( 'click', close );
+
+		form.addEventListener( 'submit', async ( e ) => {
+			e.preventDefault();
+			const passcode = input.value;
+			if ( ! passcode ) return;
+			submit.disabled = true;
+			submit.textContent = 'Unlocking…';
+			errorEl.hidden = true;
+			try {
+				const res = await fetch( REST + 'unlock/' + pageId + '/' + uuid, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify( { passcode } ),
+					credentials: 'same-origin',
+				} );
+				const json = await res.json().catch( () => ( {} ) );
+				if ( ! res.ok || ! json.ok ) {
+					errorEl.textContent = ( json && json.message ) || 'Incorrect passcode.';
+					errorEl.hidden = false;
+					submit.disabled = false;
+					submit.textContent = 'Unlock';
+					input.select();
+					return;
+				}
+				// Swap placeholder with the rendered block, then re-init enhancements.
+				const wrap = document.createElement( 'div' );
+				wrap.innerHTML = ( json.html || '' ).trim();
+				const next = wrap.firstElementChild;
+				if ( next && anchor.parentNode ) {
+					anchor.replaceWith( next );
+					enhance( next );
+					next.dispatchEvent(
+						new CustomEvent( 'biolink:unlocked', {
+							bubbles: true,
+							detail: { uuid, pageId },
+						} )
+					);
+				}
+				close();
+			} catch ( err ) {
+				errorEl.textContent = 'Network error. Try again.';
+				errorEl.hidden = false;
+				submit.disabled = false;
+				submit.textContent = 'Unlock';
+			}
+		} );
+	}
+
+	function initUnlock() {
+		// Event delegation so it works for elements swapped in later too.
+		document.addEventListener( 'click', ( ev ) => {
+			const anchor = ev.target.closest && ev.target.closest( '[data-biolink-unlock]' );
+			if ( ! anchor ) return;
+			ev.preventDefault();
+			openUnlockModal( anchor );
+		} );
+	}
+
+	function init() {
+		enhance( document );
+		initUnlock();
 		fireViewBeacon();
 	}
 
