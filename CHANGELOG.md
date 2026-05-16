@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-05-16
+
+### Fixed
+- **Hotfix**: v1.1.1 shipped without `Integrations\PayPal\Checkout::captureAndLog()` — the file Edit was silently rejected during the v1.1.1 push, so the `ReturnHandler` crashed with `Call to undefined method` (HTTP 500) on every PayPal return. Adds the method back. Smoke-test: `GET /bio/{slug}/?biolink_paypal=return&token=FAKE` now correctly redirects to `?biolink_payment=failed`.
+
 ## [1.1.1] - 2026-05-16
 
 ### Added — Closed loops
