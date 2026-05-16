@@ -1,0 +1,256 @@
+.root {
+	max-width: 1200px;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: var( --biolink-space-md );
+	margin-bottom: var( --biolink-space-lg );
+}
+
+.subtitle {
+	margin: 4px 0 0;
+	color: var( --biolink-color-muted );
+	font-size: 13px;
+}
+
+.controls {
+	display: flex;
+	gap: var( --biolink-space-sm );
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.select {
+	padding: 6px 10px;
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	font-size: 13px;
+	background: var( --biolink-color-bg );
+}
+
+.rangeBar {
+	display: flex;
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	overflow: hidden;
+}
+
+.rangeBtn {
+	padding: 6px 12px;
+	background: var( --biolink-color-bg );
+	border: none;
+	border-right: 1px solid var( --biolink-color-border );
+	font-size: 12px;
+	cursor: pointer;
+	color: var( --biolink-color-muted );
+	font-family: inherit;
+}
+
+.rangeBtn:last-child {
+	border-right: none;
+}
+
+.rangeBtn:hover {
+	background: var( --biolink-color-surface );
+}
+
+.rangeBtnActive {
+	background: var( --biolink-color-primary );
+	color: #fff;
+}
+
+.rangeBtnActive:hover {
+	background: var( --biolink-color-primary-hover );
+}
+
+.exportBtn {
+	padding: 6px 12px;
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	color: var( --biolink-color-text );
+	text-decoration: none;
+	font-size: 12px;
+}
+
+.exportBtn:hover {
+	border-color: var( --biolink-color-primary );
+	color: var( --biolink-color-primary );
+}
+
+.cards {
+	display: grid;
+	grid-template-columns: repeat( auto-fit, minmax( 180px, 1fr ) );
+	gap: var( --biolink-space-md );
+	margin-bottom: var( --biolink-space-md );
+}
+
+.card {
+	background: var( --biolink-color-bg );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	padding: var( --biolink-space-md );
+}
+
+.cardLabel {
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var( --biolink-color-muted );
+	margin-bottom: 6px;
+}
+
+.cardValue {
+	font-size: 28px;
+	font-weight: 700;
+	color: var( --biolink-color-text );
+	font-variant-numeric: tabular-nums;
+}
+
+.chartCard,
+.tableCard {
+	background: var( --biolink-color-bg );
+	border: 1px solid var( --biolink-color-border );
+	border-radius: var( --biolink-radius );
+	padding: var( --biolink-space-md );
+	margin-bottom: var( --biolink-space-md );
+}
+
+.chartCard h2,
+.tableCard h2 {
+	font-size: 14px;
+	font-weight: 600;
+	margin: 0 0 var( --biolink-space-sm );
+	color: var( --biolink-color-text );
+}
+
+.chart {
+	width: 100%;
+	height: auto;
+}
+
+.gridLine {
+	stroke: var( --biolink-color-border );
+	stroke-dasharray: 2 4;
+}
+
+.axisText {
+	font-size: 10px;
+	fill: var( --biolink-color-muted );
+}
+
+.chartLegend rect {
+	rx: 2;
+}
+
+.legendText {
+	font-size: 11px;
+	fill: var( --biolink-color-text );
+}
+
+.twoCol {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var( --biolink-space-md );
+	margin-bottom: var( --biolink-space-md );
+}
+
+@media ( max-width: 800px ) {
+	.twoCol {
+		grid-template-columns: 1fr;
+	}
+}
+
+.table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 13px;
+}
+
+.table th {
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var( --biolink-color-muted );
+	font-weight: 600;
+	text-align: left;
+	padding: 6px 8px;
+	border-bottom: 1px solid var( --biolink-color-border );
+}
+
+.table td {
+	padding: 8px;
+	border-bottom: 1px solid var( --biolink-color-border );
+}
+
+.table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.mono {
+	font-family: SFMono-Regular, Menlo, monospace;
+	font-size: 11px;
+	color: var( --biolink-color-muted );
+	max-width: 280px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.numCol {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+.bucketList {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.bucketRow {
+	display: grid;
+	grid-template-columns: 1fr 2fr 50px;
+	gap: 8px;
+	align-items: center;
+	font-size: 13px;
+}
+
+.bucketName {
+	color: var( --biolink-color-text );
+	font-weight: 500;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.bucketBar {
+	height: 8px;
+	border-radius: 4px;
+	background: var( --biolink-color-surface );
+	overflow: hidden;
+}
+
+.bucketBarFill {
+	display: block;
+	height: 100%;
+	background: var( --biolink-color-primary );
+}
+
+.bucketCount {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+	color: var( --biolink-color-muted );
+}
+
+.empty {
+	padding: var( --biolink-space-lg );
+	text-align: center;
+	color: var( --biolink-color-muted );
+}

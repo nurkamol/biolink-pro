@@ -1,0 +1,27 @@
+{
+    "slug": "musician",
+    "label": "Musician",
+    "description": "Spotify embed, tour countdown, merch link, mailing list.",
+    "preview": "musician",
+    "theme": "midnight",
+    "settings": {
+        "headline": "Artist Name",
+        "handle": "artistname",
+        "subheadline": "New single out now",
+        "button_shape": "pill",
+        "button_style": "outline"
+    },
+    "seo": {},
+    "blocks": [
+        { "type": "spotify", "data": { "url": "https://open.spotify.com/track/", "height": "normal" } },
+        { "type": "button", "data": { "label": "Listen everywhere", "url": "https://", "variant": "primary", "size": "lg" } },
+        { "type": "countdown", "data": { "label": "Tour kickoff in", "target": "", "expired_message": "We're on tour!" } },
+        { "type": "social_icons", "data": { "items": [
+            { "platform": "spotify", "url": "https://open.spotify.com/" },
+            { "platform": "instagram", "url": "https://instagram.com/" },
+            { "platform": "youtube", "url": "https://youtube.com/" },
+            { "platform": "tiktok", "url": "https://tiktok.com/@" }
+        ] } },
+        { "type": "newsletter", "data": { "heading": "Join the mailing list", "description": "Tour dates + early ticket access." } }
+    ]
+}

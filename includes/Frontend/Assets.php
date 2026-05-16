@@ -51,6 +51,7 @@ final class Assets implements Bootable
                 'BIOLINK_PRO_PUBLIC',
                 [
                     'restBase' => esc_url_raw(rest_url('biolink/v1/')),
+                    'pageId'   => (int) (get_the_ID() ?: 0),
                 ]
             );
         }

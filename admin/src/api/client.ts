@@ -72,6 +72,105 @@ export const ThemesApi = {
 	},
 };
 
+export interface AnalyticsSummary {
+	views: number;
+	clicks: number;
+	unique_visitors: number;
+	ctr: number;
+}
+
+export interface AnalyticsPoint {
+	date: string;
+	views: number;
+	clicks: number;
+}
+
+export interface AnalyticsLink {
+	link_id: number;
+	label: string;
+	url: string;
+	clicks: number;
+}
+
+export interface AnalyticsBucket {
+	bucket: string;
+	count: number;
+}
+
+export interface AnalyticsRange {
+	from?: string;
+	to?: string;
+}
+
+function range( params: AnalyticsRange ): string {
+	const q = new URLSearchParams();
+	if ( params.from ) q.set( 'from', params.from );
+	if ( params.to ) q.set( 'to', params.to );
+	const qs = q.toString();
+	return qs ? `?${ qs }` : '';
+}
+
+export const AnalyticsApi = {
+	summary( id: number, r: AnalyticsRange = {} ): Promise< AnalyticsSummary > {
+		return request< AnalyticsSummary >( `${ NS }/analytics/pages/${ id }/summary${ range( r ) }` );
+	},
+	timeseries( id: number, r: AnalyticsRange = {} ): Promise< AnalyticsPoint[] > {
+		return request< AnalyticsPoint[] >( `${ NS }/analytics/pages/${ id }/timeseries${ range( r ) }` );
+	},
+	links( id: number, r: AnalyticsRange = {} ): Promise< AnalyticsLink[] > {
+		return request< AnalyticsLink[] >( `${ NS }/analytics/pages/${ id }/links${ range( r ) }` );
+	},
+	devices( id: number, r: AnalyticsRange = {} ): Promise< AnalyticsBucket[] > {
+		return request< AnalyticsBucket[] >( `${ NS }/analytics/pages/${ id }/devices${ range( r ) }` );
+	},
+	geo( id: number, r: AnalyticsRange = {} ): Promise< AnalyticsBucket[] > {
+		return request< AnalyticsBucket[] >( `${ NS }/analytics/pages/${ id }/geo${ range( r ) }` );
+	},
+	referrers( id: number, r: AnalyticsRange = {} ): Promise< AnalyticsBucket[] > {
+		return request< AnalyticsBucket[] >( `${ NS }/analytics/pages/${ id }/referrers${ range( r ) }` );
+	},
+	exportCsvUrl( id: number, r: AnalyticsRange = {} ): string {
+		return `${ window.BIOLINK_PRO.restBase }analytics/pages/${ id }/export.csv${ range( r ) }${ range( r ) ? '&' : '?' }_wpnonce=${ encodeURIComponent( window.BIOLINK_PRO.restNonce ) }`;
+	},
+};
+
+export interface BioTemplate {
+	slug: string;
+	label: string;
+	description: string;
+	preview: string;
+	theme: string;
+	settings: Record< string, unknown >;
+	blocks: Partial< BioBlock >[];
+}
+
+export const TemplatesApi = {
+	list(): Promise< BioTemplate[] > {
+		return request< BioTemplate[] >( `${ NS }/templates` );
+	},
+	apply( slug: string ): Promise< BioPage > {
+		return request< BioPage >( `${ NS }/templates/${ slug }/apply`, { method: 'POST' } );
+	},
+};
+
+export const SettingsApi = {
+	get(): Promise< { general: Record< string, unknown >; integrations: Record< string, unknown > } > {
+		return request( `${ NS }/settings` );
+	},
+	update( payload: Record< string, unknown > ): Promise< { ok: boolean } > {
+		return request( `${ NS }/settings`, { method: 'PATCH', data: payload } );
+	},
+};
+
+export const AiApi = {
+	bio( prompt: string ): Promise< { suggestions: string[] } > {
+		return request( `${ NS }/ai/bio`, { method: 'POST', data: { prompt } } );
+	},
+	cta( prompt: string ): Promise< { suggestions: string[] } > {
+		return request( `${ NS }/ai/cta`, { method: 'POST', data: { prompt } } );
+	},
+};
+
 export interface BioBlockType {
 	slug: string;
 	label: string;

@@ -4,7 +4,7 @@ Tags: bio link, linktree, link in bio, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.6
 Requires PHP: 8.2
-Stable tag: 0.4.0
+Stable tag: 0.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,14 @@ Yes. Everything runs on your own server. No external account required (unless yo
 PHP 8.2 or higher.
 
 == Changelog ==
+
+= 0.5.0 =
+* Phase 5: click + view analytics, dashboard with charts, CSV export, daily cron prune.
+* Phase 6: per-page QR generator (PNG/SVG), OG / Twitter Card meta, JSON-LD (Person + WebPage + FAQPage), sitemap inclusion.
+* Phase 7: integrations settings page with encrypted credential vault (libsodium), generic webhook receiver.
+* Phase 8: optional AI suggestion engine (OpenAI), "✨ Suggest" button on bio subtitle.
+* Phase 9: 6 starter templates (Creator, Agency, Musician, Restaurant, Photographer, Developer), first-run onboarding overlay.
+* Phase 10: documented public extension hook surface for licensing, multi-tenant, A/B testing, custom domains, white-label.
 
 = 0.4.0 =
 * Phase 4b: 10 new P2 block types — Spotify, TikTok, FAQ, Countdown, Product Card, HTML Embed, Map, Newsletter, Donation, Contact Form. 18 total blocks now.

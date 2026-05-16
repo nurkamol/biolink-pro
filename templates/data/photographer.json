@@ -1,0 +1,21 @@
+{
+    "slug": "photographer",
+    "label": "Photographer",
+    "description": "Image gallery, prints store, booking enquiry.",
+    "preview": "photographer",
+    "theme": "glass",
+    "settings": {
+        "headline": "Photographer",
+        "handle": "yourstudio",
+        "subheadline": "Editorial · wedding · brand",
+        "button_shape": "rounded",
+        "button_style": "glass"
+    },
+    "seo": {},
+    "blocks": [
+        { "type": "image_gallery", "data": { "ids": [], "layout": "grid", "size": "medium" } },
+        { "type": "link", "data": { "label": "Print store", "url": "https://", "icon": "shopping-bag", "featured": true } },
+        { "type": "link", "data": { "label": "Wedding portfolio", "url": "https://", "icon": "heart" } },
+        { "type": "contact_form", "data": { "heading": "Booking enquiries", "description": "Tell me about your shoot." } }
+    ]
+}

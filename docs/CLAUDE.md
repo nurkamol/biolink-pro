@@ -2,8 +2,8 @@
 
 > Read this file at the start of every session. Update the phase status line below when moving between phases.
 
-**Current phase:** Phase 4 — themes + P2 blocks (shipped in v0.4.0; 18 blocks total)
-**Next phase:** Phase 5 — Analytics (click + view tracking, dashboards, CSV export)
+**Current phase:** Phase 5–10 — feature complete (shipped in v0.5.0)
+**Next phase:** v1.0 polish, accessibility audit, screenshot pack for wp.org submission
 **Decision (Phase 1):** Admin React app uses **CSS Modules** (not Tailwind).
 **Release channel:** GitHub Releases on `nurkamol/biolink-pro`. Stable tags only (`vX.Y.Z`). Updater = `BioLinkPro\Updates\GitHubUpdater`. See `bin/build-release.sh` for local builds; `.github/workflows/release.yml` runs on tag push.
 **Docs index:** `docs/` (start with `PROMPT.md` then `ARCHITECTURE.md`)

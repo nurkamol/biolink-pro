@@ -158,6 +158,15 @@ export function PageDetail() {
 							{ __( 'Publish', 'biolink-pro' ) }
 						</button>
 					) }
+					<a
+						href={ `${ window.BIOLINK_PRO.restBase }pages/${ page.id }/qr?format=png&_wpnonce=${ encodeURIComponent( window.BIOLINK_PRO.restNonce ) }` }
+						target="_blank"
+						rel="noreferrer"
+						className={ styles.viewLink }
+						title={ __( 'Open QR code', 'biolink-pro' ) }
+					>
+						{ __( 'QR', 'biolink-pro' ) }
+					</a>
 					<a href={ page.url } target="_blank" rel="noreferrer" className={ styles.viewLink }>
 						{ __( 'View ↗', 'biolink-pro' ) }
 					</a>

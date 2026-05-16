@@ -1,0 +1,28 @@
+{
+    "slug": "creator",
+    "label": "Creator",
+    "description": "Loud, vibrant single-column creator profile with social row and featured link.",
+    "preview": "creator",
+    "theme": "neon",
+    "settings": {
+        "headline": "Your Name",
+        "handle": "yourhandle",
+        "subheadline": "Photographer · creator · storyteller",
+        "button_shape": "pill",
+        "button_style": "filled"
+    },
+    "seo": {},
+    "blocks": [
+        { "type": "social_icons", "data": { "items": [
+            { "platform": "instagram", "url": "https://instagram.com/yourhandle" },
+            { "platform": "tiktok", "url": "https://tiktok.com/@yourhandle" },
+            { "platform": "youtube", "url": "https://youtube.com/@yourhandle" },
+            { "platform": "twitter", "url": "https://x.com/yourhandle" }
+        ] } },
+        { "type": "link", "data": { "label": "Latest video", "url": "https://youtube.com/", "icon": "play", "featured": true } },
+        { "type": "link", "data": { "label": "Photo store", "url": "https://", "icon": "shopping-bag" } },
+        { "type": "link", "data": { "label": "Newsletter signup", "url": "https://", "icon": "mail" } },
+        { "type": "divider", "data": { "style": "dots" } },
+        { "type": "rich_text", "data": { "markdown": "Drop a follow on your favourite platform.", "align": "center" } }
+    ]
+}

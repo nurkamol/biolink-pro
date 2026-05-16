@@ -12,12 +12,26 @@ namespace BioLinkPro\Core;
 use BioLinkPro\Admin\Assets as AdminAssets;
 use BioLinkPro\Admin\Menu as AdminMenu;
 use BioLinkPro\Admin\PluginActionLinks;
+use BioLinkPro\Ai\AiController;
+use BioLinkPro\Ai\OpenAiProvider;
+use BioLinkPro\Ai\ProviderRegistry;
+use BioLinkPro\Analytics\LinkSync;
+use BioLinkPro\Analytics\Reporter;
+use BioLinkPro\Analytics\Tracker;
+use BioLinkPro\Api\AnalyticsController;
 use BioLinkPro\Api\BlocksController;
 use BioLinkPro\Api\ChangelogController;
+use BioLinkPro\Api\ClickController;
 use BioLinkPro\Api\FormsController;
 use BioLinkPro\Api\PagesController;
+use BioLinkPro\Api\QrController;
 use BioLinkPro\Api\RestRouter;
+use BioLinkPro\Api\SettingsController;
+use BioLinkPro\Api\TemplatesController;
 use BioLinkPro\Api\ThemesController;
+use BioLinkPro\Api\TrackController;
+use BioLinkPro\Api\WebhookController;
+use BioLinkPro\Cron\Pruner;
 use BioLinkPro\Blocks\BlockRegistry;
 use BioLinkPro\Blocks\Types\ButtonBlock;
 use BioLinkPro\Blocks\Types\ContactFormBlock;
@@ -43,6 +57,11 @@ use BioLinkPro\Frontend\PageRenderer;
 use BioLinkPro\Frontend\PostType\BioLinkPagePostType;
 use BioLinkPro\Frontend\Repository\PageRepository;
 use BioLinkPro\Frontend\TemplateLoader;
+use BioLinkPro\Qr\Generator as QrGenerator;
+use BioLinkPro\Seo\MetaTags;
+use BioLinkPro\Seo\Sitemap;
+use BioLinkPro\Seo\StructuredData;
+use BioLinkPro\Templates\TemplateLibrary;
 use BioLinkPro\Themes\ThemeEngine;
 use BioLinkPro\Updates\GitHubUpdater;
 
@@ -197,6 +216,30 @@ final class Plugin
         $this->register(TemplateLoader::class, new TemplateLoader());
         $this->register(FrontendAssets::class, new FrontendAssets());
 
+        // Phase 5 — Analytics
+        $tracker  = new Tracker();
+        $link_sync = new LinkSync($repository);
+        $reporter = new Reporter();
+        $this->register(Tracker::class, $tracker);
+        $this->register(LinkSync::class, $link_sync);
+        $this->register(Reporter::class, $reporter);
+        $this->register(Pruner::class, new Pruner());
+
+        // Phase 6 — QR + SEO
+        $this->register(QrGenerator::class, new QrGenerator());
+        $this->register(MetaTags::class, new MetaTags($repository, $themes));
+        $this->register(StructuredData::class, new StructuredData($repository));
+        $this->register(Sitemap::class, new Sitemap());
+
+        // Phase 9 — Templates
+        $templates = new TemplateLibrary($repository);
+        $this->register(TemplateLibrary::class, $templates);
+
+        // Phase 8 — AI providers
+        $ai_registry = new ProviderRegistry();
+        $ai_registry->register(new OpenAiProvider());
+        $this->register(ProviderRegistry::class, $ai_registry);
+
         $updater = new GitHubUpdater(
             'nurkamol',
             'biolink-pro',
@@ -213,6 +256,14 @@ final class Plugin
                 new ChangelogController($updater),
                 new ThemesController($themes),
                 new FormsController(),
+                new ClickController($tracker),
+                new TrackController($tracker),
+                new AnalyticsController($reporter),
+                new QrController($this->get(QrGenerator::class)),
+                new TemplatesController($templates),
+                new SettingsController(),
+                new AiController($ai_registry),
+                new WebhookController(),
             ])
         );
 

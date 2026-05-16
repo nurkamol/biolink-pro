@@ -97,6 +97,12 @@ final class PageRenderer
                 continue;
             }
             $data = is_array($block['data'] ?? null) ? $block['data'] : [];
+            $uuid = isset($block['uuid']) && is_string($block['uuid']) ? $block['uuid'] : null;
+
+            // LinkBlock has an optional 2nd arg to receive uuid for click tracking.
+            $rendered = ($instance instanceof \BioLinkPro\Blocks\Types\LinkBlock)
+                ? $instance->render($data, $uuid)
+                : $instance->render($data);
 
             /**
              * Filter a block's HTML before it lands on the page.
@@ -104,8 +110,9 @@ final class PageRenderer
              * @param string               $output
              * @param string               $type
              * @param array<string, mixed> $data
+             * @param string|null          $uuid
              */
-            $output = apply_filters('biolink/block/render', $instance->render($data), (string) $block['type'], $data);
+            $output = apply_filters('biolink/block/render', $rendered, (string) $block['type'], $data, $uuid);
             if (! is_string($output)) {
                 continue;
             }

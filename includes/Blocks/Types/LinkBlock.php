@@ -9,9 +9,11 @@ declare(strict_types=1);
 
 namespace BioLinkPro\Blocks\Types;
 
+use BioLinkPro\Analytics\LinkSync;
 use BioLinkPro\Blocks\AbstractBlock;
 use BioLinkPro\Blocks\Icons;
 use BioLinkPro\Blocks\Schema\FieldValidator;
+use BioLinkPro\Core\Plugin;
 
 defined('ABSPATH') || exit;
 
@@ -43,7 +45,7 @@ final class LinkBlock extends AbstractBlock
         ];
     }
 
-    public function render(array $data): string
+    public function render(array $data, ?string $uuid = null): string
     {
         $data = FieldValidator::validate($this->schema(), $data);
         if (empty($data['label']) || empty($data['url'])) {
@@ -51,7 +53,20 @@ final class LinkBlock extends AbstractBlock
         }
 
         $url = $data['url'];
-        if (! empty($data['utm'])) {
+
+        // Route through /click/{id} when we have a stable link_id so analytics
+        // can record the click + apply UTM at redirect time.
+        $page_id = (int) (get_the_ID() ?: 0);
+        if ($page_id > 0 && $uuid !== null) {
+            $sync = Plugin::instance()->get(LinkSync::class);
+            if ($sync instanceof LinkSync) {
+                $link_id = $sync->linkIdFor($page_id, $uuid);
+                if ($link_id > 0) {
+                    $url = rest_url('biolink/v1/click/' . $link_id);
+                }
+            }
+        } elseif (! empty($data['utm'])) {
+            // Fallback: append UTM inline if click tracking isn't wired up.
             $url = add_query_arg(self::parseUtm((string) $data['utm']), $url);
         }
 

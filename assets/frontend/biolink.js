@@ -161,11 +161,35 @@
 			.forEach( ( form ) => handleFormSubmit( form, 'contact/submit', '.bio-block__contact-status' ) );
 	}
 
+	function fireViewBeacon() {
+		const pageId = ( window.BIOLINK_PRO_PUBLIC && window.BIOLINK_PRO_PUBLIC.pageId ) || 0;
+		if ( ! pageId ) return;
+		try {
+			const blob = new Blob(
+				[ JSON.stringify( { page_id: pageId } ) ],
+				{ type: 'application/json' }
+			);
+			if ( navigator.sendBeacon ) {
+				navigator.sendBeacon( REST + 'track/view', blob );
+			} else {
+				fetch( REST + 'track/view', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify( { page_id: pageId } ),
+					keepalive: true,
+				} ).catch( () => {} );
+			}
+		} catch {
+			// non-fatal
+		}
+	}
+
 	function init() {
 		initYouTube();
 		initCountdowns();
 		initTikTok();
 		initForms();
+		fireViewBeacon();
 	}
 
 	if ( document.readyState === 'loading' ) {

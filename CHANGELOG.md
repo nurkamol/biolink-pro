@@ -5,6 +5,53 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-05-16
+
+Feature-complete release covering Phases 5–10 of the original roadmap.
+
+### Added — Phase 5: Analytics
+- `Analytics\Tracker` — async event recorder (uses `wp_schedule_single_event` to keep the click redirect fast).
+- `Analytics\LinkSync` — mirrors LinkBlock entries into `wp_biolink_links` on every page save so per-link analytics can join on a stable BIGINT id; deactivates removed rows instead of deleting (preserves historical clicks).
+- `Api\ClickController` — `GET /biolink/v1/click/{id}?ref=...` rate-limited (10/min/IP), applies UTM, 302 redirects.
+- `Api\TrackController` — `POST /biolink/v1/track/view` (rate-limited, bot-filtered).
+- `LinkBlock` now routes its href through `/click/{id}` once the link has been synced.
+- Frontend `biolink.js` fires a view beacon via `navigator.sendBeacon` on DOMContentLoaded.
+- `Analytics\Reporter` — summary, daily timeseries (gap-filled), top links, devices, geo, referrers.
+- `Api\AnalyticsController` — `summary | timeseries | links | devices | geo | referrers | export.csv` under `/analytics/pages/{id}/`.
+- `Cron\Pruner` — daily job that drops expired rate-limit buckets + analytics events older than `analytics_retention_days` (default 365).
+- React Analytics page with summary cards, custom SVG dual-line sparkline, top-links table, device/country/referrer bar lists, range picker (7d/30d/90d/365d), CSV export link.
+
+### Added — Phase 6: QR codes + SEO
+- `Qr\Generator` using `endroid/qr-code` 5.x with on-disk cache keyed by a style hash; PNG or SVG output.
+- `Api\QrController` — `GET /biolink/v1/pages/{id}/qr?format=png&fg=#000&bg=#FFF&size=512`.
+- QR quick-link in the PageDetail topbar.
+- `Seo\MetaTags` — title, description, robots, canonical, og:(type|title|description|url|site_name|locale|image), twitter:(card|title|description|image|site). Per-page SEO override fields (`custom_title`, `custom_description`, `og_image_id`, `no_index`, `twitter_site`).
+- `Seo\StructuredData` — emits JSON-LD `Person` (with `sameAs` aggregated from social_icons blocks) + `WebPage`. FaqBlock continues to emit its own `FAQPage` graph.
+- `Seo\Sitemap` — registers `biolink_page` CPT with `wp_sitemaps`.
+
+### Added — Phase 7: Integrations + settings
+- `Core\Crypto` — symmetric encrypt/decrypt for at-rest secrets using `sodium_crypto_secretbox` (key derived from `AUTH_KEY`); base64 fallback when sodium is unavailable.
+- `Api\SettingsController` — `GET /settings`, `PATCH /settings`. Secrets stored encrypted and returned masked (last 4 visible).
+- `Api\WebhookController` — `POST /biolink/v1/webhooks/{provider}` generic receiver with `biolink/webhook/{provider}/verify` filter + `biolink/webhook/{provider}` action.
+- Settings page (React): General tab (analytics retention, credit toggle, tracking toggle, AI toggle) + Integrations tab (OpenAI key, Stripe secret). SecretField shows masked, has Replace + Remove.
+
+### Added — Phase 8: AI
+- `Ai\Provider` interface + `Ai\ProviderRegistry` + `Ai\OpenAiProvider` (gpt-4o-mini via `wp_remote_post` to `/v1/chat/completions`, reads encrypted key from settings).
+- `Api\AiController` — `POST /ai/{bio|cta|theme}` with per-user 10-per-minute rate limit. Returns `{ suggestions: string[] }`.
+- "✨ Suggest" button on the page subtitle in PageHeaderEditor.
+
+### Added — Phase 9: Templates + onboarding
+- `Templates\TemplateLibrary` — loads JSON files from `templates/data/` and creates new draft pages from them.
+- `Api\TemplatesController` — `GET /templates`, `POST /templates/{slug}/apply`.
+- 6 starter templates: `creator`, `agency`, `musician`, `restaurant`, `photographer`, `developer`.
+- First-run `OnboardingOverlay` (React) shown until dismissed (per-browser localStorage + server-side `onboarding_complete` setting). Pick a template to start, or "Start from scratch".
+
+### Added — Phase 10 scaffolding
+- `docs/EXTENSIONS.md` documents the public hook surface for licensing, multi-tenant SaaS mode, A/B testing, custom-domain mapping, team workspaces, automation workflows, and white-label branding. No core implementation — premium add-ons hook in here.
+
+### Dependencies
+- `endroid/qr-code ^5.0` (PHP production dep) — pure-PHP QR code generator.
+
 ## [0.4.0] - 2026-05-16
 
 ### Added — Phase 4b: P2 blocks (10 new types, 18 total)

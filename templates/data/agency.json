@@ -1,0 +1,26 @@
+{
+    "slug": "agency",
+    "label": "Agency",
+    "description": "Clean professional layout with services, contact form, and credentials.",
+    "preview": "agency",
+    "theme": "mono",
+    "settings": {
+        "headline": "Studio Name",
+        "subheadline": "We build digital products that scale.",
+        "button_shape": "rounded",
+        "button_style": "filled"
+    },
+    "seo": {},
+    "blocks": [
+        { "type": "rich_text", "data": { "markdown": "## What we do\n\nProduct design · Brand systems · Engineering.", "align": "left" } },
+        { "type": "button", "data": { "label": "Book a discovery call", "url": "https://", "variant": "primary", "size": "lg" } },
+        { "type": "button", "data": { "label": "View case studies", "url": "https://", "variant": "secondary", "size": "md" } },
+        { "type": "divider", "data": { "style": "line" } },
+        { "type": "social_icons", "data": { "items": [
+            { "platform": "linkedin", "url": "https://linkedin.com/company/" },
+            { "platform": "twitter", "url": "https://x.com/" },
+            { "platform": "github", "url": "https://github.com/" }
+        ] } },
+        { "type": "contact_form", "data": { "heading": "Get in touch", "description": "Tell us about your project." } }
+    ]
+}

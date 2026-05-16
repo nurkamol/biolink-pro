@@ -1,0 +1,24 @@
+{
+    "slug": "restaurant",
+    "label": "Restaurant",
+    "description": "Hours, menu, reservation link, location map.",
+    "preview": "restaurant",
+    "theme": "forest",
+    "settings": {
+        "headline": "Restaurant Name",
+        "subheadline": "Seasonal · neighbourhood · cosy",
+        "button_shape": "rounded",
+        "button_style": "filled"
+    },
+    "seo": {},
+    "blocks": [
+        { "type": "button", "data": { "label": "Reserve a table", "url": "https://", "variant": "primary", "size": "lg" } },
+        { "type": "button", "data": { "label": "View the menu", "url": "https://", "variant": "secondary", "size": "md" } },
+        { "type": "rich_text", "data": { "markdown": "**Hours**\n\n- Tue – Thu: 5pm – 10pm\n- Fri – Sat: 5pm – 11pm\n- Sun: 11am – 3pm brunch", "align": "left" } },
+        { "type": "map", "data": { "lat": "40.7128", "lng": "-74.0060", "zoom": 15, "label": "Find us" } },
+        { "type": "social_icons", "data": { "items": [
+            { "platform": "instagram", "url": "https://instagram.com/" },
+            { "platform": "facebook", "url": "https://facebook.com/" }
+        ] } }
+    ]
+}

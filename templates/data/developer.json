@@ -1,0 +1,27 @@
+{
+    "slug": "developer",
+    "label": "Developer",
+    "description": "Projects, blog, talks, hire me. Minimal and focused.",
+    "preview": "developer",
+    "theme": "mono",
+    "settings": {
+        "headline": "Your Name",
+        "handle": "yourhandle",
+        "subheadline": "Software engineer · open source · WordPress",
+        "button_shape": "square",
+        "button_style": "outline"
+    },
+    "seo": {},
+    "blocks": [
+        { "type": "social_icons", "data": { "items": [
+            { "platform": "github", "url": "https://github.com/" },
+            { "platform": "twitter", "url": "https://x.com/" },
+            { "platform": "linkedin", "url": "https://linkedin.com/in/" },
+            { "platform": "website", "url": "https://" }
+        ] } },
+        { "type": "link", "data": { "label": "Latest project", "url": "https://", "icon": "globe", "featured": true } },
+        { "type": "link", "data": { "label": "Blog", "url": "https://", "icon": "arrow-right" } },
+        { "type": "link", "data": { "label": "Talks & podcasts", "url": "https://", "icon": "play" } },
+        { "type": "link", "data": { "label": "Hire me", "url": "https://", "icon": "mail" } }
+    ]
+}
