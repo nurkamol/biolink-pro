@@ -26,6 +26,10 @@ export interface BioPageSettings {
 	bg_gradient_angle?: number;
 	bg_image_id?: number;
 	bg_overlay?: number;
+	accent_color?: string;
+	accent_text_color?: string;
+	button_shape?: '' | 'pill' | 'rounded' | 'square';
+	button_style?: '' | 'filled' | 'outline' | 'glass';
 	[ key: string ]: unknown;
 }
 

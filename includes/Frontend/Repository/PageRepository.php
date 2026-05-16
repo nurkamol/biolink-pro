@@ -51,18 +51,22 @@ final class PageRepository
     public static function defaultSettings(): array
     {
         return [
-            'avatar_id'         => 0,
-            'handle'            => '',
-            'headline'          => '',
-            'subheadline'       => '',
-            'hide_name'         => false,
-            'bg_type'           => 'theme',
-            'bg_color'          => '',
-            'bg_gradient_from'  => '',
-            'bg_gradient_to'    => '',
-            'bg_gradient_angle' => 135,
-            'bg_image_id'       => 0,
-            'bg_overlay'        => 0,
+            'avatar_id'          => 0,
+            'handle'             => '',
+            'headline'           => '',
+            'subheadline'        => '',
+            'hide_name'          => false,
+            'bg_type'            => 'theme',
+            'bg_color'           => '',
+            'bg_gradient_from'   => '',
+            'bg_gradient_to'     => '',
+            'bg_gradient_angle'  => 135,
+            'bg_image_id'        => 0,
+            'bg_overlay'         => 0,
+            'accent_color'       => '',
+            'accent_text_color'  => '',
+            'button_shape'       => '',
+            'button_style'       => '',
         ];
     }
 
@@ -261,10 +265,15 @@ final class PageRepository
         foreach (['handle', 'headline', 'subheadline'] as $text_key) {
             $merged[$text_key] = is_string($merged[$text_key]) ? sanitize_text_field($merged[$text_key]) : '';
         }
-        foreach (['bg_color', 'bg_gradient_from', 'bg_gradient_to'] as $color_key) {
+        foreach (['bg_color', 'bg_gradient_from', 'bg_gradient_to', 'accent_color', 'accent_text_color'] as $color_key) {
             $val = (string) ($merged[$color_key] ?? '');
             $merged[$color_key] = preg_match('/^#[0-9a-f]{3}([0-9a-f]{3})?$/i', $val) ? $val : '';
         }
+
+        $shape = (string) ($merged['button_shape'] ?? '');
+        $merged['button_shape'] = in_array($shape, ['pill', 'rounded', 'square', ''], true) ? $shape : '';
+        $style = (string) ($merged['button_style'] ?? '');
+        $merged['button_style'] = in_array($style, ['filled', 'outline', 'glass', ''], true) ? $style : '';
 
         return $merged;
     }

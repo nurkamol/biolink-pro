@@ -211,3 +211,59 @@
 	color: #fff;
 	border-color: var( --biolink-color-primary );
 }
+
+.bgThumbWrap {
+	position: relative;
+	margin-bottom: var( --biolink-space-sm );
+	border-radius: var( --biolink-radius );
+	overflow: hidden;
+	border: 1px solid var( --biolink-color-border );
+	aspect-ratio: 16 / 10;
+}
+
+.bgThumb {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.bgThumbRemove {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	width: 24px;
+	height: 24px;
+	background: rgba( 0, 0, 0, 0.7 );
+	color: #fff;
+	border: none;
+	border-radius: 50%;
+	cursor: pointer;
+	font-size: 14px;
+	line-height: 1;
+}
+
+.customizeBlock {
+	padding-top: var( --biolink-space-sm );
+	margin-top: var( --biolink-space-md );
+	border-top: 1px dashed var( --biolink-color-border );
+}
+
+.customizeBlock .label {
+	font-weight: 500;
+}
+
+.resetButton {
+	margin-top: var( --biolink-space-xs );
+	background: none;
+	border: none;
+	color: var( --biolink-color-muted );
+	font-size: 11px;
+	text-decoration: underline;
+	cursor: pointer;
+	padding: 0;
+}
+
+.resetButton:hover {
+	color: var( --biolink-color-primary );
+}

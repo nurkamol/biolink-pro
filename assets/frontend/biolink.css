@@ -457,3 +457,341 @@ body.bio-body .bio-page button {
 	color: inherit;
 	text-decoration: none;
 }
+
+/* P2 blocks ------------------------------------------------------------ */
+
+.bio-block--spotify,
+.bio-block--tiktok,
+.bio-block--map,
+.bio-block--faq,
+.bio-block--countdown,
+.bio-block--product,
+.bio-block--donation,
+.bio-block--newsletter,
+.bio-block--contact,
+.bio-block--html-embed {
+	width: 100%;
+}
+
+.bio-block--spotify iframe,
+.bio-block--map iframe {
+	border: 0;
+	border-radius: 12px;
+	width: 100%;
+	display: block;
+}
+
+.bio-block--tiktok .tiktok-embed {
+	margin: 0 auto;
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+.bio-block__map-label {
+	margin: 0 0 6px;
+	font-size: 13px;
+	color: var( --bio-color-muted );
+	text-align: center;
+}
+
+/* FAQ accordion */
+.bio-block--faq {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.bio-block__faq-item {
+	background: var( --bio-color-surface );
+	border: 1px solid var( --bio-color-border );
+	border-radius: 12px;
+	padding: 12px 16px;
+	color: var( --bio-color-text );
+	backdrop-filter: blur( 8px );
+	-webkit-backdrop-filter: blur( 8px );
+}
+
+.bio-block__faq-item summary {
+	cursor: pointer;
+	font-weight: 600;
+	list-style: none;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+}
+
+.bio-block__faq-item summary::-webkit-details-marker {
+	display: none;
+}
+
+.bio-block__faq-item summary::after {
+	content: '+';
+	font-size: 18px;
+	font-weight: 400;
+	color: var( --bio-color-muted );
+	transition: transform 200ms ease;
+}
+
+.bio-block__faq-item[open] summary::after {
+	transform: rotate( 45deg );
+}
+
+.bio-block__faq-answer {
+	margin-top: 8px;
+	font-size: 14px;
+	line-height: 1.5;
+	color: var( --bio-color-muted );
+}
+
+/* Countdown */
+.bio-block--countdown {
+	text-align: center;
+}
+
+.bio-block__countdown-label {
+	margin: 0 0 12px;
+	font-size: 14px;
+	color: var( --bio-color-muted );
+}
+
+.bio-block__countdown-grid {
+	display: grid;
+	grid-template-columns: repeat( 4, 1fr );
+	gap: 8px;
+}
+
+.bio-block__countdown-cell {
+	background: var( --bio-color-surface );
+	border: 1px solid var( --bio-color-border );
+	border-radius: 12px;
+	padding: 16px 8px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	color: var( --bio-color-text );
+	backdrop-filter: blur( 8px );
+	-webkit-backdrop-filter: blur( 8px );
+}
+
+.bio-block__countdown-num {
+	font-size: 28px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+}
+
+.bio-block__countdown-lbl {
+	font-size: 10px;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var( --bio-color-muted );
+}
+
+.bio-block__countdown-expired {
+	font-size: 16px;
+	font-weight: 600;
+	color: var( --bio-color-accent );
+	margin: 0;
+}
+
+/* Product card */
+.bio-block--product {
+	display: flex;
+	flex-direction: row;
+	background: var( --bio-color-surface );
+	border: 1px solid var( --bio-color-border );
+	border-radius: 14px;
+	padding: 14px;
+	gap: 14px;
+	color: var( --bio-color-text );
+	backdrop-filter: blur( 8px );
+	-webkit-backdrop-filter: blur( 8px );
+}
+
+.bio-block__product-img {
+	width: 96px;
+	height: 96px;
+	object-fit: cover;
+	border-radius: 10px;
+	flex-shrink: 0;
+}
+
+.bio-block__product-body {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+}
+
+.bio-block__product-name { font-size: 15px; font-weight: 700; margin: 0; }
+.bio-block__product-desc { font-size: 13px; color: var( --bio-color-muted ); margin: 0; }
+.bio-block__product-price { font-size: 15px; font-weight: 600; color: var( --bio-color-accent ); margin: 4px 0; }
+
+.bio-block__product-cta {
+	margin-top: auto;
+	padding: 8px 14px;
+	background: var( --bio-color-accent );
+	color: var( --bio-color-accent-text );
+	text-decoration: none;
+	border-radius: var( --bio-button-radius, 999px );
+	font-size: 13px;
+	font-weight: 600;
+	text-align: center;
+	align-self: flex-start;
+}
+
+/* Donation */
+.bio-block--donation {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	background: var( --bio-color-surface );
+	border: 1px solid var( --bio-color-border );
+	border-radius: 14px;
+	padding: 20px;
+	color: var( --bio-color-text );
+	text-align: center;
+	gap: 6px;
+	backdrop-filter: blur( 8px );
+	-webkit-backdrop-filter: blur( 8px );
+}
+
+.bio-block__donation-heading { font-size: 17px; margin: 0; }
+.bio-block__donation-desc { font-size: 13px; color: var( --bio-color-muted ); margin: 0; }
+
+.bio-block__donation-chips {
+	display: flex;
+	gap: 6px;
+	justify-content: center;
+	flex-wrap: wrap;
+	margin: 8px 0;
+}
+
+.bio-block__donation-chip {
+	padding: 4px 12px;
+	background: var( --bio-color-bg );
+	border: 1px solid var( --bio-color-border );
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.bio-block__donation-cta {
+	display: inline-block;
+	padding: 12px 24px;
+	margin-top: 8px;
+	background: var( --bio-color-accent );
+	color: var( --bio-color-accent-text );
+	text-decoration: none;
+	border-radius: var( --bio-button-radius, 999px );
+	font-size: 14px;
+	font-weight: 600;
+	align-self: center;
+}
+
+/* Newsletter + Contact forms */
+.bio-block--newsletter,
+.bio-block--contact {
+	display: flex;
+	flex-direction: column;
+	background: var( --bio-color-surface );
+	border: 1px solid var( --bio-color-border );
+	border-radius: 14px;
+	padding: 20px;
+	gap: 10px;
+	color: var( --bio-color-text );
+	position: relative;
+	backdrop-filter: blur( 8px );
+	-webkit-backdrop-filter: blur( 8px );
+}
+
+.bio-block__nl-heading,
+.bio-block__contact-heading {
+	font-size: 17px;
+	font-weight: 700;
+	margin: 0 0 4px;
+}
+
+.bio-block__nl-desc,
+.bio-block__contact-desc {
+	font-size: 13px;
+	color: var( --bio-color-muted );
+	margin: 0 0 8px;
+}
+
+.bio-block__nl-row {
+	display: flex;
+	gap: 6px;
+}
+
+.bio-block__nl-input,
+.bio-block__contact-input,
+.bio-block__contact-textarea {
+	flex: 1;
+	padding: 10px 12px;
+	font-size: 14px;
+	border: 1px solid var( --bio-color-border );
+	border-radius: 10px;
+	background: var( --bio-color-bg );
+	color: var( --bio-color-text );
+	font-family: inherit;
+	width: 100%;
+}
+
+.bio-block__contact-textarea {
+	resize: vertical;
+	min-height: 80px;
+}
+
+.bio-block__nl-input:focus,
+.bio-block__contact-input:focus,
+.bio-block__contact-textarea:focus {
+	outline: none;
+	border-color: var( --bio-color-accent );
+	box-shadow: 0 0 0 1px var( --bio-color-accent );
+}
+
+.bio-block__nl-button,
+.bio-block__contact-button {
+	padding: 10px 18px;
+	background: var( --bio-color-accent );
+	color: var( --bio-color-accent-text );
+	border: none;
+	border-radius: var( --bio-button-radius, 10px );
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 600;
+	font-family: inherit;
+}
+
+.bio-block__nl-button:disabled,
+.bio-block__contact-button:disabled {
+	opacity: 0.6;
+	cursor: progress;
+}
+
+.bio-block__contact-hp {
+	position: absolute;
+	left: -9999px;
+	opacity: 0;
+	pointer-events: none;
+	width: 1px;
+	height: 1px;
+}
+
+.bio-block__nl-status,
+.bio-block__contact-status {
+	font-size: 12px;
+	min-height: 1em;
+}
+
+.bio-block__form-status--ok { color: #0a7c2e; font-weight: 600; font-size: 13px; }
+.bio-block__form-status--error { color: #b32d2e; font-weight: 600; font-size: 13px; }
+.bio-block__form-status--info { color: var( --bio-color-muted ); }
+
+/* HTML embed */
+.bio-block--html-embed { display: block; }
+

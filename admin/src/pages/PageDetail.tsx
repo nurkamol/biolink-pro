@@ -206,7 +206,12 @@ export function PageDetail() {
 								/>
 							) }
 							{ tab === 'theme' && (
-								<ThemePicker value={ page.theme } onChange={ handleThemeChange } />
+								<ThemePicker
+									value={ page.theme }
+									settings={ page.settings }
+									onChange={ handleThemeChange }
+									onSettingsChange={ handleSettingsChange }
+								/>
 							) }
 							{ tab === 'background' && (
 								<BackgroundEditor

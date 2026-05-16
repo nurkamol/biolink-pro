@@ -14,16 +14,27 @@ use BioLinkPro\Admin\Menu as AdminMenu;
 use BioLinkPro\Admin\PluginActionLinks;
 use BioLinkPro\Api\BlocksController;
 use BioLinkPro\Api\ChangelogController;
+use BioLinkPro\Api\FormsController;
 use BioLinkPro\Api\PagesController;
 use BioLinkPro\Api\RestRouter;
 use BioLinkPro\Api\ThemesController;
 use BioLinkPro\Blocks\BlockRegistry;
 use BioLinkPro\Blocks\Types\ButtonBlock;
+use BioLinkPro\Blocks\Types\ContactFormBlock;
+use BioLinkPro\Blocks\Types\CountdownBlock;
 use BioLinkPro\Blocks\Types\DividerBlock;
+use BioLinkPro\Blocks\Types\DonationBlock;
+use BioLinkPro\Blocks\Types\FaqBlock;
+use BioLinkPro\Blocks\Types\HtmlEmbedBlock;
 use BioLinkPro\Blocks\Types\ImageGalleryBlock;
 use BioLinkPro\Blocks\Types\LinkBlock;
+use BioLinkPro\Blocks\Types\MapBlock;
+use BioLinkPro\Blocks\Types\NewsletterBlock;
+use BioLinkPro\Blocks\Types\ProductCardBlock;
 use BioLinkPro\Blocks\Types\RichTextBlock;
 use BioLinkPro\Blocks\Types\SocialIconsBlock;
+use BioLinkPro\Blocks\Types\SpotifyBlock;
+use BioLinkPro\Blocks\Types\TiktokBlock;
 use BioLinkPro\Blocks\Types\VideoBlock;
 use BioLinkPro\Blocks\Types\YouTubeBlock;
 use BioLinkPro\Database\Migrator;
@@ -151,10 +162,11 @@ final class Plugin
         $registry = new BlockRegistry();
         $this->register(BlockRegistry::class, $registry);
 
-        // Register P1 blocks via the same public hook third parties use.
+        // Register built-in blocks via the same public hook third parties use.
         add_action(
             'biolink/blocks/register',
             static function (BlockRegistry $r): void {
+                // P1
                 $r->register(new LinkBlock());
                 $r->register(new ButtonBlock());
                 $r->register(new SocialIconsBlock());
@@ -163,6 +175,17 @@ final class Plugin
                 $r->register(new DividerBlock());
                 $r->register(new VideoBlock());
                 $r->register(new YouTubeBlock());
+                // P2
+                $r->register(new SpotifyBlock());
+                $r->register(new TiktokBlock());
+                $r->register(new FaqBlock());
+                $r->register(new CountdownBlock());
+                $r->register(new ProductCardBlock());
+                $r->register(new HtmlEmbedBlock());
+                $r->register(new MapBlock());
+                $r->register(new NewsletterBlock());
+                $r->register(new DonationBlock());
+                $r->register(new ContactFormBlock());
             },
             5
         );
@@ -189,6 +212,7 @@ final class Plugin
                 new BlocksController($registry, $repository),
                 new ChangelogController($updater),
                 new ThemesController($themes),
+                new FormsController(),
             ])
         );
 

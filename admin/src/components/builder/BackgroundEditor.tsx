@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { useCallback, useEffect, useState } from 'react';
 import type { BioPageSettings } from '../../api/client';
 import { pickMedia } from '../../lib/mediaFrame';
 import styles from './SettingsPanel.module.css';
@@ -9,7 +10,7 @@ interface Props {
 }
 
 const TYPES = [
-	{ id: 'theme', label: __( 'Use theme default', 'biolink-pro' ) },
+	{ id: 'theme', label: __( 'Theme default', 'biolink-pro' ) },
 	{ id: 'color', label: __( 'Solid color', 'biolink-pro' ) },
 	{ id: 'gradient', label: __( 'Gradient', 'biolink-pro' ) },
 	{ id: 'image', label: __( 'Image', 'biolink-pro' ) },
@@ -17,6 +18,33 @@ const TYPES = [
 
 export function BackgroundEditor( { settings, onChange }: Props ) {
 	const type = settings.bg_type ?? 'theme';
+	const bgImageId = settings.bg_image_id ?? 0;
+	const [ bgThumb, setBgThumb ] = useState< string | null >( null );
+
+	const loadThumb = useCallback( async () => {
+		if ( ! bgImageId ) {
+			setBgThumb( null );
+			return;
+		}
+		try {
+			const res = await fetch(
+				`/wp-json/wp/v2/media/${ bgImageId }?_fields=source_url,media_details`,
+				{ headers: { 'X-WP-Nonce': window.BIOLINK_PRO.restNonce } }
+			);
+			if ( ! res.ok ) return;
+			const json = ( await res.json() ) as {
+				source_url: string;
+				media_details?: { sizes?: { medium?: { source_url?: string } } };
+			};
+			setBgThumb( json.media_details?.sizes?.medium?.source_url ?? json.source_url );
+		} catch {
+			// non-fatal
+		}
+	}, [ bgImageId ] );
+
+	useEffect( () => {
+		void loadThumb();
+	}, [ loadThumb ] );
 
 	const pickBgImage = async () => {
 		try {
@@ -28,10 +56,16 @@ export function BackgroundEditor( { settings, onChange }: Props ) {
 			} );
 			if ( picked[ 0 ] ) {
 				onChange( { ...settings, bg_image_id: picked[ 0 ].id } );
+				setBgThumb( picked[ 0 ].url );
 			}
 		} catch {
 			// cancelled
 		}
+	};
+
+	const removeBgImage = () => {
+		onChange( { ...settings, bg_image_id: 0 } );
+		setBgThumb( null );
 	};
 
 	return (
@@ -108,13 +142,26 @@ export function BackgroundEditor( { settings, onChange }: Props ) {
 
 			{ type === 'image' && (
 				<>
+					{ bgThumb && (
+						<div className={ styles.bgThumbWrap }>
+							<img src={ bgThumb } alt="" className={ styles.bgThumb } />
+							<button
+								type="button"
+								className={ styles.bgThumbRemove }
+								onClick={ removeBgImage }
+								aria-label={ __( 'Remove background image', 'biolink-pro' ) }
+							>
+								×
+							</button>
+						</div>
+					) }
 					<button type="button" className={ styles.btn } onClick={ pickBgImage }>
-						{ settings.bg_image_id
-							? __( 'Change background image', 'biolink-pro' )
+						{ bgImageId
+							? __( 'Change image', 'biolink-pro' )
 							: __( 'Select background image', 'biolink-pro' ) }
 					</button>
-					{ ( settings.bg_image_id ?? 0 ) > 0 && (
-						<label className={ styles.field }>
+					{ bgImageId > 0 && (
+						<label className={ styles.field } style={ { marginTop: '12px' } }>
 							<span className={ styles.label }>
 								{ __( 'Overlay', 'biolink-pro' ) }: { settings.bg_overlay ?? 0 }%
 							</span>

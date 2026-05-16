@@ -5,6 +5,41 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-05-16
+
+### Added — Phase 4b: P2 blocks (10 new types, 18 total)
+- **`SpotifyBlock`** — track/album/playlist iframe embed; height + light/black theme options; parses both `open.spotify.com` URLs and `spotify:` URIs.
+- **`TiktokBlock`** — official blockquote markup; embed.js is lazy-loaded only when a TikTok block is present.
+- **`FaqBlock`** — accordion of `<details>` items; emits `<script type="application/ld+json">` `FAQPage` structured data for SEO.
+- **`CountdownBlock`** — live timer to a target datetime; JS ticker updates every second; shows an "expired" message after the target passes.
+- **`ProductCardBlock`** — image + name + description + price + CTA.
+- **`HtmlEmbedBlock`** — raw HTML field; sanitized via `wp_kses_post` unless the page author has `unfiltered_html`.
+- **`MapBlock`** — OpenStreetMap iframe embed (no API key required); lat/lng + zoom + label.
+- **`NewsletterBlock`** — email subscribe form; subscribers stored in `biolink_newsletter_list` option and emailed to site admin.
+- **`DonationBlock`** — heading + suggested amounts + payment URL (PayPal.me / Stripe Payment Link). Full Stripe/PayPal SDK integration deferred to Phase 7.
+- **`ContactFormBlock`** — name/email/message form that emails the site admin with `Reply-To` set to the visitor.
+
+### Added — Forms backend
+- **`Api\FormsController`** — anonymous-POST endpoints (`/newsletter/subscribe`, `/contact/submit`). Guarded by per-page nonce + honey-pot field + 5-per-5-minute IP rate limit.
+- IPs hashed (`sha256` with `wp_salt`) before being stored alongside subscriber records — never raw.
+- `biolink/newsletter/subscribed` and `biolink/contact/submitted` actions for Phase 7 provider integrations.
+
+### Added — Theme editing
+- Per-page theme overrides on top of the chosen preset: `accent_color`, `accent_text_color`, `button_shape` (pill/rounded/square), `button_style` (filled/outline/glass).
+- `ThemeEngine::renderStyleBlock` layers per-page overrides on top of preset tokens.
+- New "Customize" section inside the Theme tab with color pickers + segmented controls + "Reset to theme defaults" link.
+- `BackgroundEditor` now shows a thumbnail preview of the picked background image with a remove button.
+- 18-block inserter grouped by category (Core / Embed / Engage / Monetize).
+
+### Added — Frontend JS
+- Live countdown ticker.
+- TikTok `embed.js` loader (deferred — only injected when a TikTok block is on the page).
+- Newsletter + contact form submission handlers with inline status updates.
+- `BIOLINK_PRO_PUBLIC` localized object exposes the REST base to public-page JS.
+
+### Fixed
+- **Background image was invisible on the public bio page.** `--bio-bg` and other theme tokens were being declared on `.bio-page` but read by `body.bio-body` — CSS custom properties don't inherit upward, so the body always resolved to the fallback. Variables are now declared on `body.bio-body` so the entire bio body picks them up.
+
 ## [0.3.0] - 2026-05-16
 
 ### Added — Phase 4 cut: themes + polish

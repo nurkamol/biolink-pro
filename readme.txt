@@ -4,7 +4,7 @@ Tags: bio link, linktree, link in bio, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.6
 Requires PHP: 8.2
-Stable tag: 0.3.0
+Stable tag: 0.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,14 @@ Yes. Everything runs on your own server. No external account required (unless yo
 PHP 8.2 or higher.
 
 == Changelog ==
+
+= 0.4.0 =
+* Phase 4b: 10 new P2 block types — Spotify, TikTok, FAQ, Countdown, Product Card, HTML Embed, Map, Newsletter, Donation, Contact Form. 18 total blocks now.
+* Theme editing: per-page overrides for accent color, button shape, and button style on top of the chosen preset.
+* Fix: background image was invisible — CSS custom properties were being declared on .bio-page but read by body.bio-body (parent can't inherit from child). Now declared on body.bio-body.
+* Background image now shows a thumbnail preview in the admin editor.
+* New public REST endpoints `POST /biolink/v1/newsletter/subscribe` and `POST /biolink/v1/contact/submit` with nonce + honey-pot + per-IP rate limiting; submissions emailed to the site admin.
+* Frontend JS extended with live countdown ticker, TikTok embed.js loader, and form submission handlers.
 
 = 0.3.0 =
 * Phase 4 cut: theme presets, page headers, live preview.

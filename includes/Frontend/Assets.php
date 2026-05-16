@@ -46,6 +46,13 @@ final class Assets implements Bootable
                 (string) filemtime($js_path),
                 true
             );
+            wp_localize_script(
+                self::HANDLE,
+                'BIOLINK_PRO_PUBLIC',
+                [
+                    'restBase' => esc_url_raw(rest_url('biolink/v1/')),
+                ]
+            );
         }
     }
 }

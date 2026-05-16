@@ -141,11 +141,43 @@ final class ThemeEngine implements Bootable
         $shape = sanitize_key((string) ($preset->buttonShape));
         $style = sanitize_key((string) ($preset->buttonStyle));
 
+        // Per-page theme token overrides (theme editing) — narrow override layer
+        // applied on top of preset tokens.
+        $override_rules = '';
+        if (! empty($settings['accent_color']) && is_string($settings['accent_color'])) {
+            $c = $this->sanitizeCssColor($settings['accent_color']);
+            if ($c !== '#000000' || $settings['accent_color'] === '#000000') {
+                $override_rules .= sprintf('--bio-color-accent:%s;', $c);
+            }
+        }
+        if (! empty($settings['accent_text_color']) && is_string($settings['accent_text_color'])) {
+            $c = $this->sanitizeCssColor($settings['accent_text_color']);
+            $override_rules .= sprintf('--bio-color-accent-text:%s;', $c);
+        }
+        if (! empty($settings['button_shape']) && in_array($settings['button_shape'], ['pill', 'rounded', 'square'], true)) {
+            $shape = (string) $settings['button_shape'];
+            $radius = match ($shape) {
+                'pill'    => '999px',
+                'square'  => '4px',
+                'rounded' => '14px',
+                default   => '999px',
+            };
+            $override_rules .= sprintf('--bio-button-radius:%s;', $radius);
+        }
+        if (! empty($settings['button_style']) && in_array($settings['button_style'], ['filled', 'outline', 'glass'], true)) {
+            $style = (string) $settings['button_style'];
+        }
+
+        // Declare ALL theme tokens on body.bio-body so they cascade to .bio-page
+        // and everything inside. (CSS custom properties don't inherit upward —
+        // defining on .bio-page meant body.bio-body's background rule resolved
+        // against the fallback, hence the invisible image bg bug.)
         return sprintf(
-            "<style id=\"biolink-theme\">\n%s.bio-page{%s%s}\nbody.bio-body{background:var(--bio-bg);color:var(--bio-color-text);font-family:var(--bio-font-stack);}\n.bio-page{--bio-button-shape:%s;--bio-button-style:%s;}\n</style>",
+            "<style id=\"biolink-theme\">\n%sbody.bio-body{%s%s%s--bio-button-shape:%s;--bio-button-style:%s;}\nbody.bio-body{background:var(--bio-bg);background-attachment:fixed;color:var(--bio-color-text);font-family:var(--bio-font-stack);}\n</style>",
             $fontImport,
             $vars,
             $bg_override,
+            $override_rules,
             esc_attr($shape),
             esc_attr($style)
         );
