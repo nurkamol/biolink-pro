@@ -98,6 +98,36 @@ final class PageRenderer
     }
 
     /**
+     * Decide whether a block is inside its visibility window.
+     *
+     * @param array<string, mixed> $data
+     */
+    private function isScheduleActive(array $data): bool
+    {
+        $start = isset($data['_start_at']) && $data['_start_at'] !== ''
+            ? strtotime((string) $data['_start_at'])
+            : false;
+        $end = isset($data['_end_at']) && $data['_end_at'] !== ''
+            ? strtotime((string) $data['_end_at'])
+            : false;
+
+        if ($start === false && $end === false) {
+            return true;
+        }
+
+        // current_time('timestamp') returns site-local time, matching the
+        // datetime-local values the admin writes.
+        $now = (int) current_time('timestamp');
+        if ($start !== false && $now < $start) {
+            return false;
+        }
+        if ($end !== false && $now > $end) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Render every block on the page to a stream of HTML.
      *
      * @param list<array<string, mixed>> $blocks
@@ -119,6 +149,13 @@ final class PageRenderer
             if (array_key_exists('_active', $data) && $data['_active'] === false) {
                 continue;
             }
+
+            // Per-block schedule window. Times are stored as "YYYY-MM-DDTHH:MM:SS"
+            // in the site's local timezone (the admin writes datetime-local values).
+            if (! $this->isScheduleActive($data)) {
+                continue;
+            }
+
             $uuid = isset($block['uuid']) && is_string($block['uuid']) ? $block['uuid'] : null;
 
             // LinkBlock + DonationBlock + ProductCardBlock take uuid as a 2nd arg
@@ -144,6 +181,12 @@ final class PageRenderer
             if (! is_string($output)) {
                 continue;
             }
+
+            // Highlight wrapper class — drives the pulse animation on the public template.
+            if (! empty($data['_highlight'])) {
+                $output = '<div class="bio-block bio-block--highlight">' . $output . '</div>';
+            }
+
             $html .= $output;
         }
         $html .= '</div>';

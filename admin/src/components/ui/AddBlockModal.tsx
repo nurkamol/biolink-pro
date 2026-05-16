@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useMemo, useState } from 'react';
 import { getBlockCatalog, type BlockMeta } from '../../blocks';
+import { IconCaret, IconClose, IconSearch } from './Icons';
 import styles from './AddBlockModal.module.css';
 
 type Category = 'suggested' | 'commerce' | 'social' | 'media' | 'engage' | 'all';
@@ -73,12 +74,12 @@ export function AddBlockModal( { open, onClose, onPick }: Props ) {
 						onClick={ onClose }
 						aria-label={ __( 'Close', 'biolink-pro' ) }
 					>
-						×
+						<IconClose size={ 16 } />
 					</button>
 				</header>
 
 				<div className={ styles.search }>
-					<span className={ styles.searchIcon }>⌕</span>
+					<span className={ styles.searchIcon }><IconSearch /></span>
 					<input
 						type="search"
 						className={ styles.searchInput }
@@ -144,7 +145,7 @@ export function AddBlockModal( { open, onClose, onPick }: Props ) {
 												{ describeBlock( m.slug ) }
 											</span>
 										</span>
-										<span className={ styles.listChev }>›</span>
+										<span className={ styles.listChev }><IconCaret direction="right" size={ 14 } /></span>
 									</button>
 								</li>
 							) ) }

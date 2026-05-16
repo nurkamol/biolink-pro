@@ -11,7 +11,6 @@ import { DesignPage } from './pages/builder/DesignPage';
 import { InsightsPage } from './pages/builder/InsightsPage';
 import { LinksPage } from './pages/builder/LinksPage';
 import { ShopPage } from './pages/builder/ShopPage';
-import { AudienceStub, EarnStub, ToolsStub } from './pages/builder/StubPage';
 
 export function App() {
 	return (
@@ -27,13 +26,8 @@ export function App() {
 						<Route path="design" element={ <DesignPage /> } />
 						<Route path="shop" element={ <ShopPage /> } />
 						<Route path="insights" element={ <InsightsPage /> } />
-						<Route path="audience" element={ <AudienceStub /> } />
-						<Route path="earn" element={ <EarnStub /> } />
 					</Route>
 					<Route path="/analytics" element={ <Analytics /> } />
-					<Route path="/audience" element={ <AudienceStub /> } />
-					<Route path="/earn" element={ <EarnStub /> } />
-					<Route path="/tools/:tool" element={ <ToolsStub /> } />
 					<Route path="/changelog" element={ <Changelog /> } />
 					<Route path="/settings" element={ <Settings /> } />
 					<Route path="*" element={ <Navigate to="/" replace /> } />

@@ -15,13 +15,33 @@ import {
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BlocksApi, type BioBlock } from '../../api/client';
 import { findBlockMeta, type BlockData } from '../../blocks';
 import { AddBlockModal } from '../../components/ui/AddBlockModal';
+import {
+	IconClock,
+	IconExternal,
+	IconGrip,
+	IconImage,
+	IconLock,
+	IconPencil,
+	IconPlus,
+	IconStar,
+	IconTrash,
+} from '../../components/ui/Icons';
 import { PageHeaderEditor } from '../../components/builder/PageHeaderEditor';
+import { pickMedia } from '../../lib/mediaFrame';
 import { useBuilder } from './BuilderContext';
 import styles from './LinksPage.module.css';
+
+type BlockMetaData = Record< string, unknown > & {
+	_active?: boolean;
+	_highlight?: boolean;
+	_thumbnail_id?: number;
+	_start_at?: string;
+	_end_at?: string;
+};
 
 export function LinksPage() {
 	const { page, setBlocks, setSettings } = useBuilder();
@@ -115,12 +135,16 @@ export function LinksPage() {
 		[ page.id, page.blocks, setBlocks ]
 	);
 
-	const handleToggleActive = useCallback(
-		async ( uuid: string, next: boolean ) => {
+	const patchMeta = useCallback(
+		async ( uuid: string, patch: Partial< BlockMetaData > ) => {
 			const block = page.blocks.find( ( b ) => b.uuid === uuid );
 			if ( ! block ) return;
-			const newData = { ...( block.data as Record< string, unknown > ), _active: next };
-			await handleUpdate( uuid, newData as BlockData );
+			const merged = { ...( block.data as Record< string, unknown > ), ...patch };
+			// Strip nulls so we don't store empty fields.
+			Object.keys( patch ).forEach( ( k ) => {
+				if ( ( patch as Record< string, unknown > )[ k ] === null ) delete merged[ k ];
+			} );
+			await handleUpdate( uuid, merged as BlockData );
 		},
 		[ page.blocks, handleUpdate ]
 	);
@@ -150,7 +174,11 @@ export function LinksPage() {
 
 			<section className={ styles.profileCard }>
 				<div className={ styles.avatar }>
-					{ avatarUrl ? <img src={ avatarUrl } alt="" /> : <span>👤</span> }
+					{ avatarUrl ? (
+						<img src={ avatarUrl } alt="" />
+					) : (
+						<span>{ ( handle || page.title || 'B' ).slice( 0, 1 ).toUpperCase() }</span>
+					) }
 				</div>
 				<div className={ styles.profileBody }>
 					<p className={ styles.handle }>
@@ -165,9 +193,8 @@ export function LinksPage() {
 							className={ styles.editPencil }
 							onClick={ () => setEditHeader( ( v ) => ! v ) }
 							aria-label={ __( 'Edit profile', 'biolink-pro' ) }
-							title={ __( 'Edit profile', 'biolink-pro' ) }
 						>
-							✎
+							<IconPencil /> { __( 'Edit profile', 'biolink-pro' ) }
 						</button>
 					</div>
 				</div>
@@ -180,15 +207,15 @@ export function LinksPage() {
 			) }
 
 			<button type="button" className={ styles.addBtn } onClick={ () => setShowAdd( true ) }>
-				<span style={ { fontSize: 18 } }>+</span> { __( 'Add', 'biolink-pro' ) }
+				<IconPlus /> { __( 'Add', 'biolink-pro' ) }
 			</button>
 
 			<div className={ styles.secondaryRow }>
 				<button type="button" className={ styles.secondaryBtn } disabled title={ __( 'Coming soon', 'biolink-pro' ) }>
-					⊞ { __( 'Add collection', 'biolink-pro' ) }
+					{ __( '+ Add collection', 'biolink-pro' ) }
 				</button>
 				<button type="button" className={ styles.secondaryBtn } disabled title={ __( 'Coming soon', 'biolink-pro' ) }>
-					{ __( 'View archive', 'biolink-pro' ) } ›
+					{ __( 'View archive ›', 'biolink-pro' ) }
 				</button>
 			</div>
 
@@ -216,7 +243,7 @@ export function LinksPage() {
 									}
 									onUpdate={ handleUpdate }
 									onDelete={ handleDelete }
-									onToggleActive={ handleToggleActive }
+									onPatchMeta={ patchMeta }
 								/>
 							) ) }
 						</div>
@@ -236,18 +263,12 @@ interface LinkRowProps {
 	onSelect: () => void;
 	onUpdate: ( uuid: string, next: BlockData ) => void;
 	onDelete: ( uuid: string ) => void;
-	onToggleActive: ( uuid: string, next: boolean ) => void;
+	onPatchMeta: ( uuid: string, patch: Partial< BlockMetaData > ) => Promise< void >;
 }
 
-function LinkRow( {
-	block,
-	selected,
-	saving,
-	onSelect,
-	onUpdate,
-	onDelete,
-	onToggleActive,
-}: LinkRowProps ) {
+type PopoverKind = null | 'schedule' | 'lock';
+
+function LinkRow( { block, selected, saving, onSelect, onUpdate, onDelete, onPatchMeta }: LinkRowProps ) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable( {
 		id: block.uuid,
 	} );
@@ -259,12 +280,71 @@ function LinkRow( {
 	};
 
 	const meta = findBlockMeta( block.type );
-	const data = block.data as Record< string, unknown >;
+	const data = block.data as BlockMetaData;
 	const active = data._active !== false;
+	const highlight = data._highlight === true;
+	const thumbId = ( data._thumbnail_id as number ) || 0;
+	const scheduled = Boolean( data._start_at || data._end_at );
+
+	const [ popover, setPopover ] = useState< PopoverKind >( null );
+	const [ thumbUrl, setThumbUrl ] = useState< string | null >( null );
+
+	useEffect( () => {
+		if ( ! thumbId ) {
+			setThumbUrl( null );
+			return;
+		}
+		void ( async () => {
+			try {
+				const res = await fetch(
+					`/wp-json/wp/v2/media/${ thumbId }?_fields=source_url,media_details`,
+					{ headers: { 'X-WP-Nonce': window.BIOLINK_PRO.restNonce } }
+				);
+				if ( ! res.ok ) return;
+				const json = ( await res.json() ) as {
+					source_url: string;
+					media_details?: { sizes?: { thumbnail?: { source_url?: string } } };
+				};
+				setThumbUrl( json.media_details?.sizes?.thumbnail?.source_url ?? json.source_url );
+			} catch {
+				// non-fatal
+			}
+		} )();
+	}, [ thumbId ] );
 
 	const classes = [ styles.row ];
 	if ( selected ) classes.push( styles.rowSelected );
 	if ( ! active ) classes.push( styles.rowInactive );
+
+	const handlePickThumb = async () => {
+		try {
+			const picked = await pickMedia( {
+				title: __( 'Select thumbnail', 'biolink-pro' ),
+				buttonText: __( 'Use image', 'biolink-pro' ),
+				multiple: false,
+				type: 'image',
+			} );
+			if ( picked[ 0 ] ) {
+				await onPatchMeta( block.uuid, { _thumbnail_id: picked[ 0 ].id } );
+				setThumbUrl( picked[ 0 ].url );
+			}
+		} catch {
+			// cancelled
+		}
+	};
+
+	const handleClearThumb = async () => {
+		await onPatchMeta( block.uuid, { _thumbnail_id: null as unknown as number } );
+		setThumbUrl( null );
+	};
+
+	const handleSaveSchedule = async ( startAt: string, endAt: string ) => {
+		await onPatchMeta( block.uuid, {
+			_start_at: startAt || ( null as unknown as string ),
+			_end_at: endAt || ( null as unknown as string ),
+		} );
+		setPopover( null );
+	};
 
 	return (
 		<div ref={ setNodeRef } style={ style } className={ classes.join( ' ' ) }>
@@ -275,14 +355,19 @@ function LinkRow( {
 				{ ...attributes }
 				{ ...listeners }
 			>
-				⋮⋮
+				<IconGrip />
 			</button>
 
 			<div className={ styles.rowTop }>
 				<button type="button" className={ styles.rowLabel } onClick={ onSelect }>
 					<div className={ styles.rowTitle }>
-						<span>{ meta?.icon ?? '◻' }</span>
+						{ thumbUrl ? (
+							<img src={ thumbUrl } alt="" className={ styles.thumbPreview } />
+						) : (
+							<span>{ meta?.icon ?? '◻' }</span>
+						) }
 						<span>{ meta ? meta.preview( data as BlockData ) || meta.label : block.type }</span>
+						<span className={ styles.rowTypeBadge }>{ meta?.label ?? block.type }</span>
 					</div>
 					<div className={ styles.rowSub }>
 						{ ( data.url as string ) || meta?.label || '' }
@@ -293,24 +378,48 @@ function LinkRow( {
 					<input
 						type="checkbox"
 						checked={ active }
-						onChange={ ( e ) => onToggleActive( block.uuid, e.target.checked ) }
+						onChange={ ( e ) => onPatchMeta( block.uuid, { _active: e.target.checked } ) }
 					/>
 					<span className={ styles.toggleSlider } />
 				</label>
 			</div>
 
 			<div className={ styles.actionBar }>
-				<button type="button" className={ styles.actionBtn } title={ __( 'Thumbnail', 'biolink-pro' ) } disabled>
-					◌
+				<button
+					type="button"
+					className={ `${ styles.actionBtn } ${ thumbUrl ? styles.actionBtnActive : '' }` }
+					onClick={ thumbUrl ? handleClearThumb : handlePickThumb }
+					title={ thumbUrl ? __( 'Remove thumbnail', 'biolink-pro' ) : __( 'Add thumbnail', 'biolink-pro' ) }
+					aria-label={ __( 'Thumbnail', 'biolink-pro' ) }
+				>
+					<IconImage />
 				</button>
-				<button type="button" className={ styles.actionBtn } title={ __( 'Highlight', 'biolink-pro' ) } disabled>
-					★
+				<button
+					type="button"
+					className={ `${ styles.actionBtn } ${ highlight ? styles.actionBtnActive : '' }` }
+					onClick={ () => onPatchMeta( block.uuid, { _highlight: ! highlight } ) }
+					title={ highlight ? __( 'Remove highlight', 'biolink-pro' ) : __( 'Highlight this link', 'biolink-pro' ) }
+					aria-label={ __( 'Highlight', 'biolink-pro' ) }
+				>
+					<IconStar filled={ highlight } />
 				</button>
-				<button type="button" className={ styles.actionBtn } title={ __( 'Schedule', 'biolink-pro' ) } disabled>
-					⏰
+				<button
+					type="button"
+					className={ `${ styles.actionBtn } ${ scheduled ? styles.actionBtnActive : '' }` }
+					onClick={ () => setPopover( ( v ) => ( v === 'schedule' ? null : 'schedule' ) ) }
+					title={ scheduled ? __( 'Edit schedule', 'biolink-pro' ) : __( 'Schedule', 'biolink-pro' ) }
+					aria-label={ __( 'Schedule', 'biolink-pro' ) }
+				>
+					<IconClock />
 				</button>
-				<button type="button" className={ styles.actionBtn } title={ __( 'Lock', 'biolink-pro' ) } disabled>
-					🔒
+				<button
+					type="button"
+					className={ styles.actionBtn }
+					onClick={ () => setPopover( ( v ) => ( v === 'lock' ? null : 'lock' ) ) }
+					title={ __( 'Lock', 'biolink-pro' ) }
+					aria-label={ __( 'Lock', 'biolink-pro' ) }
+				>
+					<IconLock />
 				</button>
 				<span className={ styles.actionChip }>
 					{ saving ? __( 'Saving…', 'biolink-pro' ) : '' }
@@ -320,9 +429,20 @@ function LinkRow( {
 					className={ `${ styles.actionBtn } ${ styles.deleteBtn }` }
 					onClick={ () => onDelete( block.uuid ) }
 					aria-label={ __( 'Delete', 'biolink-pro' ) }
+					title={ __( 'Delete', 'biolink-pro' ) }
 				>
-					🗑
+					<IconTrash />
 				</button>
+
+				{ popover === 'schedule' && (
+					<SchedulePopover
+						startAt={ ( data._start_at as string ) || '' }
+						endAt={ ( data._end_at as string ) || '' }
+						onSave={ handleSaveSchedule }
+						onClose={ () => setPopover( null ) }
+					/>
+				) }
+				{ popover === 'lock' && <LockPopover onClose={ () => setPopover( null ) } /> }
 			</div>
 
 			{ selected && meta && (
@@ -335,6 +455,105 @@ function LinkRow( {
 			) }
 		</div>
 	);
+}
+
+interface SchedulePopoverProps {
+	startAt: string;
+	endAt: string;
+	onSave: ( startAt: string, endAt: string ) => Promise< void >;
+	onClose: () => void;
+}
+
+function SchedulePopover( { startAt, endAt, onSave, onClose }: SchedulePopoverProps ) {
+	const popRef = useRef< HTMLDivElement >( null );
+	const [ s, setS ] = useState( toLocalInput( startAt ) );
+	const [ e, setE ] = useState( toLocalInput( endAt ) );
+
+	useEffect( () => {
+		const onDoc = ( ev: MouseEvent ) => {
+			if ( ! popRef.current?.contains( ev.target as Node ) ) onClose();
+		};
+		setTimeout( () => document.addEventListener( 'mousedown', onDoc ), 0 );
+		return () => document.removeEventListener( 'mousedown', onDoc );
+	}, [ onClose ] );
+
+	const save = () => {
+		void onSave( fromLocalInput( s ), fromLocalInput( e ) );
+	};
+	const clear = () => {
+		setS( '' );
+		setE( '' );
+		void onSave( '', '' );
+	};
+
+	return (
+		<div ref={ popRef } className={ styles.popover }>
+			<h3 className={ styles.popoverTitle }>{ __( 'Schedule', 'biolink-pro' ) }</h3>
+			<p className={ styles.popoverHint }>
+				{ __( 'The block is hidden outside this window. Times are in your site timezone.', 'biolink-pro' ) }
+			</p>
+			<div className={ styles.popoverField }>
+				<label>{ __( 'Visible from', 'biolink-pro' ) }</label>
+				<input type="datetime-local" value={ s } onChange={ ( ev ) => setS( ev.target.value ) } />
+			</div>
+			<div className={ styles.popoverField }>
+				<label>{ __( 'Visible until', 'biolink-pro' ) }</label>
+				<input type="datetime-local" value={ e } onChange={ ( ev ) => setE( ev.target.value ) } />
+			</div>
+			<div className={ styles.popoverActions }>
+				<button type="button" onClick={ clear }>
+					{ __( 'Clear', 'biolink-pro' ) }
+				</button>
+				<button type="button" className={ styles.popoverPrimary } onClick={ save }>
+					{ __( 'Save schedule', 'biolink-pro' ) }
+				</button>
+			</div>
+		</div>
+	);
+}
+
+function LockPopover( { onClose }: { onClose: () => void } ) {
+	const popRef = useRef< HTMLDivElement >( null );
+	useEffect( () => {
+		const onDoc = ( ev: MouseEvent ) => {
+			if ( ! popRef.current?.contains( ev.target as Node ) ) onClose();
+		};
+		setTimeout( () => document.addEventListener( 'mousedown', onDoc ), 0 );
+		return () => document.removeEventListener( 'mousedown', onDoc );
+	}, [ onClose ] );
+
+	return (
+		<div ref={ popRef } className={ styles.popover }>
+			<h3 className={ styles.popoverTitle }>
+				<IconExternal /> { __( 'Passcode-gated links', 'biolink-pro' ) }
+			</h3>
+			<p className={ styles.popoverHint }>
+				{ __(
+					'Coming in v2.2: require visitors to enter a passcode before the link reveals. Stored hashed; redirect handled server-side.',
+					'biolink-pro'
+				) }
+			</p>
+			<div className={ styles.popoverActions }>
+				<button type="button" className={ styles.popoverPrimary } onClick={ onClose }>
+					{ __( 'Got it', 'biolink-pro' ) }
+				</button>
+			</div>
+		</div>
+	);
+}
+
+function toLocalInput( iso: string ): string {
+	if ( ! iso ) return '';
+	// Accept either YYYY-MM-DDTHH:MM or full ISO; strip to minute precision.
+	const m = iso.match( /^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2})/ );
+	return m ? `${ m[ 1 ] }T${ m[ 2 ] }` : '';
+}
+
+function fromLocalInput( v: string ): string {
+	if ( ! v ) return '';
+	// Append :00 seconds so PHP's strtotime is happy without a timezone suffix
+	// (treated as site-local time).
+	return v.length === 16 ? `${ v }:00` : v;
 }
 
 function msg( err: unknown, fallback: string ): string {

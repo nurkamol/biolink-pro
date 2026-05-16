@@ -47,6 +47,9 @@ final class LinkBlock extends AbstractBlock
 
     public function render(array $data, ?string $uuid = null): string
     {
+        // Preserve the meta keys (_thumbnail_id etc.) the validator would strip.
+        $thumbnail_id = isset($data['_thumbnail_id']) ? (int) $data['_thumbnail_id'] : 0;
+
         $data = FieldValidator::validate($this->schema(), $data);
         if (empty($data['label']) || empty($data['url'])) {
             return '';
@@ -77,11 +80,33 @@ final class LinkBlock extends AbstractBlock
 
         $icon_svg = Icons::utility((string) ($data['icon'] ?? 'link'));
 
+        // Per-block thumbnail overrides the icon glyph when set.
+        $leading = '';
+        if ($thumbnail_id > 0) {
+            $thumb = wp_get_attachment_image(
+                $thumbnail_id,
+                'thumbnail',
+                false,
+                [
+                    'class'   => 'bio-block__thumb',
+                    'loading' => 'lazy',
+                    'alt'     => esc_attr($data['label']),
+                ]
+            );
+            if ($thumb !== '') {
+                $leading = $thumb;
+                $classes .= ' bio-block--has-thumb';
+            }
+        }
+        if ($leading === '' && $icon_svg !== '') {
+            $leading = '<span class="bio-block__icon" aria-hidden="true">' . $icon_svg . '</span>';
+        }
+
         return sprintf(
             '<a class="%1$s" href="%2$s" rel="noopener" target="_blank">%3$s<span class="bio-block__label">%4$s</span></a>',
             esc_attr($classes),
             esc_url($url),
-            $icon_svg !== '' ? '<span class="bio-block__icon" aria-hidden="true">' . $icon_svg . '</span>' : '',
+            $leading,
             esc_html($data['label'])
         );
     }

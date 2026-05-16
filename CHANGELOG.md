@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-05-17
+
+Polish + functionality pass on the v2.0.0 redesign. Sidebar trimmed, action chips wired up, emoji UI replaced with consistent SVG icons.
+
+### Added
+- **Thumbnail chip** on every link row — opens the WordPress media picker, stores `_thumbnail_id` on the block, `LinkBlock` renders the image as a 36×36 rounded square next to the label (replaces the utility-icon glyph when present).
+- **Highlight chip** — toggles `_highlight: true` on the block. `PageRenderer` wraps highlighted blocks in `<div class="bio-block bio-block--highlight">`, which pulses a soft glow (`@keyframes bio-highlight-pulse`). Honors `prefers-reduced-motion`.
+- **Schedule chip** — popover with `datetime-local` inputs for visible-from / visible-until. Stores `_start_at` / `_end_at` on the block. `PageRenderer::isScheduleActive()` skips blocks outside their window (site-local time, matching the admin's input).
+- **Lock chip** — popover renders, currently inert with "Coming in v2.2" explainer (passcode-gated links need server-side session handling). UI is in place so v2.2 only needs the gate.
+- **Polished SVG icon set** in `components/ui/Icons.tsx` — grid / bars / sparkle / cog / image / star / clock / lock / trash / grip / external / copy / caret / check / plus / close / pencil / search. All monochrome, 1.8 stroke. Replaces every emoji in the chrome (drag handle, trash, view, copy URL, search, modal close, nav caret).
+
+### Changed
+- **Sidebar trimmed** to working items only. Removed: Earn, Audience, Tools group (Social planner / IG auto-reply / Link shortener / Post ideas), Setup checklist. Routes for those stubs deleted with `pages/builder/StubPage.tsx`.
+- **Status pill** in the top bar shows "Live" / "Draft" with a leading dot indicator instead of lowercase raw status text.
+- **Saved indicator** now leads with a check icon.
+- **Link row** gains a small uppercase type badge ("Link" / "Button" / etc.) so the block kind is glanceable when a thumbnail replaces the type icon.
+- **`LinksPage.module.css`** popover styles, active-chip background, hover states on rows.
+
+### Fixed
+- `LinkBlock::render()` now preserves `_thumbnail_id` through `FieldValidator::validate()` (it would otherwise be stripped along with other unknown keys).
+
 ## [2.0.0] - 2026-05-16
 
 Linktree-class admin redesign. Major UI overhaul — the old top-bar nav and tabbed PageDetail are gone, replaced by a left sidebar with grouped nav, page-scoped routes (Links / Design / Shop / Insights), and a sticky phone preview pane.

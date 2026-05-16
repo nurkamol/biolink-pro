@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import { PagesApi, type BioBlock, type BioPage, type BioPageSettings } from '../../api/client';
 import { LivePreview } from '../../components/builder/LivePreview';
+import { IconCheck, IconCopy, IconExternal } from '../../components/ui/Icons';
 import { BuilderContext, type BuilderContextValue } from './BuilderContext';
 import styles from './BuilderShell.module.css';
 
@@ -163,18 +164,23 @@ export function BuilderShell() {
 				<div className={ styles.topBar }>
 					<div className={ styles.crumb }>{ title }</div>
 					<span className={ `${ styles.statusPill } ${ styles[ page.status ] ?? '' }` }>
-						{ page.status }
+						{ formatStatus( page.status ) }
 					</span>
 					<span className={ styles.savedIndicator }>
-						{ saving
-							? __( 'Saving…', 'biolink-pro' )
-							: savedAt
-							? sprintf(
+						{ saving ? (
+							__( 'Saving…', 'biolink-pro' )
+						) : savedAt ? (
+							<>
+								<IconCheck />{ ' ' }
+								{ sprintf(
 									/* translators: %s: time */
 									__( 'Saved %s', 'biolink-pro' ),
 									savedAt.toLocaleTimeString()
-							  )
-							: '' }
+								) }
+							</>
+						) : (
+							''
+						) }
 					</span>
 					{ page.status !== 'publish' && window.BIOLINK_PRO.caps.publishPages && (
 						<button type="button" className={ styles.primaryBtn } onClick={ handlePublish }>
@@ -187,8 +193,9 @@ export function BuilderShell() {
 						target="_blank"
 						rel="noreferrer"
 						title={ __( 'View page', 'biolink-pro' ) }
+						aria-label={ __( 'View page', 'biolink-pro' ) }
 					>
-						↗
+						<IconExternal size={ 16 } />
 					</a>
 				</div>
 
@@ -209,8 +216,9 @@ export function BuilderShell() {
 									void navigator.clipboard?.writeText( page.url );
 								} }
 								title={ __( 'Copy URL', 'biolink-pro' ) }
+								aria-label={ __( 'Copy URL', 'biolink-pro' ) }
 							>
-								⧉
+								<IconCopy />
 							</button>
 						</div>
 						<div className={ styles.phoneWrap }>
@@ -239,6 +247,19 @@ function labelForRoute( route: string ): string {
 			return __( 'Earn', 'biolink-pro' );
 		default:
 			return __( 'BioLink', 'biolink-pro' );
+	}
+}
+
+function formatStatus( status: string ): string {
+	switch ( status ) {
+		case 'publish':
+			return __( 'Live', 'biolink-pro' );
+		case 'draft':
+			return __( 'Draft', 'biolink-pro' );
+		case 'pending':
+			return __( 'Pending', 'biolink-pro' );
+		default:
+			return status.charAt( 0 ).toUpperCase() + status.slice( 1 );
 	}
 }
 
