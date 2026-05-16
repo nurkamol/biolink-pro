@@ -6,10 +6,12 @@ import { BackgroundEditor } from '../components/builder/BackgroundEditor';
 import { LivePreview } from '../components/builder/LivePreview';
 import { PageBuilder } from '../components/builder/PageBuilder';
 import { PageHeaderEditor } from '../components/builder/PageHeaderEditor';
+import { QrDialog } from '../components/builder/QrDialog';
+import { SeoEditor, type BioPageSeo } from '../components/builder/SeoEditor';
 import { ThemePicker } from '../components/builder/ThemePicker';
 import styles from './PageDetail.module.css';
 
-type SettingsTab = 'header' | 'theme' | 'background';
+type SettingsTab = 'header' | 'theme' | 'background' | 'seo';
 
 export function PageDetail() {
 	const { id } = useParams< { id: string } >();
@@ -22,7 +24,9 @@ export function PageDetail() {
 	const [ savedAt, setSavedAt ] = useState< Date | null >( null );
 	const [ error, setError ] = useState< string | null >( null );
 	const [ tab, setTab ] = useState< SettingsTab >( 'header' );
+	const [ qrOpen, setQrOpen ] = useState( false );
 	const settingsSaveTimer = useRef< number | null >( null );
+	const seoSaveTimer = useRef< number | null >( null );
 
 	const reload = useCallback( async () => {
 		if ( ! Number.isFinite( pageId ) ) return;
@@ -80,6 +84,15 @@ export function PageDetail() {
 		if ( ! page ) return;
 		setPage( { ...page, theme: slug } );
 		void persist( { theme: slug } );
+	};
+
+	const handleSeoChange = ( nextSeo: BioPageSeo ) => {
+		if ( ! page ) return;
+		setPage( { ...page, seo: nextSeo as Record< string, unknown > } );
+		if ( seoSaveTimer.current ) window.clearTimeout( seoSaveTimer.current );
+		seoSaveTimer.current = window.setTimeout( () => {
+			void persist( { seo: nextSeo as Record< string, unknown > } );
+		}, 500 );
 	};
 
 	const handleBlocksChange = ( next: BioBlock[] ) => {
@@ -158,15 +171,14 @@ export function PageDetail() {
 							{ __( 'Publish', 'biolink-pro' ) }
 						</button>
 					) }
-					<a
-						href={ `${ window.BIOLINK_PRO.restBase }pages/${ page.id }/qr?format=png&_wpnonce=${ encodeURIComponent( window.BIOLINK_PRO.restNonce ) }` }
-						target="_blank"
-						rel="noreferrer"
+					<button
+						type="button"
 						className={ styles.viewLink }
+						onClick={ () => setQrOpen( true ) }
 						title={ __( 'Open QR code', 'biolink-pro' ) }
 					>
 						{ __( 'QR', 'biolink-pro' ) }
-					</a>
+					</button>
 					<a href={ page.url } target="_blank" rel="noreferrer" className={ styles.viewLink }>
 						{ __( 'View ↗', 'biolink-pro' ) }
 					</a>
@@ -204,7 +216,16 @@ export function PageDetail() {
 								className={ `${ styles.tab } ${ tab === 'background' ? styles.tabActive : '' }` }
 								onClick={ () => setTab( 'background' ) }
 							>
-								{ __( 'Background', 'biolink-pro' ) }
+								{ __( 'BG', 'biolink-pro' ) }
+							</button>
+							<button
+								type="button"
+								role="tab"
+								aria-selected={ tab === 'seo' }
+								className={ `${ styles.tab } ${ tab === 'seo' ? styles.tabActive : '' }` }
+								onClick={ () => setTab( 'seo' ) }
+							>
+								{ __( 'SEO', 'biolink-pro' ) }
 							</button>
 						</div>
 						<div className={ styles.settingsBody }>
@@ -228,6 +249,12 @@ export function PageDetail() {
 									onChange={ handleSettingsChange }
 								/>
 							) }
+							{ tab === 'seo' && (
+								<SeoEditor
+									seo={ ( page.seo ?? {} ) as BioPageSeo }
+									onChange={ handleSeoChange }
+								/>
+							) }
 						</div>
 					</aside>
 
@@ -244,6 +271,13 @@ export function PageDetail() {
 					<LivePreview url={ page.url } refreshKey={ saveTick } />
 				</aside>
 			</div>
+
+			<QrDialog
+				pageId={ page.id }
+				pageUrl={ page.url }
+				open={ qrOpen }
+				onClose={ () => setQrOpen( false ) }
+			/>
 		</section>
 	);
 }

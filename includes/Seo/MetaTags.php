@@ -29,6 +29,46 @@ final class MetaTags implements Bootable
         add_action('wp_head', [$this, 'emit'], 5);
         add_filter('document_title_parts', [$this, 'documentTitle'], 10, 1);
         add_filter('pre_get_document_title', [$this, 'documentTitleOverride'], 10, 1);
+        // If a rival SEO plugin is active, push our values into their filters
+        // so they end up emitting the bio page's title/description/og:image
+        // instead of WP defaults. Hooks register early; no-ops on non-bio pages.
+        add_action('template_redirect', [$this, 'maybeFeedRivalPlugin'], 1);
+    }
+
+    /**
+     * True if Rank Math / Yoast / AIOSEO / SEOPress is active. In that case we
+     * yield: those plugins have richer UIs and emitting our own og:/twitter:
+     * tags causes the page to ship two competing sets that confuse scrapers.
+     */
+    public static function rivalSeoPluginActive(): bool
+    {
+        $detected = (
+            class_exists('\\RankMath') ||
+            class_exists('\\RankMath\\OpenGraph\\OpenGraph') ||
+            defined('WPSEO_VERSION') ||
+            class_exists('\\WPSEO_Frontend') ||
+            defined('AIOSEO_VERSION') ||
+            defined('SEOPRESS_VERSION')
+        );
+
+        /**
+         * Escape hatch — return false to force our own emit even with a rival active.
+         *
+         * @param bool $detected
+         */
+        return (bool) apply_filters('biolink/seo/rival_active', $detected);
+    }
+
+    public function maybeFeedRivalPlugin(): void
+    {
+        if (! is_singular(BioLinkPagePostType::POST_TYPE) || ! self::rivalSeoPluginActive()) {
+            return;
+        }
+        $post = get_post();
+        if (! $post) {
+            return;
+        }
+        $this->feedRivalSeoPlugin($post);
     }
 
     /**
@@ -63,6 +103,11 @@ final class MetaTags implements Bootable
     public function emit(): void
     {
         if (! is_singular(BioLinkPagePostType::POST_TYPE)) {
+            return;
+        }
+        // Yield to dedicated SEO plugins — they emit their own og:/twitter: tags
+        // and we already pushed our page-specific values into their filters.
+        if (self::rivalSeoPluginActive()) {
             return;
         }
         $post = get_post();
@@ -142,5 +187,58 @@ final class MetaTags implements Bootable
             );
         }
         echo "<!-- /BioLink Pro SEO -->\n";
+    }
+
+    private function feedRivalSeoPlugin(\WP_Post $post): void
+    {
+        $data     = $this->repository->getData($post->ID);
+        $settings = is_array($data['settings'] ?? null) ? $data['settings'] : [];
+        $seo      = is_array($data['seo'] ?? null) ? $data['seo'] : [];
+
+        $title = ! empty($seo['custom_title'])
+            ? (string) $seo['custom_title']
+            : (! empty($settings['headline']) ? (string) $settings['headline'] : (string) $post->post_title);
+
+        $description = ! empty($seo['custom_description'])
+            ? (string) $seo['custom_description']
+            : (! empty($settings['subheadline']) ? (string) $settings['subheadline'] : '');
+
+        $og_image = '';
+        if (! empty($seo['og_image_id'])) {
+            $url = wp_get_attachment_image_url((int) $seo['og_image_id'], 'full');
+            if (is_string($url)) {
+                $og_image = $url;
+            }
+        }
+        if ($og_image === '' && ! empty($settings['avatar_id'])) {
+            $url = wp_get_attachment_image_url((int) $settings['avatar_id'], 'full');
+            if (is_string($url)) {
+                $og_image = $url;
+            }
+        }
+
+        // Rank Math
+        add_filter('rank_math/frontend/title', static fn($t) => $title !== '' ? $title : $t);
+        add_filter('rank_math/frontend/description', static fn($d) => $description !== '' ? $description : $d);
+        add_filter('rank_math/opengraph/facebook/og_title', static fn($t) => $title !== '' ? $title : $t);
+        add_filter('rank_math/opengraph/facebook/og_description', static fn($d) => $description !== '' ? $description : $d);
+        add_filter('rank_math/opengraph/twitter/twitter_title', static fn($t) => $title !== '' ? $title : $t);
+        add_filter('rank_math/opengraph/twitter/twitter_description', static fn($d) => $description !== '' ? $description : $d);
+        if ($og_image !== '') {
+            add_filter('rank_math/opengraph/facebook/og_image', static fn() => $og_image);
+            add_filter('rank_math/opengraph/twitter/twitter_image', static fn() => $og_image);
+        }
+
+        // Yoast
+        add_filter('wpseo_title', static fn($t) => $title !== '' ? $title : $t);
+        add_filter('wpseo_metadesc', static fn($d) => $description !== '' ? $description : $d);
+        add_filter('wpseo_opengraph_title', static fn($t) => $title !== '' ? $title : $t);
+        add_filter('wpseo_opengraph_desc', static fn($d) => $description !== '' ? $description : $d);
+        add_filter('wpseo_twitter_title', static fn($t) => $title !== '' ? $title : $t);
+        add_filter('wpseo_twitter_description', static fn($d) => $description !== '' ? $description : $d);
+        if ($og_image !== '') {
+            add_filter('wpseo_opengraph_image', static fn() => $og_image);
+            add_filter('wpseo_twitter_image', static fn() => $og_image);
+        }
     }
 }

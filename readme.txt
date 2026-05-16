@@ -4,7 +4,7 @@ Tags: bio link, linktree, link in bio, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.6
 Requires PHP: 8.2
-Stable tag: 0.5.0
+Stable tag: 0.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,15 @@ Yes. Everything runs on your own server. No external account required (unless yo
 PHP 8.2 or higher.
 
 == Changelog ==
+
+= 0.5.1 =
+* Fix: bio pages no longer double-emit OG/Twitter meta when Rank Math / Yoast / AIOSEO / SEOPress is active. Instead, our title/description/og:image are pushed into the SEO plugin's own filters so the page's headline + subtitle are used as the share metadata.
+* `biolink_page` CPT now appears in Rank Math + Yoast sitemaps (in addition to WP core sitemap).
+* QR code: proper preview + download dialog with foreground/background color pickers, size slider, PNG/SVG toggle.
+* QR code now opens in a real dialog inside the admin (used to open the raw JSON metadata endpoint).
+* New SEO tab in PageDetail rail: custom title, meta description, share image (og:image), Twitter @handle, "Hide from search engines" toggle.
+* Bot user-agents (Googlebot, crawlers, curl/wget) no longer write to the clicks table; they still get redirected so links keep working.
+* Release zip trimmed (~3 MB, down from ~14 MB) by excluding tests/docs/CI metadata from bundled vendor packages.
 
 = 0.5.0 =
 * Phase 5: click + view analytics, dashboard with charts, CSV export, daily cron prune.

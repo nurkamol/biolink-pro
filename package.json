@@ -1,6 +1,6 @@
 {
     "name": "biolink-pro",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "description": "BioLink Pro admin React app build pipeline.",
     "private": true,
     "license": "GPL-2.0-or-later",

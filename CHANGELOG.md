@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-05-16
+
+### Fixed
+- **SEO double-emit with Rank Math / Yoast / AIOSEO / SEOPress.** When one of these SEO suites is active, `Seo\MetaTags::rivalSeoPluginActive()` now returns true and our `<meta>` block is suppressed. Instead, we push the page's title / description / og_image into the rival's own filters (`rank_math/opengraph/facebook/og_title`, `wpseo_opengraph_title`, etc.) so the page's headline + subtitle are used as the share metadata.
+- **Sitemap inclusion** — `Seo\Sitemap` now also hooks `wpseo_sitemap_exclude_post_type` (Yoast) and `rank_math/sitemap/post_types` (Rank Math), not just WP core `wp_sitemaps_post_types`.
+- **Click tracker now bot-filters** — `Api\ClickController` checks `Tracker::classifyUa()` and skips recording when device is `'bot'`. Bots still get the 302 redirect so functional links keep working. New `biolink/click/before` filter for custom short-circuit logic.
+
+### Added
+- **Real QR code dialog** (`QrDialog.tsx`) — preview + download modal with foreground / background color pickers, size slider (256-1536px), PNG/SVG format toggle. Replaces the topbar link that previously opened the raw JSON metadata endpoint.
+- **SEO tab in PageDetail** rail — per-page overrides for `custom_title`, `custom_description`, `og_image_id` (with media picker + thumbnail preview), Twitter `@handle`, and `no_index` toggle. Backend was already wired in Phase 6; this exposes it in the admin.
+- **`PageRepository::normalizeSeo()`** — sanitizes per-page SEO override fields (`sanitize_text_field` on title/description, `int` cast on `og_image_id`, `bool` cast on `no_index`, regex-validated Twitter handle).
+- **`biolink/seo/rival_active` filter** — escape hatch to force our SEO emit even when a rival is detected.
+
+### Changed
+- **Release zip trimmed** from ~14 MB → ~3 MB by adding `vendor/*/*/tests/`, `docs/`, `.github/`, CI configs, and `vendor/bin/` to `.distignore`.
+
 ## [0.5.0] - 2026-05-16
 
 Feature-complete release covering Phases 5–10 of the original roadmap.

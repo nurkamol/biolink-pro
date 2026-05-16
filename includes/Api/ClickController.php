@@ -64,19 +64,30 @@ final class ClickController extends AbstractController
         if ($rate_ok) {
             $ua_raw = isset($_SERVER['HTTP_USER_AGENT']) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
             $ua     = Tracker::classifyUa($ua_raw);
-            $event  = [
-                'link_id'       => (int) $row['id'],
-                'page_id'       => (int) $row['page_id'],
-                'ip_hash'       => Tracker::hashIp($ip),
-                'device'        => $ua['device'],
-                'browser'       => $ua['browser'],
-                'os'            => $ua['os'],
-                'referrer_host' => Tracker::referrerHost((string) ($_SERVER['HTTP_REFERER'] ?? '')),
-                'utm_source'    => (string) $request->get_param('utm_source'),
-                'utm_medium'    => (string) $request->get_param('utm_medium'),
-                'utm_campaign'  => (string) $request->get_param('utm_campaign'),
-            ];
-            $this->tracker->recordClick($event);
+            // Skip recording bot traffic (still 302-redirect them so functional links work).
+            if ($ua['device'] !== 'bot') {
+                $event = [
+                    'link_id'       => (int) $row['id'],
+                    'page_id'       => (int) $row['page_id'],
+                    'ip_hash'       => Tracker::hashIp($ip),
+                    'device'        => $ua['device'],
+                    'browser'       => $ua['browser'],
+                    'os'            => $ua['os'],
+                    'referrer_host' => Tracker::referrerHost((string) ($_SERVER['HTTP_REFERER'] ?? '')),
+                    'utm_source'    => (string) $request->get_param('utm_source'),
+                    'utm_medium'    => (string) $request->get_param('utm_medium'),
+                    'utm_campaign'  => (string) $request->get_param('utm_campaign'),
+                ];
+                /**
+                 * Short-circuit click recording. Return false to skip.
+                 *
+                 * @param bool                 $allow
+                 * @param array<string, mixed> $event
+                 */
+                if (apply_filters('biolink/click/before', true, $event)) {
+                    $this->tracker->recordClick($event);
+                }
+            }
         }
 
         $destination = (string) $row['url'];

@@ -223,7 +223,9 @@ final class PageRepository
         $settings = isset($data['settings']) && is_array($data['settings'])
             ? self::normalizeSettings($data['settings'])
             : $defaults['settings'];
-        $seo      = isset($data['seo']) && is_array($data['seo']) ? $data['seo'] : $defaults['seo'];
+        $seo      = isset($data['seo']) && is_array($data['seo'])
+            ? self::normalizeSeo($data['seo'])
+            : $defaults['seo'];
 
         $blocks = [];
         if (isset($data['blocks']) && is_array($data['blocks'])) {
@@ -248,6 +250,30 @@ final class PageRepository
      * @param array<string, mixed> $settings
      * @return array<string, mixed>
      */
+    /**
+     * Sanitize per-page SEO overrides.
+     *
+     * @param array<string, mixed> $seo
+     * @return array<string, mixed>
+     */
+    public static function normalizeSeo(array $seo): array
+    {
+        $out = [
+            'custom_title'       => isset($seo['custom_title']) ? sanitize_text_field((string) $seo['custom_title']) : '',
+            'custom_description' => isset($seo['custom_description']) ? sanitize_text_field((string) $seo['custom_description']) : '',
+            'og_image_id'        => isset($seo['og_image_id']) ? (int) $seo['og_image_id'] : 0,
+            'no_index'           => ! empty($seo['no_index']),
+            'twitter_site'       => '',
+        ];
+        if (isset($seo['twitter_site']) && is_string($seo['twitter_site'])) {
+            $handle = ltrim(trim($seo['twitter_site']), '@');
+            if (preg_match('/^[A-Za-z0-9_]{1,15}$/', $handle)) {
+                $out['twitter_site'] = '@' . $handle;
+            }
+        }
+        return $out;
+    }
+
     public static function normalizeSettings(array $settings): array
     {
         $defaults = self::defaultSettings();
