@@ -4,7 +4,7 @@ Tags: link in bio, linktree, bio link, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.9
 Requires PHP: 8.2
-Stable tag: 2.5.2
+Stable tag: 2.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,11 @@ GitHub: https://github.com/nurkamol/biolink-pro/issues
 First stable release. Production-ready: 18 block types, 8 themes, analytics, QR codes, SEO coexistence with Rank Math / Yoast, JSON portability, encrypted integrations vault, AI suggestions, onboarding wizard, accessibility pass. Tested on WordPress 6.9 and PHP 8.2 / 8.3.
 
 == Changelog ==
+
+= 2.6.0 =
+* Fully featured background config: wallpaper Position presets (cover-center / cover-top / cover-bottom / contain / tile) and a Blur slider that softens the image without affecting the content.
+* New Content area card on the Design page: choose Transparent / Solid card / Frosted glass for the content column. Set its color, opacity, max-width (380-960px), corner radius, and backdrop blur.
+* Wallpaper now renders via a fixed pseudo-element so blur applies cleanly without bleeding into the text.
 
 = 2.5.2 =
 * Fix: the Version history + Schedule drawer headers were getting clipped by the WordPress admin bar. Drawer now sits below the admin bar with a much higher z-index.

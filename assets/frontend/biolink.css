@@ -60,14 +60,63 @@ body.bio-body .bio-page button {
 	font-family: inherit;
 }
 
+/* Wallpaper blur layer (only renders when --bio-bg-blur > 0) ------------ */
+
+body.bio-body {
+	position: relative;
+}
+
+body.bio-body::before {
+	content: "";
+	position: fixed;
+	inset: -10px;
+	background: var( --bio-bg );
+	background-attachment: fixed;
+	background-size: cover;
+	background-position: center;
+	filter: blur( var( --bio-bg-blur, 0px ) );
+	z-index: -1;
+	pointer-events: none;
+}
+
+/* When a blur is set, hide the body's own background so we don't paint twice. */
+body.bio-body[ style*="--bio-bg-blur" ],
+body.bio-body {
+	background-color: transparent;
+}
+
 /* Page wrapper ---------------------------------------------------------- */
 
 .bio-page {
-	max-width: 620px;
+	max-width: var( --bio-content-max-width, 620px );
 	margin: 0 auto;
-	padding: 56px 20px 80px;
+	padding: 56px 24px 80px;
 	min-height: 100vh;
 	min-height: 100svh;
+	position: relative;
+}
+
+/* Content card (v2.6) — opt-in when content_bg_type is solid or glass.
+ * Triggered by the --bio-content-card flag emitted by ThemeEngine. */
+body.bio-body .bio-page {
+	border-radius: var( --bio-content-radius, 22px );
+}
+
+body.bio-body[ style*="--bio-content-card:1" ] .bio-page {
+	background: var( --bio-content-bg, transparent );
+	-webkit-backdrop-filter: blur( var( --bio-content-blur, 0px ) );
+	backdrop-filter: blur( var( --bio-content-blur, 0px ) );
+	margin: 40px auto;
+	min-height: auto;
+	box-shadow: 0 12px 48px rgba( 0, 0, 0, 0.18 );
+}
+
+@media ( max-width: 540px ) {
+	body.bio-body[ style*="--bio-content-card:1" ] .bio-page {
+		margin: 0 auto;
+		border-radius: 0;
+		box-shadow: none;
+	}
 }
 
 /* Header ---------------------------------------------------------------- */

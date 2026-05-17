@@ -1,12 +1,13 @@
 import { __ } from '@wordpress/i18n';
 import { useState, type ReactNode } from 'react';
 import { BackgroundEditor } from '../../components/builder/BackgroundEditor';
+import { ContentAreaEditor } from '../../components/builder/ContentAreaEditor';
 import { PageHeaderEditor } from '../../components/builder/PageHeaderEditor';
 import { ThemePicker } from '../../components/builder/ThemePicker';
 import { useBuilder } from './BuilderContext';
 import styles from './DesignPage.module.css';
 
-type Section = 'theme' | 'header' | 'wallpaper' | 'buttons' | 'text' | 'footer' | 'advanced';
+type Section = 'theme' | 'header' | 'wallpaper' | 'content' | 'buttons' | 'text' | 'footer' | 'advanced';
 
 export function DesignPage() {
 	const { page, setSettings, setTheme } = useBuilder();
@@ -56,6 +57,20 @@ export function DesignPage() {
 				onToggle={ () => toggle( 'wallpaper' ) }
 			>
 				<BackgroundEditor settings={ settings } onChange={ setSettings } />
+			</DesignCard>
+
+			<DesignCard
+				id="content"
+				title={ __( 'Content area', 'biolink-pro' ) }
+				summary={
+					settings.content_bg_type
+						? `${ settings.content_bg_type } · ${ settings.content_max_width ?? 620 }px`
+						: __( 'Transparent', 'biolink-pro' )
+				}
+				open={ open === 'content' }
+				onToggle={ () => toggle( 'content' ) }
+			>
+				<ContentAreaEditor settings={ settings } onChange={ setSettings } />
 			</DesignCard>
 
 			<DesignCard

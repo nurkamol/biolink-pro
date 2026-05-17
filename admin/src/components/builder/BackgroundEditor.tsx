@@ -161,20 +161,75 @@ export function BackgroundEditor( { settings, onChange }: Props ) {
 							: __( 'Select background image', 'biolink-pro' ) }
 					</button>
 					{ bgImageId > 0 && (
-						<label className={ styles.field } style={ { marginTop: '12px' } }>
-							<span className={ styles.label }>
-								{ __( 'Overlay', 'biolink-pro' ) }: { settings.bg_overlay ?? 0 }%
-							</span>
-							<input
-								type="range"
-								min={ 0 }
-								max={ 80 }
-								value={ settings.bg_overlay ?? 0 }
-								onChange={ ( e ) =>
-									onChange( { ...settings, bg_overlay: Number( e.target.value ) } )
-								}
-							/>
-						</label>
+						<>
+							<label className={ styles.field } style={ { marginTop: '12px' } }>
+								<span className={ styles.label }>
+									{ __( 'Position', 'biolink-pro' ) }
+								</span>
+								<select
+									className={ styles.select }
+									value={ settings.bg_position ?? 'cover-center' }
+									onChange={ ( e ) =>
+										onChange( {
+											...settings,
+											bg_position: e.target
+												.value as NonNullable< BioPageSettings[ 'bg_position' ] >,
+										} )
+									}
+								>
+									<option value="cover-center">
+										{ __( 'Cover (center)', 'biolink-pro' ) }
+									</option>
+									<option value="cover-top">
+										{ __( 'Cover (top)', 'biolink-pro' ) }
+									</option>
+									<option value="cover-bottom">
+										{ __( 'Cover (bottom)', 'biolink-pro' ) }
+									</option>
+									<option value="contain">
+										{ __( 'Contain (fit, no crop)', 'biolink-pro' ) }
+									</option>
+									<option value="tile">{ __( 'Tile / repeat', 'biolink-pro' ) }</option>
+								</select>
+							</label>
+							<label className={ styles.field }>
+								<span className={ styles.label }>
+									{ __( 'Overlay', 'biolink-pro' ) }: { settings.bg_overlay ?? 0 }%
+								</span>
+								<input
+									type="range"
+									min={ 0 }
+									max={ 90 }
+									value={ settings.bg_overlay ?? 0 }
+									onChange={ ( e ) =>
+										onChange( {
+											...settings,
+											bg_overlay: Number( e.target.value ),
+										} )
+									}
+								/>
+							</label>
+							<label className={ styles.field }>
+								<span className={ styles.label }>
+									{ __( 'Blur', 'biolink-pro' ) }: { settings.bg_blur ?? 0 }px
+								</span>
+								<input
+									type="range"
+									min={ 0 }
+									max={ 30 }
+									value={ settings.bg_blur ?? 0 }
+									onChange={ ( e ) =>
+										onChange( { ...settings, bg_blur: Number( e.target.value ) } )
+									}
+								/>
+								<span className={ styles.hint }>
+									{ __(
+										'Softens the image so the content stays readable. Set the content area background below for the strongest effect.',
+										'biolink-pro'
+									) }
+								</span>
+							</label>
+						</>
 					) }
 				</>
 			) }

@@ -68,6 +68,16 @@ final class PageRepository
             'button_shape'       => '',
             'button_style'       => '',
             'custom_css'         => '',
+            // Wallpaper polish (v2.6)
+            'bg_position'        => 'cover-center', // cover-center | cover-top | cover-bottom | contain | tile
+            'bg_blur'            => 0, // px
+            // Content card (v2.6)
+            'content_bg_type'    => '', // '' | solid | glass
+            'content_bg_color'   => '',
+            'content_bg_opacity' => 90,
+            'content_blur'       => 12,
+            'content_radius'     => 22,
+            'content_max_width'  => 620,
         ];
     }
 

@@ -126,14 +126,24 @@ final class ThemeEngine implements Bootable
             $url = wp_get_attachment_image_url((int) $settings['bg_image_id'], 'full');
             if (is_string($url)) {
                 $overlay = max(0, min(100, (int) ($settings['bg_overlay'] ?? 0))) / 100;
+                // Position presets → CSS background shorthand fragment.
+                $position = (string) ($settings['bg_position'] ?? 'cover-center');
+                $position_css = match ($position) {
+                    'cover-top'    => 'center top/cover no-repeat',
+                    'cover-bottom' => 'center bottom/cover no-repeat',
+                    'contain'      => 'center/contain no-repeat',
+                    'tile'         => 'top left/auto repeat',
+                    default        => 'center/cover no-repeat',
+                };
                 $bg_value = $overlay > 0
                     ? sprintf(
-                        'linear-gradient(rgba(0,0,0,%.2f), rgba(0,0,0,%.2f)), url(%s) center/cover no-repeat',
+                        'linear-gradient(rgba(0,0,0,%.2f), rgba(0,0,0,%.2f)), url(%s) %s',
                         $overlay,
                         $overlay,
-                        esc_url_raw($url)
+                        esc_url_raw($url),
+                        $position_css
                     )
-                    : sprintf('url(%s) center/cover no-repeat', esc_url_raw($url));
+                    : sprintf('url(%s) %s', esc_url_raw($url), $position_css);
                 $bg_override = sprintf('--bio-bg:%s;', $bg_value);
             }
         }
@@ -168,12 +178,44 @@ final class ThemeEngine implements Bootable
             $style = (string) $settings['button_style'];
         }
 
+        // Wallpaper blur (v2.6). Applied to a pseudo-element behind body content
+        // via .bio-body::before — see assets/frontend/biolink.css. We only emit
+        // the CSS var here; the rule lives in the static stylesheet.
+        $bg_blur = max(0, min(40, (int) ($settings['bg_blur'] ?? 0)));
+        $override_rules .= sprintf('--bio-bg-blur:%dpx;', $bg_blur);
+
+        // Content card (v2.6). When content_bg_type is 'solid' or 'glass',
+        // .bio-page becomes a card with its own background distinct from
+        // the wallpaper. 'glass' uses backdrop-filter blur.
+        $content_bg_type = (string) ($settings['content_bg_type'] ?? '');
+        if (in_array($content_bg_type, ['solid', 'glass'], true)) {
+            $opacity   = max(0, min(100, (int) ($settings['content_bg_opacity'] ?? 90))) / 100;
+            $color_hex = $this->sanitizeCssColor((string) ($settings['content_bg_color'] ?? '#ffffff'));
+            $rgba      = $this->hexToRgba($color_hex, $opacity);
+            $override_rules .= sprintf('--bio-content-bg:%s;', $rgba);
+            $override_rules .= '--bio-content-card:1;';
+            if ($content_bg_type === 'glass') {
+                $blur_px = max(0, min(40, (int) ($settings['content_blur'] ?? 12)));
+                $override_rules .= sprintf('--bio-content-blur:%dpx;', $blur_px);
+            } else {
+                $override_rules .= '--bio-content-blur:0px;';
+            }
+        }
+        $content_radius = max(0, min(48, (int) ($settings['content_radius'] ?? 22)));
+        $override_rules .= sprintf('--bio-content-radius:%dpx;', $content_radius);
+        $content_max_width = max(380, min(960, (int) ($settings['content_max_width'] ?? 620)));
+        $override_rules .= sprintf('--bio-content-max-width:%dpx;', $content_max_width);
+
         // Declare ALL theme tokens on the scoping selector so they cascade to
         // everything inside. Defaults to body.bio-body for full-page renders.
         // Shortcodes pass a `.bio-embed-{id}` selector so each embedded page
         // is independently themed inside the host page.
+        // For full-page (body.bio-body), the actual paint happens on a
+        // ::before pseudo defined in assets/frontend/biolink.css — that's
+        // what supports bg_blur via `filter: blur()`. Body itself stays
+        // transparent so we don't double-paint.
         $background_rule = $selector === 'body.bio-body'
-            ? sprintf('%s{background:var(--bio-bg);background-attachment:fixed;color:var(--bio-color-text);font-family:var(--bio-font-stack);}', $selector)
+            ? sprintf('%s{color:var(--bio-color-text);font-family:var(--bio-font-stack);}', $selector)
             : sprintf('%s{background:var(--bio-bg);color:var(--bio-color-text);font-family:var(--bio-font-stack);}', $selector);
 
         $style_id = $selector === 'body.bio-body'
@@ -216,6 +258,24 @@ final class ThemeEngine implements Bootable
             return $value;
         }
         return '#000000';
+    }
+
+    /**
+     * Convert a sanitized #RGB or #RRGGBB hex string to rgba() with the given alpha (0..1).
+     */
+    private function hexToRgba(string $hex, float $alpha): string
+    {
+        $hex = ltrim($hex, '#');
+        if (strlen($hex) === 3) {
+            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+        }
+        if (strlen($hex) !== 6) {
+            return sprintf('rgba(255,255,255,%.2f)', $alpha);
+        }
+        $r = (int) hexdec(substr($hex, 0, 2));
+        $g = (int) hexdec(substr($hex, 2, 2));
+        $b = (int) hexdec(substr($hex, 4, 2));
+        return sprintf('rgba(%d,%d,%d,%.2f)', $r, $g, $b, max(0.0, min(1.0, $alpha)));
     }
 
     /**

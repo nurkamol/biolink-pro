@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.6.0] - 2026-05-17
+
+### Added
+- **Wallpaper position + blur** — Background editor (image type) now exposes `Position` (Cover-center / Cover-top / Cover-bottom / Contain / Tile) and a `Blur` slider (0–30 px). The image renders behind a fixed `body.bio-body::before` pseudo so blur applies cleanly without affecting the foreground content.
+- **Content area card** — new "Content area" card on the Design page. Three modes:
+  - **Transparent** (default, current behavior)
+  - **Solid card** — `.bio-page` gets a configurable color + opacity background, rounded corners, drop shadow. Wallpaper fills the desktop viewport behind it.
+  - **Frosted glass** — solid card + `backdrop-filter: blur()` so the wallpaper shows through with a frosted effect.
+- **Card max-width slider** (380–960 px) — controls the desktop column width.
+- **Card corner radius slider** (0–48 px).
+- **Card opacity slider** (10–100%) — fine-tune solid/glass card transparency.
+
+### Changed
+- **`ThemeEngine` background rendering refactored.** The `body.bio-body` selector no longer paints the bg directly — that moved to `body.bio-body::before` (a fixed full-viewport pseudo) so the new `bg_blur` filter applies to the image without blurring the content. Shortcode embeds (`.bio-embed-{id}`) keep the inline `background:` rule since blur doesn't make sense scoped to an inline embed.
+- Image overlay slider max bumped from 80% to 90% (still keeps the image faintly visible at max).
+
+### DB
+- 8 new page settings keys: `bg_position`, `bg_blur`, `content_bg_type`, `content_bg_color`, `content_bg_opacity`, `content_blur`, `content_radius`, `content_max_width`. Stored in the existing `_biolink_data.settings` JSON — no schema bump needed.
+
+### Notes
+- On screens narrower than 540 px, the content card drops its border-radius + shadow + horizontal margin so it spans the full viewport (mobile-first stays readable).
+- `Frosted glass` mode uses `backdrop-filter`, which Safari < 9 and some Linux Firefox builds don't support — they'll fall back to the solid card automatically.
+
 ## [2.5.2] - 2026-05-17
 
 ### Fixed

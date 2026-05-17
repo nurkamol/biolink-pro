@@ -31,6 +31,16 @@ export interface BioPageSettings {
 	button_shape?: '' | 'pill' | 'rounded' | 'square';
 	button_style?: '' | 'filled' | 'outline' | 'glass';
 	custom_css?: string;
+	// Wallpaper polish (v2.6)
+	bg_position?: 'cover-center' | 'cover-top' | 'cover-bottom' | 'contain' | 'tile';
+	bg_blur?: number;
+	// Content card (v2.6)
+	content_bg_type?: '' | 'solid' | 'glass';
+	content_bg_color?: string;
+	content_bg_opacity?: number;
+	content_blur?: number;
+	content_radius?: number;
+	content_max_width?: number;
 	[ key: string ]: unknown;
 }
 
