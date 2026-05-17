@@ -71,6 +71,7 @@ final class PageRepository
             // Wallpaper polish (v2.6)
             'bg_position'        => 'cover-center', // cover-center | cover-top | cover-bottom | contain | tile
             'bg_blur'            => 0, // px
+            'bg_overlay_color'   => '#000000', // hex for the wallpaper overlay tint
             // Content card (v2.6)
             'content_bg_type'    => '', // '' | solid | glass
             'content_bg_color'   => '',

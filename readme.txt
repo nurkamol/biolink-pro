@@ -4,7 +4,7 @@ Tags: link in bio, linktree, bio link, landing page, link builder
 Requires at least: 6.5
 Tested up to: 6.9
 Requires PHP: 8.2
-Stable tag: 2.6.0
+Stable tag: 2.6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,10 @@ GitHub: https://github.com/nurkamol/biolink-pro/issues
 First stable release. Production-ready: 18 block types, 8 themes, analytics, QR codes, SEO coexistence with Rank Math / Yoast, JSON portability, encrypted integrations vault, AI suggestions, onboarding wizard, accessibility pass. Tested on WordPress 6.9 and PHP 8.2 / 8.3.
 
 == Changelog ==
+
+= 2.6.1 =
+* Fix: content area card from v2.6.0 wasn't actually rendering — the gating CSS selector never matched. Card styling now applies correctly when you switch to Solid or Frosted glass mode.
+* New: wallpaper overlay color picker. Pick the tint color (was hardcoded to black).
 
 = 2.6.0 =
 * Fully featured background config: wallpaper Position presets (cover-center / cover-top / cover-bottom / contain / tile) and a Blur slider that softens the image without affecting the content.

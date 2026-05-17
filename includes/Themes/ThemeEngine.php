@@ -135,11 +135,13 @@ final class ThemeEngine implements Bootable
                     'tile'         => 'top left/auto repeat',
                     default        => 'center/cover no-repeat',
                 };
+                $overlay_hex = $this->sanitizeCssColor((string) ($settings['bg_overlay_color'] ?? '#000000'));
+                $overlay_rgba = $this->hexToRgba($overlay_hex, $overlay);
                 $bg_value = $overlay > 0
                     ? sprintf(
-                        'linear-gradient(rgba(0,0,0,%.2f), rgba(0,0,0,%.2f)), url(%s) %s',
-                        $overlay,
-                        $overlay,
+                        'linear-gradient(%s, %s), url(%s) %s',
+                        $overlay_rgba,
+                        $overlay_rgba,
                         esc_url_raw($url),
                         $position_css
                     )
@@ -188,23 +190,33 @@ final class ThemeEngine implements Bootable
         // .bio-page becomes a card with its own background distinct from
         // the wallpaper. 'glass' uses backdrop-filter blur.
         $content_bg_type = (string) ($settings['content_bg_type'] ?? '');
+        $content_card_rule = '';
+        $content_radius = max(0, min(48, (int) ($settings['content_radius'] ?? 22)));
+        $content_max_width = max(380, min(960, (int) ($settings['content_max_width'] ?? 620)));
+        $override_rules .= sprintf('--bio-content-radius:%dpx;', $content_radius);
+        $override_rules .= sprintf('--bio-content-max-width:%dpx;', $content_max_width);
+
         if (in_array($content_bg_type, ['solid', 'glass'], true)) {
             $opacity   = max(0, min(100, (int) ($settings['content_bg_opacity'] ?? 90))) / 100;
             $color_hex = $this->sanitizeCssColor((string) ($settings['content_bg_color'] ?? '#ffffff'));
             $rgba      = $this->hexToRgba($color_hex, $opacity);
-            $override_rules .= sprintf('--bio-content-bg:%s;', $rgba);
-            $override_rules .= '--bio-content-card:1;';
-            if ($content_bg_type === 'glass') {
-                $blur_px = max(0, min(40, (int) ($settings['content_blur'] ?? 12)));
-                $override_rules .= sprintf('--bio-content-blur:%dpx;', $blur_px);
-            } else {
-                $override_rules .= '--bio-content-blur:0px;';
-            }
+            $blur_px   = $content_bg_type === 'glass'
+                ? max(0, min(40, (int) ($settings['content_blur'] ?? 12)))
+                : 0;
+            // Emit the card rule directly so it actually applies. v2.6.0 used
+            // a [style*=] attribute selector that never matched because the
+            // CSS vars are emitted inside a <style> tag, not on body inline.
+            $sel = $selector === 'body.bio-body' ? 'body.bio-body .bio-page' : $selector . ' .bio-page';
+            $content_card_rule = sprintf(
+                "\n%s{background:%s;border-radius:%dpx;-webkit-backdrop-filter:blur(%dpx);backdrop-filter:blur(%dpx);margin:40px auto;min-height:auto;box-shadow:0 12px 48px rgba(0,0,0,0.18);}\n@media (max-width:540px){%s{margin:0 auto;border-radius:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;}}",
+                $sel,
+                $rgba,
+                $content_radius,
+                $blur_px,
+                $blur_px,
+                $sel
+            );
         }
-        $content_radius = max(0, min(48, (int) ($settings['content_radius'] ?? 22)));
-        $override_rules .= sprintf('--bio-content-radius:%dpx;', $content_radius);
-        $content_max_width = max(380, min(960, (int) ($settings['content_max_width'] ?? 620)));
-        $override_rules .= sprintf('--bio-content-max-width:%dpx;', $content_max_width);
 
         // Declare ALL theme tokens on the scoping selector so they cascade to
         // everything inside. Defaults to body.bio-body for full-page renders.
@@ -223,7 +235,7 @@ final class ThemeEngine implements Bootable
             : 'biolink-theme-' . substr(md5($selector), 0, 8);
 
         $base = sprintf(
-            "<style id=\"%s\">\n%s%s{%s%s%s--bio-button-shape:%s;--bio-button-style:%s;}\n%s\n</style>",
+            "<style id=\"%s\">\n%s%s{%s%s%s--bio-button-shape:%s;--bio-button-style:%s;}\n%s%s\n</style>",
             esc_attr($style_id),
             $fontImport,
             $selector,
@@ -232,7 +244,8 @@ final class ThemeEngine implements Bootable
             $override_rules,
             esc_attr($shape),
             esc_attr($style),
-            $background_rule
+            $background_rule,
+            $content_card_rule
         );
 
         // Per-page custom CSS, appended in its own style block. Trusted input

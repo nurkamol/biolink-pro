@@ -34,6 +34,7 @@ export interface BioPageSettings {
 	// Wallpaper polish (v2.6)
 	bg_position?: 'cover-center' | 'cover-top' | 'cover-bottom' | 'contain' | 'tile';
 	bg_blur?: number;
+	bg_overlay_color?: string;
 	// Content card (v2.6)
 	content_bg_type?: '' | 'solid' | 'glass';
 	content_bg_color?: string;

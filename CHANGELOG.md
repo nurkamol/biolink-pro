@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.6.1] - 2026-05-17
+
+### Fixed
+- **Content area card was silently a no-op in v2.6.0.** The CSS used an attribute selector `body.bio-body[ style*="--bio-content-card:1" ]` to gate the card styling, but `ThemeEngine` emits its variables inside a `<style>` block — never on the body's inline `style=` attribute — so the selector never matched and the card never rendered. `ThemeEngine` now emits the full card rule (background, border-radius, backdrop-filter, margin, shadow, plus a `@media (max-width: 540px)` reset) directly inside the dynamic style block so it actually applies. The same fix works for shortcode embeds.
+
+### Added
+- **Wallpaper overlay color picker** — the image overlay was hardcoded to black; now you can pick the tint color (white, brand color, anything). Sits next to the existing Overlay opacity slider in the Wallpaper editor. ThemeEngine generates the gradient with the chosen color at the chosen opacity.
+
 ## [2.6.0] - 2026-05-17
 
 ### Added

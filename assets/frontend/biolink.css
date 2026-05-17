@@ -96,28 +96,10 @@ body.bio-body {
 	position: relative;
 }
 
-/* Content card (v2.6) — opt-in when content_bg_type is solid or glass.
- * Triggered by the --bio-content-card flag emitted by ThemeEngine. */
-body.bio-body .bio-page {
-	border-radius: var( --bio-content-radius, 22px );
-}
-
-body.bio-body[ style*="--bio-content-card:1" ] .bio-page {
-	background: var( --bio-content-bg, transparent );
-	-webkit-backdrop-filter: blur( var( --bio-content-blur, 0px ) );
-	backdrop-filter: blur( var( --bio-content-blur, 0px ) );
-	margin: 40px auto;
-	min-height: auto;
-	box-shadow: 0 12px 48px rgba( 0, 0, 0, 0.18 );
-}
-
-@media ( max-width: 540px ) {
-	body.bio-body[ style*="--bio-content-card:1" ] .bio-page {
-		margin: 0 auto;
-		border-radius: 0;
-		box-shadow: none;
-	}
-}
+/* The card styling itself (background, blur, shadow, mobile reset) is
+ * emitted by ThemeEngine inline when content_bg_type is solid/glass —
+ * the v2.6.0 attribute-selector approach was a no-op because the vars
+ * sit inside a <style> tag, not on the body's inline style attribute. */
 
 /* Header ---------------------------------------------------------------- */
 

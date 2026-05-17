@@ -192,23 +192,41 @@ export function BackgroundEditor( { settings, onChange }: Props ) {
 									<option value="tile">{ __( 'Tile / repeat', 'biolink-pro' ) }</option>
 								</select>
 							</label>
-							<label className={ styles.field }>
-								<span className={ styles.label }>
-									{ __( 'Overlay', 'biolink-pro' ) }: { settings.bg_overlay ?? 0 }%
-								</span>
-								<input
-									type="range"
-									min={ 0 }
-									max={ 90 }
-									value={ settings.bg_overlay ?? 0 }
-									onChange={ ( e ) =>
-										onChange( {
-											...settings,
-											bg_overlay: Number( e.target.value ),
-										} )
-									}
-								/>
-							</label>
+							<div className={ styles.row }>
+								<label className={ styles.field }>
+									<span className={ styles.label }>
+										{ __( 'Overlay', 'biolink-pro' ) }: { settings.bg_overlay ?? 0 }%
+									</span>
+									<input
+										type="range"
+										min={ 0 }
+										max={ 90 }
+										value={ settings.bg_overlay ?? 0 }
+										onChange={ ( e ) =>
+											onChange( {
+												...settings,
+												bg_overlay: Number( e.target.value ),
+											} )
+										}
+									/>
+								</label>
+								<label className={ styles.field }>
+									<span className={ styles.label }>
+										{ __( 'Overlay color', 'biolink-pro' ) }
+									</span>
+									<input
+										type="color"
+										className={ styles.colorInput }
+										value={ settings.bg_overlay_color || '#000000' }
+										onChange={ ( e ) =>
+											onChange( {
+												...settings,
+												bg_overlay_color: e.target.value,
+											} )
+										}
+									/>
+								</label>
+							</div>
 							<label className={ styles.field }>
 								<span className={ styles.label }>
 									{ __( 'Blur', 'biolink-pro' ) }: { settings.bg_blur ?? 0 }px
