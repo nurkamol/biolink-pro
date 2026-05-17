@@ -6,7 +6,7 @@ import { LivePreview } from '../../components/builder/LivePreview';
 import { QrDialog } from '../../components/builder/QrDialog';
 import { RevisionsDrawer } from '../../components/builder/RevisionsDrawer';
 import { ScheduleDrawer } from '../../components/builder/ScheduleDrawer';
-import { IconCheck, IconClock, IconCode, IconCopy, IconExternal, IconHistory, IconQr } from '../../components/ui/Icons';
+import { IconCheck, IconClock, IconCode, IconCopy, IconExternal, IconHistory, IconPencil, IconQr } from '../../components/ui/Icons';
 import { BuilderContext, type BuilderContextValue } from './BuilderContext';
 import styles from './BuilderShell.module.css';
 
@@ -278,7 +278,11 @@ export function BuilderShell() {
 				{ showPreview && (
 					<aside className={ styles.preview }>
 						<div className={ styles.previewUrlBar }>
-							<span className={ styles.previewUrl }>{ formatPreviewHost( page.url ) }</span>
+							<EditableUrlBar
+								url={ page.url }
+								slug={ page.slug }
+								onSave={ setSlug }
+							/>
 							<button
 								type="button"
 								className={ styles.previewIconBtn }
@@ -337,6 +341,116 @@ function labelForRoute( route: string ): string {
 	}
 }
 
+function EditableUrlBar( {
+	url,
+	slug,
+	onSave,
+}: {
+	url: string;
+	slug: string;
+	onSave: ( slug: string ) => Promise< void >;
+} ) {
+	const [ editing, setEditing ] = useState( false );
+	const [ draft, setDraft ] = useState( slug );
+	const inputRef = useRef< HTMLInputElement | null >( null );
+
+	const prefix = ( () => {
+		try {
+			const u = new URL( url );
+			const parts = u.pathname.replace( /\/$/, '' ).split( '/' );
+			parts.pop();
+			return `${ u.host }${ parts.join( '/' ) }/`;
+		} catch {
+			return '/';
+		}
+	} )();
+
+	useEffect( () => {
+		if ( ! editing ) setDraft( slug );
+	}, [ slug, editing ] );
+
+	useEffect( () => {
+		if ( editing && inputRef.current ) {
+			inputRef.current.focus();
+			inputRef.current.select();
+		}
+	}, [ editing ] );
+
+	const commit = async () => {
+		const cleaned = draft
+			.toLowerCase()
+			.trim()
+			.replace( /[^a-z0-9-]/g, '-' )
+			.replace( /-+/g, '-' )
+			.replace( /^-|-$/g, '' );
+		if ( ! cleaned || cleaned === slug ) {
+			setDraft( slug );
+			setEditing( false );
+			return;
+		}
+		await onSave( cleaned );
+		setEditing( false );
+	};
+
+	if ( editing ) {
+		return (
+			<span className={ styles.previewUrl } style={ { display: 'flex', alignItems: 'center', gap: 0 } }>
+				<span style={ { color: 'var(--biolink-color-text-muted)' } }>{ prefix }</span>
+				<input
+					ref={ inputRef }
+					type="text"
+					value={ draft }
+					onChange={ ( e ) => setDraft( e.target.value ) }
+					onBlur={ () => void commit() }
+					onKeyDown={ ( e ) => {
+						if ( e.key === 'Enter' ) void commit();
+						if ( e.key === 'Escape' ) {
+							setDraft( slug );
+							setEditing( false );
+						}
+					} }
+					style={ {
+						border: 0,
+						background: 'transparent',
+						padding: '0 4px',
+						font: 'inherit',
+						fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+						color: 'var(--biolink-color-text)',
+						width: `${ Math.max( draft.length, 4 ) + 1 }ch`,
+						outline: 'none',
+					} }
+					aria-label={ __( 'Page slug', 'biolink-pro' ) }
+				/>
+			</span>
+		);
+	}
+
+	return (
+		<button
+			type="button"
+			onClick={ () => setEditing( true ) }
+			className={ styles.previewUrl }
+			style={ {
+				background: 'none',
+				border: 0,
+				padding: 0,
+				font: 'inherit',
+				color: 'inherit',
+				cursor: 'text',
+				display: 'flex',
+				alignItems: 'center',
+				gap: 6,
+				textAlign: 'left',
+				width: '100%',
+			} }
+			title={ __( 'Click to edit URL slug', 'biolink-pro' ) }
+		>
+			<span>{ prefix }<strong style={ { fontWeight: 600 } }>{ slug }</strong></span>
+			<IconPencil size={ 11 } className={ styles.previewUrlPencil } />
+		</button>
+	);
+}
+
 function formatStatus( status: string ): string {
 	switch ( status ) {
 		case 'publish':
@@ -350,11 +464,3 @@ function formatStatus( status: string ): string {
 	}
 }
 
-function formatPreviewHost( url: string ): string {
-	try {
-		const u = new URL( url, window.location.origin );
-		return `${ u.host }${ u.pathname }`.replace( /\/$/, '' );
-	} catch {
-		return url;
-	}
-}

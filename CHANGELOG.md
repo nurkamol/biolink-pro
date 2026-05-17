@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.7.1] - 2026-05-17
+
+### Added
+- **Inline-editable slug** in the preview pane's URL bar. The slug portion (after the prefix) is now a click target — click it, the bar swaps to an input pre-selected on the slug, Enter or blur saves via the existing `setSlug()`, Escape cancels. A small pencil cue fades in on row hover so the affordance is discoverable. Reuses the v2.7.0 backend; this is purely a more findable entry point than the Design → Page card.
+
 ## [2.7.0] - 2026-05-17
 
 ### Added
