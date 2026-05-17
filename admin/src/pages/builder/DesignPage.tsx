@@ -9,11 +9,15 @@ import styles from './DesignPage.module.css';
 
 type Section = 'theme' | 'header' | 'wallpaper' | 'content' | 'buttons' | 'text' | 'footer' | 'advanced';
 
-export function DesignPage() {
-	const { page, setSettings, setTheme } = useBuilder();
-	const [ open, setOpen ] = useState< Section | null >( 'theme' );
+type SectionWithPage = Section | 'page';
 
-	const toggle = ( s: Section ) => setOpen( ( v ) => ( v === s ? null : s ) );
+export function DesignPage() {
+	const { page, setSettings, setTheme, setTitle, setSlug } = useBuilder();
+	const [ open, setOpen ] = useState< SectionWithPage | null >( 'theme' );
+	const [ slugDraft, setSlugDraft ] = useState( page.slug );
+	const [ titleDraft, setTitleDraft ] = useState( page.title );
+
+	const toggle = ( s: SectionWithPage ) => setOpen( ( v ) => ( v === s ? null : s ) );
 
 	const settings = page.settings;
 	const buttonStyle = settings.button_style || 'filled';
@@ -21,6 +25,97 @@ export function DesignPage() {
 
 	return (
 		<div className={ styles.root }>
+			<DesignCard
+				id="page"
+				title={ __( 'Page', 'biolink-pro' ) }
+				summary={ `${ page.title } · /${ page.slug }` }
+				open={ open === 'page' }
+				onToggle={ () => toggle( 'page' ) }
+			>
+				<div className={ styles.section }>
+					<div className={ styles.row }>
+						<label className={ styles.rowLabel } htmlFor="biolink-page-title">
+							{ __( 'Page title', 'biolink-pro' ) }
+						</label>
+						<div>
+							<input
+								id="biolink-page-title"
+								type="text"
+								className={ styles.colorHex }
+								style={ {
+									width: '100%',
+									padding: '8px 12px',
+									border: '1px solid var(--biolink-color-border)',
+									borderRadius: 'var(--biolink-radius)',
+									background: 'var(--biolink-color-bg)',
+									fontFamily: 'inherit',
+								} }
+								value={ titleDraft }
+								onChange={ ( e ) => setTitleDraft( e.target.value ) }
+								onBlur={ () => {
+									if ( titleDraft && titleDraft !== page.title ) setTitle( titleDraft );
+								} }
+							/>
+							<p className={ styles.disabledHint }>
+								{ __( 'Shown in browser tabs and search results.', 'biolink-pro' ) }
+							</p>
+						</div>
+					</div>
+					<div className={ styles.row }>
+						<label className={ styles.rowLabel } htmlFor="biolink-page-slug">
+							{ __( 'URL slug', 'biolink-pro' ) }
+						</label>
+						<div>
+							<div
+								style={ {
+									display: 'flex',
+									alignItems: 'center',
+									border: '1px solid var(--biolink-color-border)',
+									borderRadius: 'var(--biolink-radius)',
+									background: 'var(--biolink-color-bg)',
+									overflow: 'hidden',
+								} }
+							>
+								<span
+									style={ {
+										padding: '8px 12px',
+										color: 'var(--biolink-color-text-muted)',
+										background: 'var(--biolink-color-surface)',
+										fontSize: 13,
+									} }
+								>
+									{ slugPrefix( page.url ) }
+								</span>
+								<input
+									id="biolink-page-slug"
+									type="text"
+									value={ slugDraft }
+									onChange={ ( e ) => setSlugDraft( e.target.value ) }
+									onBlur={ () => {
+										if ( slugDraft && slugDraft !== page.slug ) {
+											void setSlug( slugDraft );
+										} else {
+											setSlugDraft( page.slug );
+										}
+									} }
+									style={ {
+										flex: 1,
+										padding: '8px 12px',
+										border: 0,
+										background: 'transparent',
+										fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+										fontSize: 13,
+									} }
+								/>
+							</div>
+							<p className={ styles.disabledHint }>
+								{ __( 'Lowercase letters, numbers, and hyphens. Spaces become hyphens.', 'biolink-pro' ) }
+							</p>
+						</div>
+					</div>
+				</div>
+			</DesignCard>
+
 			<DesignCard
 				id="theme"
 				title={ __( 'Theme', 'biolink-pro' ) }
@@ -226,12 +321,24 @@ export function DesignPage() {
 }
 
 interface CardProps {
-	id: Section;
+	id: SectionWithPage;
 	title: string;
 	summary: string;
 	open: boolean;
 	onToggle: () => void;
 	children: ReactNode;
+}
+
+function slugPrefix( url: string ): string {
+	try {
+		const u = new URL( url );
+		// Strip the trailing slug so we show "yoursite.com/bio/".
+		const parts = u.pathname.replace( /\/$/, '' ).split( '/' );
+		parts.pop();
+		return `${ u.host }${ parts.join( '/' ) }/`;
+	} catch {
+		return '/';
+	}
 }
 
 function DesignCard( { title, summary, open, onToggle, children }: CardProps ) {

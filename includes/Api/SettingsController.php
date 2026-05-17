@@ -143,6 +143,7 @@ final class SettingsController extends AbstractController
             'show_credit'              => true,
             'allow_tracking'           => true,
             'ai_enabled'               => false,
+            'page_slug'                => 'bio',
         ];
     }
 
@@ -159,6 +160,13 @@ final class SettingsController extends AbstractController
         foreach (['show_credit', 'allow_tracking', 'ai_enabled'] as $bool_key) {
             if (array_key_exists($bool_key, $input)) {
                 $out[$bool_key] = (bool) $input[$bool_key];
+            }
+        }
+        if (isset($input['page_slug'])) {
+            // Sanitize as title (lowercase, hyphens). Reject empties + known reserved slugs.
+            $slug = sanitize_title((string) $input['page_slug']);
+            if ($slug !== '' && ! in_array($slug, ['wp-admin', 'wp-content', 'wp-json', 'admin', 'login'], true)) {
+                $out['page_slug'] = $slug;
             }
         }
         return $out;

@@ -125,6 +125,21 @@ export function BuilderShell() {
 		[ page, persist ]
 	);
 
+	const setSlug = useCallback(
+		async ( slug: string ) => {
+			if ( ! page ) return;
+			const cleaned = slug
+				.toLowerCase()
+				.trim()
+				.replace( /[^a-z0-9-]/g, '-' )
+				.replace( /-+/g, '-' )
+				.replace( /^-|-$/g, '' );
+			if ( ! cleaned || cleaned === page.slug ) return;
+			await persist( { slug: cleaned } );
+		},
+		[ page, persist ]
+	);
+
 	const bumpPreview = useCallback( () => setPreviewTick( ( t ) => t + 1 ), [] );
 
 	const handlePublish = async () => {
@@ -158,6 +173,7 @@ export function BuilderShell() {
 		setTheme,
 		setSeo,
 		setTitle,
+		setSlug,
 		bumpPreview,
 		saving,
 		savedAt,

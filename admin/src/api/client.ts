@@ -279,12 +279,13 @@ export interface PageListParams {
 }
 
 export interface CreatePagePayload {
-	title: string;
+	title?: string;
 	slug?: string;
 	status?: BioPage[ 'status' ];
 	theme?: string;
 	settings?: Record< string, unknown >;
 	blocks?: Partial< BioBlock >[];
+	seo?: Record< string, unknown >;
 }
 
 export interface UpdatePagePayload extends Partial< CreatePagePayload > {}

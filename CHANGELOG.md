@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [2.7.0] - 2026-05-17
+
+### Added
+- **Configurable URL prefix.** New `Settings → General → Page URL prefix` field controls the rewrite slug for every bio page. Default is `bio` (so pages live at `/bio/{slug}`). Change it to `links` and every page now lives at `/links/{slug}`. `BioLinkPagePostType::currentSlug()` reads from saved settings; the CPT re-registers + `flush_rewrite_rules(false)` runs automatically on save via `update_option_biolink_settings`. Reserved slugs (`wp-admin`, `wp-json`, etc.) are rejected.
+- **Per-page slug editor** on the Design page. New "Page" card at the top exposes the page title and the URL slug. Slug field shows the `yoursite.com/{prefix}/` prefix on the left so you see exactly what the public URL becomes; input sanitizes to `[a-z0-9-]` on blur and saves via `PagesApi.update({slug})`.
+- **`setSlug()` on BuilderContext** — typed mutation for the slug, normalizes input + persists via the existing pages PATCH endpoint.
+
+### Notes
+- Changing the URL prefix flushes the rewrite cache, but existing search-engine links to `/bio/{old-slug}` will 404 until indexed under the new prefix. Don't change it on a high-traffic page without a 301 plan.
+- The `BioLinkPagePostType::REWRITE_SLUG` constant is now @deprecated. It still equals `'bio'` for backwards compat with any external code referencing it, but the CPT registration uses `currentSlug()`.
+
 ## [2.6.1] - 2026-05-17
 
 ### Fixed

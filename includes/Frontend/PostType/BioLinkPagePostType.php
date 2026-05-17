@@ -22,6 +22,7 @@ defined('ABSPATH') || exit;
 final class BioLinkPagePostType implements Bootable
 {
     public const POST_TYPE = 'biolink_page';
+    /** @deprecated since v2.7. Use {@see currentSlug()} which reads the dynamic setting. */
     public const REWRITE_SLUG = 'bio';
     public const META_DATA = '_biolink_data';
 
@@ -29,6 +30,37 @@ final class BioLinkPagePostType implements Bootable
     {
         add_action('init', [$this, 'register'], 5);
         add_action('init', [$this, 'registerMeta'], 6);
+        // Flush rewrite rules once after a slug change.
+        add_action('update_option_biolink_settings', [$this, 'maybeFlushOnSlugChange'], 10, 2);
+    }
+
+    /**
+     * Resolve the current rewrite slug from saved settings (or default to 'bio').
+     */
+    public static function currentSlug(): string
+    {
+        $settings = (array) get_option('biolink_settings', []);
+        $slug     = isset($settings['page_slug']) ? sanitize_title((string) $settings['page_slug']) : '';
+        return $slug !== '' ? $slug : self::REWRITE_SLUG;
+    }
+
+    /**
+     * If the page_slug setting just changed, schedule a rewrite flush so the
+     * new prefix actually starts resolving without manual permalinks-resave.
+     *
+     * @param array<string, mixed>|mixed $old
+     * @param array<string, mixed>|mixed $new
+     */
+    public function maybeFlushOnSlugChange($old, $new): void
+    {
+        $old_slug = is_array($old) && isset($old['page_slug']) ? sanitize_title((string) $old['page_slug']) : '';
+        $new_slug = is_array($new) && isset($new['page_slug']) ? sanitize_title((string) $new['page_slug']) : '';
+        if ($old_slug === $new_slug) {
+            return;
+        }
+        // Re-register the CPT with the new slug, then flush.
+        $this->register();
+        flush_rewrite_rules(false);
     }
 
     public function register(): void
@@ -70,7 +102,7 @@ final class BioLinkPagePostType implements Bootable
             'hierarchical'        => false,
             'has_archive'         => false,
             'rewrite'             => [
-                'slug'       => self::REWRITE_SLUG,
+                'slug'       => self::currentSlug(),
                 'with_front' => false,
                 'feeds'      => false,
                 'pages'      => false,

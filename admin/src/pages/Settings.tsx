@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useEffect, useState } from 'react';
 import { SettingsApi } from '../api/client';
 import styles from './Settings.module.css';
@@ -8,6 +8,7 @@ interface General {
 	show_credit?: boolean;
 	allow_tracking?: boolean;
 	ai_enabled?: boolean;
+	page_slug?: string;
 	[ k: string ]: unknown;
 }
 
@@ -83,6 +84,30 @@ export function Settings() {
 
 			{ tab === 'general' && (
 				<div className={ styles.card }>
+					<label className={ styles.field }>
+						<span>{ __( 'Page URL prefix', 'biolink-pro' ) }</span>
+						<input
+							type="text"
+							className={ styles.input }
+							value={ general.page_slug ?? 'bio' }
+							placeholder="bio"
+							onChange={ ( e ) =>
+								setGeneral( {
+									...general,
+									page_slug: e.target.value
+										.toLowerCase()
+										.replace( /[^a-z0-9-]/g, '' ),
+								} )
+							}
+						/>
+						<span style={ { fontSize: 12, color: 'var(--biolink-color-text-muted)', display: 'block', marginTop: 4 } }>
+							{ sprintf(
+								/* translators: 1: site URL prefix, 2: slug */
+								__( 'Public bio pages will live at /%s/{page-slug}. Existing pages keep their links once permalinks refresh (we flush automatically on save).', 'biolink-pro' ),
+								general.page_slug ?? 'bio'
+							) }
+						</span>
+					</label>
 					<label className={ styles.field }>
 						<span>{ __( 'Analytics retention (days)', 'biolink-pro' ) }</span>
 						<input

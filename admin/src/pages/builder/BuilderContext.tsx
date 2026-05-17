@@ -8,6 +8,7 @@ export interface BuilderContextValue {
 	setTheme: ( slug: string ) => void;
 	setSeo: ( seo: Record< string, unknown > ) => void;
 	setTitle: ( title: string ) => void;
+	setSlug: ( slug: string ) => Promise< void >;
 	bumpPreview: () => void;
 	saving: boolean;
 	savedAt: Date | null;
